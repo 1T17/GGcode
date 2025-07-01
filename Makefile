@@ -31,6 +31,7 @@ bin/%: tests/%.c $(filter-out src/main.c, $(SRC)) $(UNITY)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Run all tests with final summary
+.PHONY: test
 test: tests
 	@echo ""
 	@PASS_TOTAL=0; FAIL_TOTAL=0; \
@@ -66,6 +67,8 @@ unity:
 		echo "Unity already present."; \
 	fi
 
-# Clean   ggggg
+# Clean build and test artifacts
+.PHONY: clean
 clean:
+	@mkdir -p bin
 	rm -f $(OUT) bin/* .testlog.tmp
