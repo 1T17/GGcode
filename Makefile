@@ -1,5 +1,3 @@
-
-
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Werror -Wpedantic -Wextra \
@@ -15,6 +13,9 @@ TEST_SRC := $(wildcard tests/test_*.c)
 TEST_BINS := $(patsubst tests/%.c,bin/%,$(TEST_SRC))
 UNITY = tests/Unity/src/unity.c
 
+UNITY_URL = https://github.com/ThrowTheSwitch/Unity/archive/refs/heads/master.zip
+UNITY_DIR = tests/Unity
+
 # Main target
 all: $(OUT)
 
@@ -23,7 +24,7 @@ $(OUT): $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Build all test binaries (excluding src/main.c to avoid duplicate main)
-tests: $(TEST_BINS)
+tests: unity $(TEST_BINS)
 
 bin/%: tests/%.c $(filter-out src/main.c, $(SRC)) $(UNITY)
 	@mkdir -p bin
@@ -49,6 +50,21 @@ test: tests
 	echo "✅ All Tests Done"; \
 	echo "🧪 Total: $$PASS_TOTAL Pass, $$FAIL_TOTAL Fail"; \
 	echo "============================="
+
+# Download and setup Unity framework
+.PHONY: unity
+unity:
+	@if [ ! -d "$(UNITY_DIR)" ]; then \
+		echo "Downloading Unity test framework..."; \
+		mkdir -p tests; \
+		curl -L $(UNITY_URL) -o tests/unity.zip; \
+		unzip -q tests/unity.zip -d tests; \
+		mv tests/Unity-master $(UNITY_DIR); \
+		rm tests/unity.zip; \
+		echo "Unity downloaded to $(UNITY_DIR)"; \
+	else \
+		echo "Unity already present."; \
+	fi
 
 # Clean
 clean:
