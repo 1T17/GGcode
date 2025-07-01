@@ -1,13 +1,28 @@
-MIT License
+MIT License (Modified for Dual Licensing)
 
-Copyright (c) 2005 T1
+Copyright (c) 2025 [Your Name]
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
+Permission is hereby granted, free of charge, to any person obtaining a copy  
+of this software and associated documentation files (the "Software"), to deal  
 in the Software without restriction, including without limitation the rights  
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  
 copies of the Software, and to permit persons to whom the Software is  
 furnished to do so, subject to the following conditions:
+
+This license applies to:
+- Personal use
+- Educational use
+- Non-commercial use
+- Commercial use by individuals and small businesses with **less than $100,000 USD in annual gross revenue**
+
+If your organization **generates $100,000 USD or more per year**, or is part of a larger company,  
+you must purchase a commercial license.
+
+To obtain a commercial license, contact:
+
+    T1
+    Email: t@doorbase.io
+    Website: www.doorbase.io
 
 The above copyright notice and this permission notice shall be included in  
 all copies or substantial portions of the Software.

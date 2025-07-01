@@ -121,10 +121,17 @@ N10 G1 X123
 
 ---
 
-## License
+## 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+- This project is licensed under the **MIT License** for personal, educational, and small business use.
+- If your company earns **$100,000 USD or more per year**, a **commercial license is required**.
 
+See:
+
+- [LICENSE](./LICENSE) — Free use terms  
+- [LICENSE-COMMERCIAL](./LICENSE-COMMERCIAL) — Commercial license info
+
+To inquire about commercial licensing, contact: [t@doorbase.io](mailto:t@doorbase.io)
 
 ---
 
