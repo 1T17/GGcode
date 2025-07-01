@@ -4,6 +4,12 @@
 
 ---
 
+
+<p align="center">
+  <img src="logo.png" alt="GGcode Logo" width="200"/>
+</p>
+
+
 ## Features
 
 - Lightweight compiler for `.gg` source files
