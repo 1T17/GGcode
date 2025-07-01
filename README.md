@@ -67,6 +67,25 @@ make clean
 
 Compile and run a `.gg` file:
 
+
+---
+
+## Makefile Targets
+
+| Command         | Description                                      |
+|-----------------|--------------------------------------------------|
+| `make` or `make all` | Build the main `ggcode` compiler binary         |
+| `make tests`    | Build all test binaries in the `bin/` directory  |
+| `make test`     | Run all tests and show a summary                 |
+| `make clean`    | Remove build artifacts and test binaries         |
+
+- The main binary will be named `ggcode`.
+- Test binaries are built from files matching `tests/test_*.c`.
+- Running `make test` will execute all tests and print a summary.
+
+---
+
+
 ```sh
 ./ggcode path/to/file.gg
 ```
