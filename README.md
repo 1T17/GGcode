@@ -75,7 +75,6 @@ The compiler binary `ggcode` will be generated in the root folder.
 
 Compile and run a `.gg` file:
 
-
 ---
 
 
