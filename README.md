@@ -71,16 +71,6 @@ for i = 0..3 {
 - Test binaries are built from files matching `tests/test_*.c`.
 - Running `make test` will execute all tests and print a summary.
 
-#### SVG Logo Support
-
-- You can use an SVG logo by replacing `logo.png` with `logo.svg` in the image tag at the top of this README:
-  ```html
-  <p align="center">
-    <img src="logo.svg" alt="GGcode Logo" width="500"/>
-  </p>
-  ```
-- Most Markdown renderers on GitHub support SVG images.
-
 ---
 
 ## Usage
