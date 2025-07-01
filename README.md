@@ -124,7 +124,6 @@ N10 G1 X123
 ## 📜 License
 
 - This project is licensed under the **MIT License** for personal, educational, and small business use.
-- If your company earns **$100,000 USD or more per year**, a **commercial license is required**.
 
 See:
 
