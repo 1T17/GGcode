@@ -53,21 +53,33 @@ for i = 0..3 {
 
 ### Build
 
-```sh
-| Command         | Description                                      |
-|-----------------|--------------------------------------------------|
-| `make` or `make all` | Build the main `ggcode` compiler binary         |
-| `make tests`    | Build all test binaries in the `bin/` directory  |
-| `make test`     | Run all tests and show a summary                 |
-| `make clean`    | Remove build artifacts and test binaries         |
+#### Requirements
 
-- The main binary will be named `ggcode`.
+- GCC or Clang
+- `make`
+
+#### Makefile Targets
+
+| Command             | Description                                      |
+|---------------------|--------------------------------------------------|
+| `make` or `make all`| Build the main `ggcode` compiler binary          |
+| `make tests`        | Build all test binaries in the `bin/` directory  |
+| `make test`         | Run all tests and show a summary                 |
+| `make clean`        | Remove build artifacts and test binaries         |
+
+- The main binary will be named **`ggcode`** and generated in the root folder.
 - Test binaries are built from files matching `tests/test_*.c`.
 - Running `make test` will execute all tests and print a summary.
 
-```
-The compiler binary `ggcode` will be generated in the root folder.
+#### SVG Logo Support
 
+- You can use an SVG logo by replacing `logo.png` with `logo.svg` in the image tag at the top of this README:
+  ```html
+  <p align="center">
+    <img src="logo.svg" alt="GGcode Logo" width="500"/>
+  </p>
+  ```
+- Most Markdown renderers on GitHub support SVG images.
 
 ---
 
