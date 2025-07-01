@@ -433,6 +433,22 @@ void test_dot_prefixed_and_negative_floats() {
 
 
 
+void test_ampersand_operator() {
+    TokenList tokens = lex_source("& &&");
+    print_tokens(&tokens);
+    TEST_ASSERT_EQUAL(3, tokens.count); // & , && , EOF
+
+    assert_token(tokens.tokens[0], TOKEN_AMPERSAND, "&");
+    assert_token(tokens.tokens[1], TOKEN_AND, "&&");
+    assert_token(tokens.tokens[2], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+
+
+
+
 // === UNITY HOOKS ===
 
 void setUp(void) {}
@@ -461,5 +477,6 @@ int main(void) {
     RUN_TEST(test_gcode_long);
     RUN_TEST(test_numbers);
     RUN_TEST(test_dot_prefixed_and_negative_floats);
+    RUN_TEST(test_ampersand_operator);
     return UNITY_END();
 }

@@ -41,6 +41,7 @@ int get_precedence(TokenType op)
         return 1;
     case TOKEN_AND:
     case TOKEN_OR:
+    case TOKEN_AMPERSAND: // <-- Add this line
         return 0; // lowest precedence
     default:
         return -1;
@@ -115,14 +116,42 @@ static ASTNode *parse_primary()
         return node;
     }
 
-    // Variable reference
+    // Function call or variable reference
     if (parser.current.type == TOKEN_IDENTIFIER)
     {
-        ASTNode *node = malloc(sizeof(ASTNode));
-        node->type = AST_VAR;
-        node->var.name = strdup(parser.current.value);
+        char *name = strdup(parser.current.value);
         advance();
-        return node;
+
+        if (parser.current.type == TOKEN_LPAREN) {
+            // Parse function call
+            advance(); // consume '('
+            ASTNode **args = NULL;
+            int arg_count = 0, arg_capacity = 0;
+
+            while (parser.current.type != TOKEN_RPAREN) {
+                if (arg_count >= arg_capacity) {
+                    arg_capacity = arg_capacity == 0 ? 4 : arg_capacity * 2;
+                    args = realloc(args, arg_capacity * sizeof(ASTNode *));
+                }
+                args[arg_count++] = parse_binary_expression();
+                if (parser.current.type == TOKEN_COMMA)
+                    advance();
+            }
+            advance(); // consume ')'
+
+            ASTNode *node = malloc(sizeof(ASTNode));
+            node->type = AST_CALL;
+            node->call_expr.name = name;
+            node->call_expr.args = args;
+            node->call_expr.arg_count = arg_count;
+            return node;
+        } else {
+            // Variable reference
+            ASTNode *node = malloc(sizeof(ASTNode));
+            node->type = AST_VAR;
+            node->var.name = name;
+            return node;
+        }
     }
 
     // Numeric constant
@@ -257,6 +286,9 @@ static ASTNode *parse_statement()
         return parse_gcode();
     if (parser.current.type == TOKEN_IDENTIFIER && gcode_mode_active)
         return parse_gcode_coord_only();
+    if (parser.current.type == TOKEN_IDENTIFIER) {
+        return parse_primary();
+    }
 
     printf("[Parser] Unexpected token: %s (type %d) at line %d\n",
            parser.current.value, parser.current.type, parser.current.line);

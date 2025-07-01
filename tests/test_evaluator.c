@@ -46,22 +46,12 @@ void test_eval_unary_bang(void) {
     free_ast(root);
 }
 
-
-
-
-
-
-
-
 void test_eval_not_equal_operator(void) {
     ASTNode* root = parse_script("let neq = 4 != 5");
     set_var("neq", eval_expr(root->block.statements[0]->let_stmt.expr));
     TEST_ASSERT_EQUAL_DOUBLE(1.0, get_var("neq"));
     free_ast(root);
 }
-
-
-
 
 void test_eval_variable_dependencies(void) {
     ASTNode* root = parse_script("let a = 3\nlet b = a + 2\nlet c = b * 3");
@@ -87,9 +77,6 @@ void test_eval_operator_precedence(void) {
     free_ast(root);
 }
 
-
-
-
 void test_eval_chained_arithmetic(void) {
     ASTNode* root = parse_script("let result = 10 - 2 + 1");
     set_var("result", eval_expr(root->block.statements[0]->let_stmt.expr));
@@ -97,17 +84,12 @@ void test_eval_chained_arithmetic(void) {
     free_ast(root);
 }
 
-
-
 void test_eval_parentheses_override_precedence(void) {
     ASTNode* root = parse_script("let x = (2 + 3) * 4");
     set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
     TEST_ASSERT_EQUAL_DOUBLE(20.0, get_var("x"));
     free_ast(root);
 }
-
-
-
 
 void test_eval_deep_variable_chain(void) {
     ASTNode* root = parse_script("let a = 2\nlet b = a + 2\nlet c = b * 2\nlet d = c - a");
@@ -118,17 +100,6 @@ void test_eval_deep_variable_chain(void) {
     TEST_ASSERT_EQUAL_DOUBLE(6.0, get_var("d"));  // ((2 + 2) * 2) - 2 = 6
     free_ast(root);
 }
-
-
-
-
-
-
-
-
-
-
-
 
 void test_eval_multiple_comparisons(void) {
     ASTNode* root = parse_script("let x = 3 < 5\nlet y = 5 <= 5\nlet z = 6 > 4");
@@ -141,10 +112,6 @@ void test_eval_multiple_comparisons(void) {
     free_ast(root);
 }
 
-
-
-
-
 void test_eval_all_operators_combo(void) {
     ASTNode* root = parse_script("let result = (5 + 3) * 2 - 4 / 2");
     set_var("result", eval_expr(root->block.statements[0]->let_stmt.expr));
@@ -152,23 +119,12 @@ void test_eval_all_operators_combo(void) {
     free_ast(root);
 }
 
-
-
-
-
-
-
 void test_eval_division(void) {
     ASTNode* root = parse_script("let x = 20 / 4");
     set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
     TEST_ASSERT_EQUAL_DOUBLE(5.0, get_var("x"));
     free_ast(root);
 }
-
-
-
-
-
 
 void test_eval_logical_and_or(void) {
     ASTNode* root = parse_script("let x = 1 < 2 && 2 < 3\nlet y = 1 > 2 || 3 > 2");
@@ -178,8 +134,6 @@ void test_eval_logical_and_or(void) {
     TEST_ASSERT_EQUAL_DOUBLE(1.0, get_var("y"));  // false || true
     free_ast(root);
 }
-
-
 
 void test_eval_manual_while_loop(void) {
     set_var("i", 0);
@@ -191,7 +145,6 @@ void test_eval_manual_while_loop(void) {
     TEST_ASSERT_EQUAL_DOUBLE(3.0, result);  // 0 + 1 + 2
 }
 
-
 void test_eval_negative_and_unary(void) {
     ASTNode* root = parse_script("let x = -(-5)");
     set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
@@ -199,11 +152,17 @@ void test_eval_negative_and_unary(void) {
     free_ast(root);
 }
 
-
 void test_eval_arith_and_compare_mix(void) {
     ASTNode* root = parse_script("let r = (2 + 3) == (1 + 4)");
     set_var("r", eval_expr(root->block.statements[0]->let_stmt.expr));
     TEST_ASSERT_EQUAL_DOUBLE(1.0, get_var("r"));
+    free_ast(root);
+}
+
+void test_eval_bitwise_and(void) {
+    ASTNode* root = parse_script("let x = 6 & 3");
+    set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
+    TEST_ASSERT_EQUAL_DOUBLE(2.0, get_var("x"));  // 6 & 3 == 2
     free_ast(root);
 }
 
@@ -258,6 +217,7 @@ RUN_TEST(test_eval_arith_and_compare_mix);
 
 
 RUN_TEST(test_eval_logical_and_or);
+RUN_TEST(test_eval_bitwise_and);
 
 
 
@@ -265,6 +225,6 @@ RUN_TEST(test_eval_logical_and_or);
 
 
     return UNITY_END();
-} 
+}
 
 

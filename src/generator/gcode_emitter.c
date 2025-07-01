@@ -236,6 +236,9 @@ static void emit_block_stmt(ASTNode *node, int debug) {
 /// @param debug Enables debug output.
 static void emit_function_stmt(ASTNode *node, int debug) {
     statement_count++;
+    // Register function in global table
+    extern void register_function(ASTNode *node);
+    register_function(node);
 
     if (debug) {
         printf("[Emit] FUNCTION declared: %s with %d params\n",
@@ -243,24 +246,22 @@ static void emit_function_stmt(ASTNode *node, int debug) {
                node->function_stmt.param_count);
         fflush(stdout);
     }
-
-    // Optional: You can store the function in a function table here if implementing function calls.
 }
 
 /// Emits a function call expression by evaluating it.
 /// @param node CALL AST node.
 /// @param debug Enables debug output.
-static void emit_call_stmt(ASTNode *node, int debug) {
-    statement_count++;
+// static void emit_call_stmt(ASTNode *node, int debug) {
+//     statement_count++;
 
-    // Evaluate the function call for its return value or side effects
-    eval_expr(node);
+//     // Evaluate the function call for its return value or side effects
+//     eval_expr(node);
 
-    if (debug) {
-        printf("[Emit] Function call: %s()\n", node->call_expr.name);
-        fflush(stdout);
-    }
-}
+//     if (debug) {
+//         printf("[Emit] Function call: %s()\n", node->call_expr.name);
+//         fflush(stdout);
+//     }
+// }
 
 /// Emits an IF/ELSE conditional branch depending on the evaluated condition.
 /// @param node IF AST node.
@@ -291,16 +292,7 @@ static void emit_if_stmt(ASTNode *node, int debug) {
 /// @param node Any AST node.
 /// @param debug Enables debug output.
 void emit_gcode(ASTNode *node, int debug) {
-    if (!node) {
-        fprintf(stderr, "[Emit] ERROR: NULL node passed to emit_gcode\n");
-        return;
-    }
-
-    if (node->type < 0 || node->type >= AST_NODE_TYPE_COUNT) {
-        fprintf(stderr, "[Emit] ERROR: Invalid AST node type: %d\n", node->type);
-        return;
-    }
-
+    if (!node) return;
     switch (node->type) {
         case AST_NOTE:     emit_note_stmt(node, debug); break;
         case AST_LET:      emit_let_stmt(node, debug); break;
@@ -309,8 +301,8 @@ void emit_gcode(ASTNode *node, int debug) {
         case AST_FOR:      emit_for_stmt(node, debug); break;
         case AST_BLOCK:    emit_block_stmt(node, debug); break;
         case AST_FUNCTION: emit_function_stmt(node, debug); break;
-        case AST_CALL:     emit_call_stmt(node, debug); break;
         case AST_IF:       emit_if_stmt(node, debug); break;
+        case AST_CALL:     eval_expr(node); break; // <-- Add this line
         default:
             fprintf(stderr, "[Emit] WARNING: Unrecognized node type: %d\n", node->type);
             break;

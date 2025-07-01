@@ -18,6 +18,7 @@
     X("<=", TOKEN_LESS_EQUAL, "<=", 0) \
     X(">=", TOKEN_GREATER_EQUAL, ">=", 0) \
     X("&&", TOKEN_AND, "&&", 0) \
+    X("&", TOKEN_AMPERSAND, "&", '&') \
     X("||", TOKEN_OR, "||", 0) \
     X("+", TOKEN_PLUS, "+", '+') \
     X("-", TOKEN_MINUS, "-", '-') \
