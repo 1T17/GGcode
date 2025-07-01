@@ -67,7 +67,7 @@ unity:
 		echo "Unity already present."; \
 	fi
 
-# Clean build and test artifacts
+# Clean build and test artifacts gg
 .PHONY: clean
 clean:
 	@mkdir -p bin
