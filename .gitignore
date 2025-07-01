@@ -14,6 +14,8 @@ Doxyfile
 
 test.nc
 r.sh
+g.sh
+
 
 # Executable files
 *.exe
