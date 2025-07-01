@@ -1,11 +1,13 @@
 <p align="center">
-  <img src="logo.png" alt="GGcode Logo" width="500"/>
+  <img src="logo.png" alt="GGcode Logo" width="320"/>
+  <!-- For SVG support, you can use: <img src="logo.svg" alt="GGcode Logo" width="320"/> -->
 </p>
+
+# GGcode
 
 **GGcode** is a custom G-code scripting language and compiler that brings programmability to CNC machining. Designed for automation, testing, and dynamic toolpath generation, it supports variables, control flow, expression evaluation, and runtime note/comment blocks.
 
 ---
-
 
 ## Features
 
@@ -21,7 +23,7 @@
 
 ---
 
-## Example GGcode Script
+## Example
 
 ```gg
 let id = 100
@@ -44,7 +46,7 @@ for i = 0..3 {
 
 ---
 
-## Building the Compiler
+## Getting Started
 
 ### Requirements
 
@@ -53,12 +55,7 @@ for i = 0..3 {
 
 ### Build
 
-#### Requirements
-
-- GCC or Clang
-- `make`
-
-#### Makefile Targets
+Use the following commands to build and test the project:
 
 | Command             | Description                                      |
 |---------------------|--------------------------------------------------|
@@ -77,9 +74,6 @@ for i = 0..3 {
 
 Compile and run a `.gg` file:
 
----
-
-
 ```sh
 ./ggcode path/to/file.gg
 ```
@@ -92,7 +86,7 @@ N10 G1 X123
 
 ---
 
-## Supported Syntax Overview
+## Supported Syntax
 
 | Keyword   | Description                        |
 |-----------|------------------------------------|
@@ -107,7 +101,7 @@ N10 G1 X123
 
 ---
 
-## Internals (Current Architecture)
+## Architecture
 
 - **Lexer** – Tokenizes source
 - **Parser** – Builds AST with recursive descent
@@ -151,12 +145,13 @@ N10 G1 X123
 
 *Have ideas or want to contribute? Open an issue or pull request!*
 
+---
+
 ## 📜 License
 
-- This project is licensed under the **MIT License** for personal, educational, and small business use.
+This project is licensed under the **MIT License** for personal, educational, and small business use.
 
 See:
-
 - [LICENSE](./LICENSE) — Free use terms  
 - [LICENSE-COMMERCIAL](./LICENSE-COMMERCIAL) — Commercial license info
 
