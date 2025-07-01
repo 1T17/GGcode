@@ -126,9 +126,9 @@ Roadmap
 
 License
 
-MIT License (or update with your preferred license)
+MIT License 
 
-Author  https://doorbase.io
+Author  T1
 
 GGcode is built for control, clarity, and creativity — bringing logic to motion.
 
