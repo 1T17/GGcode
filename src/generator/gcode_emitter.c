@@ -9,9 +9,13 @@
 #include "utils/output_buffer.h"
 #include "config.h"
 
+// Forward declarations of utility functions
 extern char RUNTIME_TIME[64];
+// Forward declaration of the runtime filename
 extern char RUNTIME_FILENAME[256];
 
+
+// Global variable to track the number of emitted statements
 int statement_count = 0;
 
 /// Returns the number of statements emitted so far.
