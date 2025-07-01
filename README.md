@@ -54,27 +54,6 @@ for i = 0..3 {
 ### Build
 
 ```sh
-make
-```
-The compiler binary `ggcode` will be generated in the root folder.
-
-### Clean
-
-```sh
-make clean
-```
-
----
-
-## Usage
-
-Compile and run a `.gg` file:
-
-
----
-
-## Makefile Targets
-
 | Command         | Description                                      |
 |-----------------|--------------------------------------------------|
 | `make` or `make all` | Build the main `ggcode` compiler binary         |
@@ -85,6 +64,17 @@ Compile and run a `.gg` file:
 - The main binary will be named `ggcode`.
 - Test binaries are built from files matching `tests/test_*.c`.
 - Running `make test` will execute all tests and print a summary.
+
+```
+The compiler binary `ggcode` will be generated in the root folder.
+
+
+---
+
+## Usage
+
+Compile and run a `.gg` file:
+
 
 ---
 
