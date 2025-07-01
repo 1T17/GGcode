@@ -1,13 +1,10 @@
-# GGcode
+<p align="center">
+  <img src="logo.png" alt="GGcode Logo" width="500"/>
+</p>
 
 **GGcode** is a custom G-code scripting language and compiler that brings programmability to CNC machining. Designed for automation, testing, and dynamic toolpath generation, it supports variables, control flow, expression evaluation, and runtime note/comment blocks.
 
 ---
-
-
-<p align="center">
-  <img src="logo.png" alt="GGcode Logo" width="200"/>
-</p>
 
 
 ## Features
