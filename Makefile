@@ -1,0 +1,55 @@
+
+
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Werror -Wpedantic -Wextra \
+         -DUNITY_SUPPORT_64 -DUNITY_INCLUDE_DOUBLE \
+         -I./include -Isrc -Isrc/lexer -Isrc/parser -Isrc/runtime -Isrc/semantic -Isrc/generator -Isrc/utils
+
+# Main source files
+SRC = $(wildcard src/*.c src/lexer/*.c src/parser/*.c src/semantic/*.c src/generator/*.c src/runtime/*.c src/utils/*.c)
+OUT = ggcode
+
+# Test discovery
+TEST_SRC := $(wildcard tests/test_*.c)
+TEST_BINS := $(patsubst tests/%.c,bin/%,$(TEST_SRC))
+UNITY = tests/Unity/src/unity.c
+
+# Main target
+all: $(OUT)
+
+# Build main program
+$(OUT): $(SRC)
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Build all test binaries (excluding src/main.c to avoid duplicate main)
+tests: $(TEST_BINS)
+
+bin/%: tests/%.c $(filter-out src/main.c, $(SRC)) $(UNITY)
+	@mkdir -p bin
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Run all tests with final summary
+test: tests
+	@echo ""
+	@PASS_TOTAL=0; FAIL_TOTAL=0; \
+	for t in $(TEST_BINS); do \
+		echo "🧪 Running $$t..."; \
+		./$$t > .testlog.tmp; cat .testlog.tmp; \
+		PASS=$$(grep -c ":PASS" .testlog.tmp); \
+		FAIL=$$(grep -c ":FAIL" .testlog.tmp); \
+		PASS_TOTAL=$$((PASS_TOTAL + PASS)); \
+		FAIL_TOTAL=$$((FAIL_TOTAL + FAIL)); \
+		echo "→ Summary for $$t: $$PASS Pass, $$FAIL Fail"; \
+		echo ""; \
+		if [ $$FAIL -gt 0 ]; then exit 1; fi; \
+	done; \
+	rm -f .testlog.tmp; \
+	echo "============================="; \
+	echo "✅ All Tests Done"; \
+	echo "🧪 Total: $$PASS_TOTAL Pass, $$FAIL_TOTAL Fail"; \
+	echo "============================="
+
+# Clean
+clean:
+	rm -f $(OUT) bin/* .testlog.tmp

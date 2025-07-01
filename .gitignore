@@ -1,0 +1,67 @@
+# Compiled object files
+*.o
+*.obj
+
+
+Unity/
+BK/
+ggcode
+
+function_report.html
+function_report.txt
+
+Doxyfile
+
+
+
+# Executable files
+*.exe
+*.out
+*.app
+a.out
+
+# Static and dynamic libraries
+*.a
+*.so
+*.dll
+*.dylib
+
+# Core dumps
+core
+*.core
+
+# Build directories
+/build/
+/bin/
+/dist/
+/Debug/
+/Release/
+
+# Editor/IDE files
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Code::Blocks
+*.depend
+*.layout
+*.cbp
+*.layout
+
+# CLion
+cmake-build-*/
+
+# Visual Studio Code
+.vscode/
+
+# Other
+tags
