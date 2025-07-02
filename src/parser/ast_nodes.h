@@ -78,7 +78,7 @@ struct
 
         struct
         { // binary expression: left + right
-            TokenType op;
+            Token_Type op;
             ASTNode *left;
             ASTNode *right;
         } binary_expr;
@@ -139,7 +139,7 @@ struct
 
         struct
         { // unary expression: !x
-            TokenType op;
+            Token_Type op;
             ASTNode *operand;
         } unary_expr;
 

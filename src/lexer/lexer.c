@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include "../utils/compat.h"
 #include "lexer.h"
 #include "token_utils.h" // or "token.h" if you later split it
 
@@ -128,7 +129,7 @@ static void skip_whitespace(Lexer *lexer)
 }
 
 /// @brief Creates a token object
-// static Token make_token(TokenType type, const char *value, int line, int column)
+// static Token make_token(Token_Type type, const char *value, int line, int column)
 // {
 //     Token token;
 //     token.type = type;
@@ -140,7 +141,7 @@ static void skip_whitespace(Lexer *lexer)
 // }
 
 /// @brief Lookup keyword and return its token type
-static TokenType keyword_lookup(const char *word)
+static Token_Type keyword_lookup(const char *word)
 {
 #define X(name, type) if (strcmp(word, name) == 0) return type;
     KEYWORD_LIST
@@ -172,7 +173,7 @@ if (isalpha(c) || c == '_') {
 
     int length = lexer->pos - start;
     char *word = strndup(&lexer->source[start], length);
-    TokenType type = keyword_lookup(word);
+    Token_Type type = keyword_lookup(word);
 
     if (type == TOKEN_IDENTIFIER && (word[0] == 'G' || word[0] == 'M' || word[0] == 'T'))
         type = TOKEN_GCODE_WORD;

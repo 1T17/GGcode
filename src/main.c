@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <sys/resource.h>
+
 #include <string.h>
 
 #include "config.h"
@@ -12,12 +12,19 @@
 #include "utils/file_utils.h"
 #include "utils/report.h"
 
+#include "utils/time_utils.h"
+
+
 
 #include <libgen.h>  // for basename()
 
+#ifdef __linux__
+#include <sys/resource.h>
+#endif
 
-
-
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
 
 // Declare the runtime variable lookup functions from evaluator.c
@@ -28,14 +35,17 @@ const char* GGCODE_INPUT_FILENAME = NULL;
 
 
 void compile_file(const char* input_path, const char* output_path, int debug) {
-
-     GGCODE_INPUT_FILENAME = input_path;  // Save for later use
+    GGCODE_INPUT_FILENAME = input_path;
     long input_size_bytes = 0;
 
-        GGCODE_INPUT_FILENAME = input_path;
-
     // Store filename only (no path)
-    strncpy(RUNTIME_FILENAME, basename((char*)input_path), sizeof(RUNTIME_FILENAME) - 1);
+#if defined(_WIN32)
+    const char* last_slash = strrchr(input_path, '\\');
+    const char* filename = last_slash ? last_slash + 1 : input_path;
+#else
+    const char* filename = basename((char*)input_path);
+#endif
+    strncpy(RUNTIME_FILENAME, filename, sizeof(RUNTIME_FILENAME) - 1);
     RUNTIME_FILENAME[sizeof(RUNTIME_FILENAME) - 1] = '\0';
 
     // Get current time string
@@ -43,7 +53,7 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     struct tm* tm_info = localtime(&now);
     strftime(RUNTIME_TIME, sizeof(RUNTIME_TIME), "%Y-%m-%d %H:%M:%S", tm_info);
 
-
+    // Load source
     char* source = read_file_to_buffer(input_path, &input_size_bytes);
     if (!source) {
         perror("Failed to read input file");
@@ -52,22 +62,21 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
 
     init_output_buffer();
 
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    // Parse timing
+    Timer parse_timer;
+    start_timer(&parse_timer);
     ASTNode* root = parse_script(source);
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    double parse_time = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    double parse_time = end_timer(&parse_timer);
 
-    // ➤ Emit G-code (this defines variables like 'id')
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    // Emit timing
+    Timer emit_timer;
+    start_timer(&emit_timer);
     emit_gcode(root, debug);
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    double emit_time = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    double emit_time = end_timer(&emit_timer);
 
     // ➤ Insert G-code header at the beginning AFTER emit
     char preamble[128] = "%\n";
     char id_line[64];
-
     if (var_exists("id")) {
         snprintf(id_line, sizeof(id_line), "%.0f", get_var("id"));
     } else {
@@ -75,14 +84,17 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     }
     strcat(preamble, id_line);
     strcat(preamble, "\n");
-
-    // ➤ Insert preamble at start of output buffer
     prepend_to_output_buffer(preamble);
 
+    // Measure memory usage (only supported on Linux/macOS)
+    long memory_kb = 0;
+#if defined(__linux__) || defined(__APPLE__)
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
-    long memory_kb = usage.ru_maxrss;
+    memory_kb = usage.ru_maxrss;
+#endif
 
+    // Output
     if (get_output_to_file()) {
         FILE* out = fopen(output_path, "w");
         if (!out) {
@@ -102,6 +114,11 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     free(source);
     free_output_buffer();
 }
+
+
+
+
+
 
 int main() {
     compile_file(get_input_file(), get_output_file(), get_debug());

@@ -5,7 +5,7 @@
 #include "keyword_table.h"
 
 typedef struct {
-    TokenType type;
+    Token_Type type;
     char* value;
     int line;
     int column;

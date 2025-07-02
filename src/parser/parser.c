@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "parser.h"
+#include "../utils/compat.h"
 #include "../runtime/evaluator.h"
 
 
@@ -36,7 +37,7 @@ Token lexer_peek_token(Lexer *lexer);
 
 
 
-int get_precedence(TokenType op)
+int get_precedence(Token_Type op)
 {
     switch (op)
     {
@@ -68,7 +69,7 @@ static void advance()
     parser.current = lexer_next_token(parser.lexer);
 }
 
-static int match(TokenType type)
+static int match(Token_Type type)
 {
     if (parser.current.type == type)
     {
@@ -82,7 +83,7 @@ static ASTNode *parse_unary()
 {
     if (parser.current.type == TOKEN_BANG)
     {
-        TokenType op = parser.current.type;
+        Token_Type op = parser.current.type;
         advance(); // consume '!'
 
         ASTNode *operand = parse_unary(); // recursive for !!x
@@ -219,7 +220,7 @@ static ASTNode *parse_binary_expression_prec(int min_prec)
 
     while (1)
     {
-        TokenType op = parser.current.type;
+        Token_Type op = parser.current.type;
         int prec = get_precedence(op);
 
         if (prec < min_prec)

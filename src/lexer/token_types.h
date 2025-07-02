@@ -33,6 +33,6 @@ typedef enum {
     TOKEN_EOF,
     TOKEN_UNKNOWN,
 
-} TokenType;
+} Token_Type;
 
 #endif // TOKEN_TYPES_H

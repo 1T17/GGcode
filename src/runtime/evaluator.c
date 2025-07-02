@@ -167,7 +167,7 @@ double eval_expr(ASTNode *node)
     {
         double left = eval_expr(node->binary_expr.left);
         double right = eval_expr(node->binary_expr.right);
-        TokenType op = node->binary_expr.op;
+        Token_Type op = node->binary_expr.op;
 
         switch (op)
         {

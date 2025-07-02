@@ -4,6 +4,9 @@ CFLAGS = -Wall -Werror -Wpedantic -Wextra \
          -DUNITY_SUPPORT_64 -DUNITY_INCLUDE_DOUBLE \
          -I./include -Isrc -Isrc/lexer -Isrc/parser -Isrc/runtime -Isrc/semantic -Isrc/generator -Isrc/utils
 
+# Windows cross-compiler
+CC_WIN = x86_64-w64-mingw32-gcc
+
 # Main source files
 SRC = $(wildcard src/*.c src/lexer/*.c src/parser/*.c src/semantic/*.c src/generator/*.c src/runtime/*.c src/utils/*.c)
 OUT = ggcode
@@ -22,6 +25,12 @@ all: $(OUT)
 # Build main program
 $(OUT): $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^ -lm
+
+# Windows build target
+.PHONY: win
+win:
+	@mkdir -p win
+	$(CC_WIN) $(CFLAGS) -o win/$(OUT).exe $(SRC) -lm
 
 # Build all test binaries (excluding src/main.c to avoid duplicate main)
 tests: unity $(TEST_BINS)
@@ -67,8 +76,8 @@ unity:
 		echo "Unity already present."; \
 	fi
 
-# Clean build and test artifacts gg
+# Clean build and test artifacts
 .PHONY: clean
 clean:
-	@mkdir -p bin
-	rm -f $(OUT) bin/* .testlog.tmp
+	@mkdir -p bin win
+	rm -f $(OUT) bin/* win/*.exe .testlog.tmp

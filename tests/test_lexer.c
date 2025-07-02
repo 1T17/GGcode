@@ -46,7 +46,7 @@ void free_token_list(TokenList* list) {
     list->capacity = 0;
 }
 
-void assert_token(Token token, TokenType expected_type, const char* expected_value) {
+void assert_token(Token token, Token_Type expected_type, const char* expected_value) {
     TEST_ASSERT_EQUAL(expected_type, token.type);
     if (expected_value) {
         TEST_ASSERT_EQUAL_STRING(expected_value, token.value);
@@ -458,7 +458,7 @@ void test_builtin_constants_and_math_functions() {
 
     TokenList tokens = lex_source(input);
 
-    const TokenType expected_types[] = {
+    const Token_Type expected_types[] = {
         TOKEN_FUNC_PI, TOKEN_FUNC_TAU, TOKEN_FUNC_EU,
         TOKEN_FUNC_DEG_TO_RAD, TOKEN_FUNC_RAD_TO_DEG,
 

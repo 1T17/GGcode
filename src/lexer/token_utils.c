@@ -7,7 +7,7 @@
 extern int LEXER_DEBUG;
 
 /// @brief Create a new token instance
-Token make_token(TokenType type, const char *value, int line, int column) {
+Token make_token(Token_Type type, const char *value, int line, int column) {
     Token token;
     token.type = type;
     token.value = strdup(value);  // Duplicate the string for safety
