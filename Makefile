@@ -28,7 +28,7 @@ tests: unity $(TEST_BINS)
 
 bin/%: tests/%.c $(filter-out src/main.c, $(SRC)) $(UNITY)
 	@mkdir -p bin
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lm
 
 # Run all tests with final summary
 .PHONY: test

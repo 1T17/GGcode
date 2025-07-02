@@ -144,9 +144,11 @@ static TokenType keyword_lookup(const char *word)
 {
 #define X(name, type) if (strcmp(word, name) == 0) return type;
     KEYWORD_LIST
+    TOKEN_FUNCTION_LIST
 #undef X
     return TOKEN_IDENTIFIER;
 }
+
 
 /// @brief Main lexer function to get the next token
 Token lexer_next_token(Lexer *lexer)

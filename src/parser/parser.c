@@ -4,6 +4,13 @@
 #include "parser.h"
 #include "../runtime/evaluator.h"
 
+
+
+#define M_PI 3.14159265358979323846
+
+
+
+
 static int gcode_mode_active = 0;
 static Parser parser;
 
@@ -90,15 +97,12 @@ static ASTNode *parse_unary()
     return parse_primary();
 }
 
-static ASTNode *parse_primary()
-{
+static ASTNode *parse_primary() {
     // Handle parentheses
-    if (parser.current.type == TOKEN_LPAREN)
-    {
-        advance();                                 // consume '('
-        ASTNode *expr = parse_binary_expression(); // parse inner expression
-        if (!match(TOKEN_RPAREN))
-        {
+    if (parser.current.type == TOKEN_LPAREN) {
+        advance(); // consume '('
+        ASTNode *expr = parse_binary_expression();
+        if (!match(TOKEN_RPAREN)) {
             printf("[Parser] Expected ')' after expression\n");
             exit(1);
         }
@@ -106,8 +110,7 @@ static ASTNode *parse_primary()
     }
 
     // Handle unary minus
-    if (parser.current.type == TOKEN_MINUS)
-    {
+    if (parser.current.type == TOKEN_MINUS) {
         advance(); // consume '-'
         ASTNode *right = parse_primary();
 
@@ -123,28 +126,55 @@ static ASTNode *parse_primary()
         return node;
     }
 
-    // Function call or variable reference
-    if (parser.current.type == TOKEN_IDENTIFIER)
-    {
+    // Handle built-in math constants
+    if (
+        parser.current.type == TOKEN_FUNC_PI ||
+        parser.current.type == TOKEN_FUNC_TAU ||
+        parser.current.type == TOKEN_FUNC_EU ||
+        parser.current.type == TOKEN_FUNC_DEG_TO_RAD ||
+        parser.current.type == TOKEN_FUNC_RAD_TO_DEG
+    ) {
+        double val = 0.0;
+        switch (parser.current.type) {
+            case TOKEN_FUNC_PI:         val = M_PI; break;
+            case TOKEN_FUNC_TAU:        val = 2 * M_PI; break;
+            case TOKEN_FUNC_EU:         val = 2.718281828459045; break;
+            case TOKEN_FUNC_DEG_TO_RAD: val = M_PI / 180.0; break;
+            case TOKEN_FUNC_RAD_TO_DEG: val = 180.0 / M_PI; break;
+            default: break;
+        }
+
+        advance(); // consume the constant
+        ASTNode *node = malloc(sizeof(ASTNode));
+        node->type = AST_NUMBER;
+        node->number.value = val;
+        return node;
+    }
+
+    // Handle function calls and variables
+    if (parser.current.type == TOKEN_IDENTIFIER ||
+        (parser.current.type >= TOKEN_FUNC_ABS && parser.current.type <= TOKEN_FUNC_EXP)) {
+
         char *name = strdup(parser.current.value);
-        advance();
+        advance(); // consume function or variable name
 
         if (parser.current.type == TOKEN_LPAREN) {
-            // Parse function call
             advance(); // consume '('
+
             ASTNode **args = NULL;
             int arg_count = 0, arg_capacity = 0;
 
             while (parser.current.type != TOKEN_RPAREN) {
                 if (arg_count >= arg_capacity) {
-                    arg_capacity = arg_capacity == 0 ? 4 : arg_capacity * 2;
+                    arg_capacity = (arg_capacity == 0) ? 4 : arg_capacity * 2;
                     args = realloc(args, arg_capacity * sizeof(ASTNode *));
                 }
                 args[arg_count++] = parse_binary_expression();
                 if (parser.current.type == TOKEN_COMMA)
-                    advance();
+                    advance(); // consume comma
             }
-            advance(); // consume ')'
+
+            match(TOKEN_RPAREN); // consume ')'
 
             ASTNode *node = malloc(sizeof(ASTNode));
             node->type = AST_CALL;
@@ -161,20 +191,27 @@ static ASTNode *parse_primary()
         }
     }
 
-    // Numeric constant
-    if (parser.current.type == TOKEN_NUMBER)
-    {
+    // Handle numeric constants
+    if (parser.current.type == TOKEN_NUMBER) {
         ASTNode *node = malloc(sizeof(ASTNode));
         node->type = AST_NUMBER;
-        node->number.value = atof(parser.current.value); // Parse to float
-        advance();
+        node->number.value = atof(parser.current.value);
+        advance(); // consume number
         return node;
     }
 
-    // Unknown token
+    // Fallback error
     printf("[Parser] Unexpected token in expression: %s\n", parser.current.value);
     exit(1);
 }
+
+
+
+
+
+
+
+
 
 static ASTNode *parse_binary_expression_prec(int min_prec)
 {
@@ -203,6 +240,17 @@ static ASTNode *parse_binary_expression_prec(int min_prec)
 
     return left;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 static ASTNode *parse_binary_expression()
 {

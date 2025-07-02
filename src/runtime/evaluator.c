@@ -2,6 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../parser/ast_nodes.h"
+#include <math.h>
+
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_E
+#define M_E 2.71828182845904523536
+#endif
 
 #define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
@@ -30,6 +40,41 @@ static int var_count = 0;
 
 static FunctionEntry function_table[MAX_FUNCTIONS];
 static int function_count = 0;
+
+
+
+
+
+
+
+
+#include "evaluator.h"
+#include <stdio.h>
+
+void eval_block(ASTNode *block) {
+    if (!block || block->type != AST_BLOCK) {
+        printf("[Runtime] Invalid block node\n");
+        return;
+    }
+
+    for (int i = 0; i < block->block.count; ++i) {
+        ASTNode *stmt = block->block.statements[i];
+        switch (stmt->type) {
+            case AST_LET:
+                set_var(stmt->let_stmt.name, eval_expr(stmt->let_stmt.expr));
+                break;
+            case AST_NOTE:
+                // Optional: support runtime notes/logs if needed
+                break;
+            default:
+                printf("[Runtime] Unsupported statement in block at index %d\n", i);
+                break;
+        }
+    }
+}
+
+
+
 
 // Set or update variable
 void set_var(const char *name, double value)
@@ -216,11 +261,89 @@ double eval_expr(ASTNode *node)
 
 
 
+#include <math.h>
+#include <string.h>
 
 double eval_function_call(ASTNode *node) {
-    ASTNode *func = find_function(node->call_expr.name);
+    const char *name = node->call_expr.name;
+    int argc = node->call_expr.arg_count;
+    ASTNode **args = node->call_expr.args;
+
+    // --- Constants ---
+    if (strcmp(name, "PI") == 0) return M_PI;
+    if (strcmp(name, "TAU") == 0) return 2.0 * M_PI;
+    if (strcmp(name, "EU") == 0) return M_E;
+    if (strcmp(name, "DEG_TO_RAD") == 0) return M_PI / 180.0;
+    if (strcmp(name, "RAD_TO_DEG") == 0) return 180.0 / M_PI;
+
+    // --- Basic Math ---
+    if (strcmp(name, "abs") == 0 && argc == 1) return fabs(eval_expr(args[0]));
+    if (strcmp(name, "mod") == 0 && argc == 2) return fmod(eval_expr(args[0]), eval_expr(args[1]));
+    if (strcmp(name, "floor") == 0 && argc == 1) return floor(eval_expr(args[0]));
+    if (strcmp(name, "ceil") == 0 && argc == 1) return ceil(eval_expr(args[0]));
+    if (strcmp(name, "round") == 0 && argc == 1) return round(eval_expr(args[0]));
+    if (strcmp(name, "min") == 0 && argc == 2) return fmin(eval_expr(args[0]), eval_expr(args[1]));
+    if (strcmp(name, "max") == 0 && argc == 2) return fmax(eval_expr(args[0]), eval_expr(args[1]));
+    if (strcmp(name, "clamp") == 0 && argc == 3) {
+        double v = eval_expr(args[0]);
+        double lo = eval_expr(args[1]);
+        double hi = eval_expr(args[2]);
+        return fmin(fmax(v, lo), hi);
+    }
+
+    // --- Trigonometry ---
+    if (strcmp(name, "sin") == 0 && argc == 1) return sin(eval_expr(args[0]));
+    if (strcmp(name, "cos") == 0 && argc == 1) return cos(eval_expr(args[0]));
+    if (strcmp(name, "tan") == 0 && argc == 1) return tan(eval_expr(args[0]));
+    if (strcmp(name, "asin") == 0 && argc == 1) return asin(eval_expr(args[0]));
+    if (strcmp(name, "acos") == 0 && argc == 1) return acos(eval_expr(args[0]));
+    if (strcmp(name, "atan") == 0 && argc == 1) return atan(eval_expr(args[0]));
+    if (strcmp(name, "atan2") == 0 && argc == 2) return atan2(eval_expr(args[0]), eval_expr(args[1]));
+    if (strcmp(name, "deg") == 0 && argc == 1) return eval_expr(args[0]) * (180.0 / M_PI);
+    if (strcmp(name, "rad") == 0 && argc == 1) return eval_expr(args[0]) * (M_PI / 180.0);
+
+    // --- Geometry / Vector ---
+    if (strcmp(name, "sqrt") == 0 && argc == 1) return sqrt(eval_expr(args[0]));
+    if (strcmp(name, "pow") == 0 && argc == 2) return pow(eval_expr(args[0]), eval_expr(args[1]));
+    if (strcmp(name, "hypot") == 0 && argc == 2) return hypot(eval_expr(args[0]), eval_expr(args[1]));
+    if (strcmp(name, "lerp") == 0 && argc == 3) {
+        double a = eval_expr(args[0]);
+        double b = eval_expr(args[1]);
+        double t = eval_expr(args[2]);
+        return a + t * (b - a);
+    }
+    if (strcmp(name, "map") == 0 && argc == 5) {
+        double v = eval_expr(args[0]);
+        double in_min = eval_expr(args[1]);
+        double in_max = eval_expr(args[2]);
+        double out_min = eval_expr(args[3]);
+        double out_max = eval_expr(args[4]);
+        return out_min + ((v - in_min) * (out_max - out_min)) / (in_max - in_min);
+    }
+    if (strcmp(name, "distance") == 0 && argc == 4) {
+        double x1 = eval_expr(args[0]);
+        double y1 = eval_expr(args[1]);
+        double x2 = eval_expr(args[2]);
+        double y2 = eval_expr(args[3]);
+        return hypot(x2 - x1, y2 - y1);
+    }
+
+    // --- Optional / Advanced ---
+    if (strcmp(name, "sign") == 0 && argc == 1) {
+        double x = eval_expr(args[0]);
+        return (x > 0) - (x < 0);
+    }
+    if (strcmp(name, "log") == 0 && argc == 1) return log(eval_expr(args[0]));
+    if (strcmp(name, "exp") == 0 && argc == 1) return exp(eval_expr(args[0]));
+    if (strcmp(name, "noise") == 0 && argc == 1) {
+        // TODO: Replace with real noise function
+        return sin(eval_expr(args[0])); // Placeholder
+    }
+
+    // --- User-defined function fallback ---
+    ASTNode *func = find_function(name);
     if (!func) {
-        fprintf(stderr, "[Runtime] Function not found: %s\n", node->call_expr.name);
+        fprintf(stderr, "[Runtime] Function not found: %s\n", name);
         exit(1);
     }
 
@@ -237,12 +360,12 @@ double eval_function_call(ASTNode *node) {
         double arg_val = 0.0;
         if (i < node->call_expr.arg_count)
             arg_val = eval_expr(node->call_expr.args[i]);
-        declare_var(param_names[i], arg_val); // <-- use declare_var here
+        declare_var(param_names[i], arg_val);
     }
 
-    int old_var_count = var_count; // Save before declaring params
+    int old_var_count = var_count;
 
-    // Evaluate function body and capture return value
+    // Evaluate body
     runtime_has_returned = 0;
     runtime_return_value = 0.0;
     ASTNode *body = func->function_stmt.body;
@@ -251,15 +374,36 @@ double eval_function_call(ASTNode *node) {
         if (runtime_has_returned) break;
     }
 
-    var_count = old_var_count; // Remove locals after function call
+    var_count = old_var_count;
 
-    // Restore old variable values
+    // Restore old values
     for (int i = 0; i < param_count; i++) {
         set_var(param_names[i], old_vars[i]);
     }
 
     return runtime_return_value;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void register_function(ASTNode *node) {
     if (function_count >= MAX_FUNCTIONS) {

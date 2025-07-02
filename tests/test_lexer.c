@@ -448,6 +448,61 @@ void test_ampersand_operator() {
 
 
 
+void test_builtin_constants_and_math_functions() {
+    const char* input =
+        "PI TAU EU DEG_TO_RAD RAD_TO_DEG "
+        "abs mod floor ceil round min max clamp "
+        "sin cos tan asin acos atan atan2 deg rad "
+        "sqrt pow hypot lerp map distance "
+        "noise sign log exp";
+
+    TokenList tokens = lex_source(input);
+
+    const TokenType expected_types[] = {
+        TOKEN_FUNC_PI, TOKEN_FUNC_TAU, TOKEN_FUNC_EU,
+        TOKEN_FUNC_DEG_TO_RAD, TOKEN_FUNC_RAD_TO_DEG,
+
+        TOKEN_FUNC_ABS, TOKEN_FUNC_MOD, TOKEN_FUNC_FLOOR, TOKEN_FUNC_CEIL, TOKEN_FUNC_ROUND,
+        TOKEN_FUNC_MIN, TOKEN_FUNC_MAX, TOKEN_FUNC_CLAMP,
+
+        TOKEN_FUNC_SIN, TOKEN_FUNC_COS, TOKEN_FUNC_TAN,
+        TOKEN_FUNC_ASIN, TOKEN_FUNC_ACOS, TOKEN_FUNC_ATAN, TOKEN_FUNC_ATAN2,
+        TOKEN_FUNC_DEG, TOKEN_FUNC_RAD,
+
+        TOKEN_FUNC_SQRT, TOKEN_FUNC_POW, TOKEN_FUNC_HYPOT,
+        TOKEN_FUNC_LERP, TOKEN_FUNC_MAP, TOKEN_FUNC_DISTANCE,
+
+        TOKEN_FUNC_NOISE, TOKEN_FUNC_SIGN, TOKEN_FUNC_LOG, TOKEN_FUNC_EXP
+    };
+
+    const char* expected_values[] = {
+        "PI", "TAU", "EU", "DEG_TO_RAD", "RAD_TO_DEG",
+        "abs", "mod", "floor", "ceil", "round",
+        "min", "max", "clamp",
+        "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "deg", "rad",
+        "sqrt", "pow", "hypot", "lerp", "map", "distance",
+        "noise", "sign", "log", "exp"
+    };
+
+    int expected_count = sizeof(expected_types) / sizeof(expected_types[0]);
+
+    // +1 for EOF
+    TEST_ASSERT_EQUAL(expected_count + 1, tokens.count);
+
+    for (int i = 0; i < expected_count; ++i) {
+        assert_token(tokens.tokens[i], expected_types[i], expected_values[i]);
+    }
+
+    // Final EOF check
+    assert_token(tokens.tokens[expected_count], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+
+
+
+
 
 // === UNITY HOOKS ===
 
@@ -478,5 +533,15 @@ int main(void) {
     RUN_TEST(test_numbers);
     RUN_TEST(test_dot_prefixed_and_negative_floats);
     RUN_TEST(test_ampersand_operator);
+
+
+
+
+
+
+
+
+   RUN_TEST(test_builtin_constants_and_math_functions);
+
     return UNITY_END();
 }

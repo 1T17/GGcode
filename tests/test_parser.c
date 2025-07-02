@@ -373,6 +373,185 @@ void test_multiple_statements_in_block(void) {
 
 
 
+
+void test_builtin_constants_expression(void) {
+    const char* source = 
+        "let a = PI\n"
+        "let b = TAU\n"
+        "let c = EU";
+
+    printf("Parsing source:\n%s\n", source);
+
+    ASTResult result = parse_source(source);
+    print_ast_if_enabled(&result, "test_builtin_constants_expression");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(3, result.root->block.count);
+
+    ASTNode *let_a = result.root->block.statements[0];
+    ASTNode *let_b = result.root->block.statements[1];
+    ASTNode *let_c = result.root->block.statements[2];
+
+    printf("a = %f\n", let_a->let_stmt.expr->number.value);
+    printf("b = %f\n", let_b->let_stmt.expr->number.value);
+    printf("c = %f\n", let_c->let_stmt.expr->number.value);
+
+    TEST_ASSERT_EQUAL(AST_LET, let_a->type);
+    TEST_ASSERT_EQUAL(AST_NUMBER, let_a->let_stmt.expr->type);
+    TEST_ASSERT_FLOAT_WITHIN(0.0001, 3.14159, let_a->let_stmt.expr->number.value);
+
+    TEST_ASSERT_EQUAL(AST_LET, let_b->type);
+    TEST_ASSERT_EQUAL(AST_NUMBER, let_b->let_stmt.expr->type);
+    TEST_ASSERT_FLOAT_WITHIN(0.0001, 6.28318, let_b->let_stmt.expr->number.value);
+
+    TEST_ASSERT_EQUAL(AST_LET, let_c->type);
+    TEST_ASSERT_EQUAL(AST_NUMBER, let_c->let_stmt.expr->type);
+    TEST_ASSERT_FLOAT_WITHIN(0.0001, 2.71828, let_c->let_stmt.expr->number.value);
+
+    free_ast_result(&result);
+}
+
+
+
+void test_builtin_constants_only(void) {
+    const char* source =
+        "let pi = PI\n"
+        "let tau = TAU\n"
+        "let eu = EU\n"
+        "let d2r = DEG_TO_RAD\n"
+        "let r2d = RAD_TO_DEG";
+
+    ASTResult result = parse_source(source);
+    print_ast_if_enabled(&result, "test_builtin_constants_only");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(5, result.root->block.count);
+
+    for (int i = 0; i < 5; i++) {
+        ASTNode *stmt = result.root->block.statements[i];
+        TEST_ASSERT_EQUAL(AST_LET, stmt->type);
+        TEST_ASSERT_EQUAL(AST_NUMBER, stmt->let_stmt.expr->type);
+        printf("[Const %d] = %f\n", i, stmt->let_stmt.expr->number.value);
+    }
+
+    free_ast_result(&result);
+}
+
+
+void test_basic_arithmetic_functions(void) {
+    const char* source =
+        "let a1 = abs(-5)\n"
+        "let a2 = mod(10, 3)\n"
+        "let a3 = floor(3.9)\n"
+        "let a4 = ceil(3.1)\n"
+        "let a5 = round(2.6)\n"
+        "let a6 = min(3, 4)\n"
+        "let a7 = max(4, 5)\n"
+        "let a8 = clamp(7, 0, 10)";
+
+    ASTResult result = parse_source(source);
+    print_ast_if_enabled(&result, "test_basic_arithmetic_functions");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(8, result.root->block.count);
+
+    for (int i = 0; i < 8; i++) {
+        ASTNode *stmt = result.root->block.statements[i];
+        TEST_ASSERT_EQUAL(AST_LET, stmt->type);
+        TEST_ASSERT_EQUAL(AST_CALL, stmt->let_stmt.expr->type);
+        printf("[Func %d] %s\n", i, stmt->let_stmt.expr->call_expr.name);
+    }
+
+    free_ast_result(&result);
+}
+
+
+void test_trigonometry_functions(void) {
+    const char* source =
+        "let t1 = sin(0)\n"
+        "let t2 = cos(0)\n"
+        "let t3 = tan(0)\n"
+        "let t4 = asin(0)\n"
+        "let t5 = acos(1)\n"
+        "let t6 = atan(1)\n"
+        "let t7 = atan2(1, 1)\n"
+        "let t8 = deg(3.14)\n"
+        "let t9 = rad(180)";
+
+    ASTResult result = parse_source(source);
+    print_ast_if_enabled(&result, "test_trigonometry_functions");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(9, result.root->block.count);
+
+    for (int i = 0; i < 9; i++) {
+        ASTNode *stmt = result.root->block.statements[i];
+        TEST_ASSERT_EQUAL(AST_LET, stmt->type);
+        TEST_ASSERT_EQUAL(AST_CALL, stmt->let_stmt.expr->type);
+        printf("[Trig %d] %s\n", i, stmt->let_stmt.expr->call_expr.name);
+    }
+
+    free_ast_result(&result);
+}
+
+
+void test_geometry_functions(void) {
+    const char* source =
+        "let g1 = sqrt(9)\n"
+        "let g2 = pow(2, 3)\n"
+        "let g3 = hypot(3, 4)\n"
+        "let g4 = lerp(0, 10, 0.5)\n"
+        "let g5 = map(5, 0, 10, 0, 100)\n"
+        "let g6 = distance(0, 0, 3, 4)";
+
+    ASTResult result = parse_source(source);
+    print_ast_if_enabled(&result, "test_geometry_functions");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(6, result.root->block.count);
+
+    for (int i = 0; i < 6; i++) {
+        ASTNode *stmt = result.root->block.statements[i];
+        TEST_ASSERT_EQUAL(AST_LET, stmt->type);
+        TEST_ASSERT_EQUAL(AST_CALL, stmt->let_stmt.expr->type);
+        printf("[Geom %d] %s\n", i, stmt->let_stmt.expr->call_expr.name);
+    }
+
+    free_ast_result(&result);
+}
+
+
+void test_optional_advanced_functions(void) {
+    const char* source =
+        "let o1 = noise(1)\n"
+        "let o2 = sign(-42)\n"
+        "let o3 = log(10)\n"
+        "let o4 = exp(1)";
+
+    ASTResult result = parse_source(source);
+    print_ast_if_enabled(&result, "test_optional_advanced_functions");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(4, result.root->block.count);
+
+    for (int i = 0; i < 4; i++) {
+        ASTNode *stmt = result.root->block.statements[i];
+        TEST_ASSERT_EQUAL(AST_LET, stmt->type);
+        TEST_ASSERT_EQUAL(AST_CALL, stmt->let_stmt.expr->type);
+        printf("[Adv %d] %s\n", i, stmt->let_stmt.expr->call_expr.name);
+    }
+
+    free_ast_result(&result);
+}
+
+
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_parse_let_statement);
@@ -394,6 +573,16 @@ int main(void) {
     RUN_TEST(test_nested_loops_and_conditionals);
     RUN_TEST(test_complex_nested_gcode);
     RUN_TEST(test_multiple_statements_in_block);
+
+
+RUN_TEST(test_multiple_statements_in_block);
+RUN_TEST(test_builtin_constants_expression);
+RUN_TEST(test_builtin_constants_only);
+RUN_TEST(test_basic_arithmetic_functions);
+RUN_TEST(test_trigonometry_functions);
+RUN_TEST(test_geometry_functions);
+RUN_TEST(test_optional_advanced_functions);
+
 
     return UNITY_END();
 }

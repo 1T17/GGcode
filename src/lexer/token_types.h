@@ -17,6 +17,11 @@ typedef enum {
     TOKEN_DOT_LIST
     #undef X
 
+    // Built-in functions and constants
+    #define X(name, type) type,
+    TOKEN_FUNCTION_LIST
+    #undef X
+
     // Identifiers and literals
     TOKEN_IDENTIFIER,
     TOKEN_NUMBER,
@@ -24,7 +29,7 @@ typedef enum {
 
     // Special
     TOKEN_BLOCK_COMMENT,   // /% %/
-    TOKEN_NEWLINE,         // <-- Add this line!
+    TOKEN_NEWLINE,
     TOKEN_EOF,
     TOKEN_UNKNOWN,
 
