@@ -5,7 +5,7 @@
 #include "lexer.h"
 #include "token_utils.h" // or "token.h" if you later split it
 
-int LEXER_DEBUG = 0; // Toggle lexer debug output
+int LEXER_DEBUG = 1; // Toggle lexer debug output
 
 /// @brief Creates a new lexer instance
 /// @param source The input string to lex

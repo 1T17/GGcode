@@ -4,7 +4,7 @@
 // Default configuration
 #define DEFAULT_INPUT_FILE      "test.gg"
 #define DEFAULT_OUTPUT_FILE     "test.nc"
-#define DEFAULT_DEBUG           0   // 1 = enable debug logging
+#define DEFAULT_DEBUG           1   // 1 = enable debug logging
 #define DEFAULT_OUTPUT_TO_FILE  1   // 1 = output to file, 0 = print to stdout
 #define DEFAULT_LINE_NUMBER     10
 #define DEFAULT_ENABLE_N_LINES  1   // 1 = enabled, 0 = disabled

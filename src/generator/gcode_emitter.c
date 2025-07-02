@@ -296,6 +296,7 @@ void emit_gcode(ASTNode *node, int debug) {
     switch (node->type) {
         case AST_NOTE:     emit_note_stmt(node, debug); break;
         case AST_LET:      emit_let_stmt(node, debug); break;
+          case AST_ASSIGN:   eval_expr(node); break;      // <-- add this line
         case AST_GCODE:    emit_gcode_stmt(node, debug); break;
         case AST_WHILE:    emit_while_stmt(node, debug); break;
         case AST_FOR:      emit_for_stmt(node, debug); break;

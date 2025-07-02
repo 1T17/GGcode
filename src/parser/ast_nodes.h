@@ -16,6 +16,7 @@ typedef enum
 {
     AST_NOP,
     AST_LET,
+    AST_ASSIGN,
     AST_VAR,
     AST_INDEX,
     AST_FUNCTION,
@@ -30,6 +31,7 @@ typedef enum
     AST_NOTE,
     AST_IF,
     AST_UNARY,
+    
     AST_NODE_TYPE_COUNT // <- this must always be the last
 } ASTNodeType;
 
@@ -40,16 +42,18 @@ struct ASTNode
     union
     {
 
+struct
+{
+    char *name;
+    ASTNode *expr;
+} assign_stmt;
 
-
-struct {
-    char* name;
-    ASTNode** args;
-    int arg_count;
-} call_expr;
-
-
-
+        struct
+        {
+            char *name;
+            ASTNode **args;
+            int arg_count;
+        } call_expr;
 
         struct
         { // function definition: function name(args...) { body }
@@ -59,19 +63,18 @@ struct {
             ASTNode *body;
         } function_def;
 
+        struct
+        {
+            ASTNode *expr;
+        } return_stmt;
 
-struct {
-    ASTNode* expr;
-} return_stmt;
-
-
-
-struct {
-    char* name;
-    char** params;
-    int param_count;
-    ASTNode* body;
-} function_stmt;
+        struct
+        {
+            char *name;
+            char **params;
+            int param_count;
+            ASTNode *body;
+        } function_stmt;
 
         struct
         { // binary expression: left + right

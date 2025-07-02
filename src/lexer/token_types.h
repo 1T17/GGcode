@@ -24,6 +24,7 @@ typedef enum {
 
     // Special
     TOKEN_BLOCK_COMMENT,   // /% %/
+    TOKEN_NEWLINE,         // <-- Add this line!
     TOKEN_EOF,
     TOKEN_UNKNOWN,
 

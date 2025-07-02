@@ -21,6 +21,7 @@ static ASTNode *parse_gcode_coord_only();
 static ASTNode *parse_primary();
 static ASTNode *parse_function();
 static ASTNode *parse_return();
+static ASTNode *parse_assignment();
 
 int get_precedence(TokenType op)
 {
@@ -266,8 +267,30 @@ static ASTNode *parse_return()
     return node;
 }
 
+static ASTNode *parse_assignment() {
+    // Assume current token is TOKEN_IDENTIFIER
+    char *name = strdup(parser.current.value);
+    advance(); // consume identifier
+
+    if (!match(TOKEN_EQUAL)) {
+        printf("[Parser] Expected '=' after identifier in assignment\n");
+        exit(1);
+    }
+
+    ASTNode *expr = parse_binary_expression();
+
+    ASTNode *node = malloc(sizeof(ASTNode));
+    node->type = AST_ASSIGN;
+    node->assign_stmt.name = name;
+    node->assign_stmt.expr = expr;
+    return node;
+}
+
 static ASTNode *parse_statement()
 {
+    printf("[DEBUG] parse_statement: token=%s (type=%d) line=%d\n",
+           parser.current.value, parser.current.type, parser.current.line);
+
     if (parser.current.type == TOKEN_FUNCTION)
         return parse_function();
     if (parser.current.type == TOKEN_RETURN)
@@ -282,12 +305,43 @@ static ASTNode *parse_statement()
         return parse_let();
     if (parser.current.type == TOKEN_NOTE)
         return parse_note();
-    if (parser.current.type == TOKEN_GCODE_WORD)
-        return parse_gcode();
-    if (parser.current.type == TOKEN_IDENTIFIER && gcode_mode_active)
-        return parse_gcode_coord_only();
+
     if (parser.current.type == TOKEN_IDENTIFIER) {
-        return parse_primary();
+        printf("[DEBUG] parse_statement: identifier '%s', gcode_mode_active=%d\n", parser.current.value, gcode_mode_active);
+        // Lookahead for assignment
+        char *save = strdup(parser.current.value);
+        advance();
+        printf("[DEBUG] parse_statement: after advance, token=%s (type=%d)\n", parser.current.value, parser.current.type);
+        if (parser.current.type == TOKEN_EQUAL) {
+            printf("[DEBUG] parse_statement: Detected assignment for '%s'\n", save);
+            // It's an assignment, rewind and parse as assignment
+            parser.lexer->pos -= strlen(save);
+            parser.lexer->column -= strlen(save);
+            parser.current.type = TOKEN_IDENTIFIER;
+            parser.current.value = save;
+            return parse_assignment();
+        } else if (gcode_mode_active) {
+            printf("[DEBUG] parse_statement: Detected G-code coordinate for '%s'\n", save);
+            // Not assignment, treat as G-code coordinate
+            parser.lexer->pos -= strlen(save);
+            parser.lexer->column -= strlen(save);
+            parser.current.type = TOKEN_IDENTIFIER;
+            parser.current.value = save;
+            return parse_gcode_coord_only();
+        } else {
+            printf("[DEBUG] parse_statement: Detected primary/expression for '%s'\n", save);
+            // Not assignment, treat as expression/primary
+            parser.lexer->pos -= strlen(save);
+            parser.lexer->column -= strlen(save);
+            parser.current.type = TOKEN_IDENTIFIER;
+            parser.current.value = save;
+            return parse_primary();
+        }
+    }
+
+    if (parser.current.type == TOKEN_GCODE_WORD) {
+        printf("[DEBUG] parse_statement: Detected G-code word '%s'\n", parser.current.value);
+        return parse_gcode();
     }
 
     printf("[Parser] Unexpected token: %s (type %d) at line %d\n",
@@ -321,6 +375,10 @@ static ASTNode *parse_block()
         }
 
         statements[count++] = parse_statement();
+
+        // Skip any newlines between statements in a block
+        while (parser.current.type == TOKEN_NEWLINE)
+            advance();
     }
 
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -482,6 +540,36 @@ static ASTNode *parse_note()
     return node;
 }
 
+
+
+
+
+
+
+
+
+
+
+// Add this to lexer.c or a shared header
+Token lexer_peek_token(Lexer *lexer) {
+    int saved_pos = lexer->pos;
+    int saved_column = lexer->column;
+
+    Token next = lexer_next_token(lexer);
+
+    lexer->pos = saved_pos;
+    lexer->column = saved_column;
+    return next;
+}
+
+
+
+
+
+
+
+
+
 static ASTNode *parse_gcode()
 {
     // Start grouping multiple GCODE words from the same line
@@ -503,46 +591,10 @@ static ASTNode *parse_gcode()
 
     while (parser.current.type == TOKEN_IDENTIFIER)
     {
-        char *key = strdup(parser.current.value);
-        advance();
+        Token lookahead = lexer_peek_token(parser.lexer);
+        if (lookahead.type == TOKEN_EQUAL)
+            break;
 
-        ASTNode *index = NULL;
-        if (parser.current.type == TOKEN_LBRACKET)
-        {
-            advance();
-            index = parse_binary_expression(); // handles x-20, x+2, -20, etc.
-            if (!match(TOKEN_RBRACKET))
-            {
-                printf("[Parser] Expected ']'\n");
-                exit(1);
-            }
-        }
-
-        if (count >= capacity)
-        {
-            capacity = capacity == 0 ? 4 : capacity * 2;
-            args = realloc(args, capacity * sizeof(GArg));
-        }
-        args[count++] = (GArg){key, index};
-    }
-
-    ASTNode *node = malloc(sizeof(ASTNode));
-    node->type = AST_GCODE;
-    node->gcode_stmt.code = code;
-    node->gcode_stmt.args = args;
-    node->gcode_stmt.argCount = count;
-    gcode_mode_active = 1;
-
-    return node;
-}
-
-static ASTNode *parse_gcode_coord_only()
-{
-    GArg *args = NULL;
-    int count = 0, capacity = 0;
-
-    while (parser.current.type == TOKEN_IDENTIFIER)
-    {
         char *key = strdup(parser.current.value);
         advance();
 
@@ -564,9 +616,65 @@ static ASTNode *parse_gcode_coord_only()
             args = realloc(args, capacity * sizeof(GArg));
         }
         args[count++] = (GArg){key, index};
+
+        if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
+            break;
     }
 
-    // Assume implicit G1
+    ASTNode *node = malloc(sizeof(ASTNode));
+    node->type = AST_GCODE;
+    node->gcode_stmt.code = code;
+    node->gcode_stmt.args = args;
+    node->gcode_stmt.argCount = count;
+    gcode_mode_active = 1;
+
+    return node;
+}
+
+
+
+
+
+
+
+
+static ASTNode *parse_gcode_coord_only()
+{
+    GArg *args = NULL;
+    int count = 0, capacity = 0;
+
+    while (parser.current.type == TOKEN_IDENTIFIER)
+    {
+        Token lookahead = lexer_peek_token(parser.lexer);
+        if (lookahead.type == TOKEN_EQUAL)
+            break;
+
+        char *key = strdup(parser.current.value);
+        advance();
+
+        ASTNode *index = NULL;
+        if (parser.current.type == TOKEN_LBRACKET)
+        {
+            advance();
+            index = parse_binary_expression();
+            if (!match(TOKEN_RBRACKET))
+            {
+                printf("[Parser] Expected ']'\n");
+                exit(1);
+            }
+        }
+
+        if (count >= capacity)
+        {
+            capacity = capacity == 0 ? 4 : capacity * 2;
+            args = realloc(args, capacity * sizeof(GArg));
+        }
+        args[count++] = (GArg){key, index};
+
+        if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
+            break;
+    }
+
     ASTNode *node = malloc(sizeof(ASTNode));
     node->type = AST_GCODE;
     node->gcode_stmt.code = strdup("G1");
@@ -574,6 +682,20 @@ static ASTNode *parse_gcode_coord_only()
     node->gcode_stmt.argCount = count;
     return node;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 static ASTNode *parse_if()
 {
@@ -638,6 +760,10 @@ ASTNode *parse_script(const char *source)
         }
 
         statements[count++] = parse_statement();
+
+        // Skip any newlines between statements
+        while (parser.current.type == TOKEN_NEWLINE)
+            advance();
     }
 
     ASTNode *root = malloc(sizeof(ASTNode));
@@ -646,6 +772,9 @@ ASTNode *parse_script(const char *source)
     root->block.count = count;
     return root;
 }
+
+
+
 
 void free_ast(ASTNode *node)
 {
@@ -686,6 +815,13 @@ void free_ast(ASTNode *node)
         }
         free(node->gcode_stmt.args);
         break;
+    case AST_CALL:
+        free(node->call_expr.name);
+        for (int i = 0; i < node->call_expr.arg_count; i++) {
+            free_ast(node->call_expr.args[i]);
+        }
+        free(node->call_expr.args);
+        break;
 
     case AST_NUMBER:
         // nothing to free
@@ -724,6 +860,10 @@ void free_ast(ASTNode *node)
         free_ast(node->if_stmt.then_branch);
         if (node->if_stmt.else_branch)
             free_ast(node->if_stmt.else_branch);
+        break;
+    case AST_ASSIGN:
+        free(node->assign_stmt.name);
+        free_ast(node->assign_stmt.expr);
         break;
 
     default:

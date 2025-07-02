@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../parser/ast_nodes.h"
 
-#define MAX_VARIABLES 100
+#define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
 
 void register_function(ASTNode *node);
@@ -34,12 +34,18 @@ static int function_count = 0;
 // Set or update variable
 void set_var(const char *name, double value)
 {
-    if (var_count >= MAX_VARIABLES)
-    {
-        fprintf(stderr, "[set_var] ERROR: variable limit reached.\n");
+    // Search from the end for an existing variable with this name
+    for (int i = var_count - 1; i >= 0; i--) {
+        if (variables[i].name && strcmp(variables[i].name, name) == 0) {
+            variables[i].value = value;
+            return;
+        }
+    }
+    // Not found, create new
+    if (var_count >= MAX_VARIABLES) {
+        fprintf(stderr, "[set_var] ERROR: variable limit reached.aaaaaaaaaaaaaaaaaaaaaa\n");
         exit(1);
     }
-
     variables[var_count].name = strdup(name);
     variables[var_count].value = value;
     var_count++;
@@ -193,12 +199,23 @@ double eval_expr(ASTNode *node)
         runtime_return_value = eval_expr(node->return_stmt.expr);
         return runtime_return_value;
 
+        case AST_FUNCTION:
+    register_function(node);
+    return 0.0;
+
+    case AST_ASSIGN:
+        set_var(node->assign_stmt.name, eval_expr(node->assign_stmt.expr));
+        return 0.0;
+
 
     default:
         fprintf(stderr, "[Runtime] Unsupported expression type: %d\n", node->type);
         exit(1);
     }
 }
+
+
+
 
 double eval_function_call(ASTNode *node) {
     ASTNode *func = find_function(node->call_expr.name);
@@ -274,6 +291,7 @@ void reset_runtime_state(void) {
 
 void declare_var(const char *name, double value)
 {
+    // Not found, create new
     if (var_count >= MAX_VARIABLES) {
         fprintf(stderr, "[declare_var] ERROR: variable limit reached.\n");
         exit(1);
@@ -282,4 +300,3 @@ void declare_var(const char *name, double value)
     variables[var_count].value = value;
     var_count++;
 }
-
