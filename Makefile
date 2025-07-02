@@ -21,7 +21,7 @@ all: $(OUT)
 
 # Build main program
 $(OUT): $(SRC)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lm
 
 # Build all test binaries (excluding src/main.c to avoid duplicate main)
 tests: unity $(TEST_BINS)
