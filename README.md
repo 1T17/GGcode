@@ -101,51 +101,6 @@ N10 G1 X123
 
 ---
 
-## Architecture
-
-- **Lexer** – Tokenizes source
-- **Parser** – Builds AST with recursive descent
-- **AST Nodes** – Strongly typed C structs
-- **Evaluator** – Interprets expressions and conditions
-- **Emitter** – Outputs final G-code (with line numbers, formatted output)
-
----
-
-## Roadmap
-
-### 📚 Documentation
-- [ ] Add more language examples and advanced usage
-- [ ] Write a full language reference
-- [ ] Add tutorials and FAQ
-
-### 🛠️ Language Features
-- [ ] User-defined functions and macros
-- [ ] Include/import support for modular code
-- [ ] Enhanced math and logic operators
-- [ ] Custom G-code command templates
-
-### 🧰 Tooling
-- [ ] VS Code extension for syntax highlighting and linting
-- [ ] Interactive REPL or playground
-- [ ] Static analysis and code formatting tools
-
-### ✅ Testing & CI
-- [ ] Expand test coverage for all modules
-- [ ] Add GitHub Actions for automated builds and tests
-
-### 🚀 Performance
-- [ ] Optimize parsing and code generation speed
-- [ ] Reduce binary size
-
-### 🌱 Community
-- [ ] Contribution guidelines and code of conduct
-- [ ] Example projects and user gallery
-
----
-
-*Have ideas or want to contribute? Open an issue or pull request!*
-
----
 
 ## 📜 License
 
