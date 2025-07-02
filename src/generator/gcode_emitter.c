@@ -202,7 +202,7 @@ static void emit_for_stmt(ASTNode *node, int debug) {
     }
 
     if (debug) {
-        printf("[Emit] FOR %s = %.2f .. %.2f\n", node->for_stmt.var, node->for_stmt.from, node->for_stmt.to);
+        printf("[Emit]yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy FOR %s = %.2f .. %.2f\n", node->for_stmt.var, node->for_stmt.from, node->for_stmt.to);
         fflush(stdout);
     }
 

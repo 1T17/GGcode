@@ -5,7 +5,14 @@
 #include "lexer.h"
 #include "token_utils.h" // or "token.h" if you later split it
 
-int LEXER_DEBUG = 1; // Toggle lexer debug output
+
+
+
+
+int LEXER_DEBUG = 0; // Toggle lexer debug output
+
+
+
 
 /// @brief Creates a new lexer instance
 /// @param source The input string to lex
@@ -146,7 +153,7 @@ Token lexer_next_token(Lexer *lexer)
 {
     skip_whitespace(lexer);
 
-    int start_pos = lexer->pos;
+
     int start_col = lexer->column;
     char c = peek(lexer);
 
@@ -154,19 +161,22 @@ Token lexer_next_token(Lexer *lexer)
         return make_token(TOKEN_EOF, "EOF", lexer->line, lexer->column);
 
     // Identifiers, keywords, G-code words
-    if (isalpha(c) || c == '_') {
-        while (isalnum(peek(lexer)) || peek(lexer) == '_')
-            advance(lexer);
+if (isalpha(c) || c == '_') {
+    int start = lexer->pos; // mark start before any advance
+    advance(lexer); // consume the first character
 
-        int length = lexer->pos - start_pos;
-        char *word = strndup(&lexer->source[start_pos], length);
-        TokenType type = keyword_lookup(word);
+    while (isalnum(peek(lexer)) || peek(lexer) == '_')
+        advance(lexer);
 
-        if (type == TOKEN_IDENTIFIER && (word[0] == 'G' || word[0] == 'M' || word[0] == 'T'))
-            type = TOKEN_GCODE_WORD;
+    int length = lexer->pos - start;
+    char *word = strndup(&lexer->source[start], length);
+    TokenType type = keyword_lookup(word);
 
-        return make_token(type, word, lexer->line, start_col);
-    }
+    if (type == TOKEN_IDENTIFIER && (word[0] == 'G' || word[0] == 'M' || word[0] == 'T'))
+        type = TOKEN_GCODE_WORD;
+
+    return make_token(type, word, lexer->line, start_col);
+}
 
     // Number literals (including negative and dot-prefixed)
     if ((c == '-' && (isdigit(peek_next(lexer)) || peek_next(lexer) == '.')) ||

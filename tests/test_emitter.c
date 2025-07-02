@@ -4,7 +4,7 @@
 #include "runtime/evaluator.h"
 #include "generator/gcode_emitter.h"
 
- int debug = 1;
+ int debug = 0;
 
 extern int statement_count;
 extern void reset_runtime_state(void);
@@ -409,20 +409,52 @@ void test_emit_function_empty_body(void) {
     free_ast(root);
 }
 
+void test_complex_gcode_logic(void) {
+    const char *code =
+        "let x = 0\n"
+        "let flag = 0\n"
+        "function double(n) { return n * 2 }\n"
+        "function clamp(n) {\n"
+        "  if (n < 0) { return 0 }\n"
+        "  if (n > 10) { return 10 }\n"
+        "  return n\n"
+        "}\n"
 
+        "x = double(double(1)) + clamp(-5) + clamp(25)\n"   // 2*2 + 0 + 10 = 14
 
+        "if (x > 5) {\n"
+        "  flag = 1\n"
+        "  note {Flag raised, x = [x]}\n"
+        "} else {\n"
+        "  flag = -1\n"
+        "  note {Flag lowered, x = [x]}\n"
+        "}\n"
 
+        "for i = -2..4 {\n"
+        "  let z = clamp(i * 3 - 1)\n"
+        "  G1 X[i] Y[z]\n"
+        "  if (z == 0) {\n"
+        "    note {Z hit lower bound}\n"
+        "  } else if (z == 10) {\n"
+        "    note {Z hit upper bound}\n"
+        "  }\n"
+        "}\n"
 
+        "note {Final X = [x], Flag = [flag]}\n";
 
+    ASTNode *root = parse_script(code);
+    emit_gcode(root, debug);
 
+    TEST_ASSERT_EQUAL_DOUBLE(14.0, get_var("x"));     // 2+2+0+10
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, get_var("flag"));   // since x > 5
+
+    free_ast(root);
+}
 
 
 
 int main(void) {
     UNITY_BEGIN();
-
-
-// all pass do not remuve
 
     RUN_TEST(test_emit_function_declaration_and_call);
     RUN_TEST(test_emit_simple_gcode_block);
@@ -440,19 +472,13 @@ int main(void) {
     RUN_TEST(test_emit_function_recursion);
     RUN_TEST(test_emit_function_no_return);
     RUN_TEST(test_emit_function_overwrite_var);
-
-
-    // Add these for full function coverage:
     RUN_TEST(test_emit_function_no_params_no_return);
     RUN_TEST(test_emit_function_only_return);
     RUN_TEST(test_emit_function_unused_param);
     RUN_TEST(test_emit_function_calls_function);
     RUN_TEST(test_emit_function_early_return);
     RUN_TEST(test_emit_function_empty_body);
-
-
-
-
+    RUN_TEST(test_complex_gcode_logic);
 
     return UNITY_END();
 }

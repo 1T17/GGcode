@@ -23,6 +23,12 @@ static ASTNode *parse_function();
 static ASTNode *parse_return();
 static ASTNode *parse_assignment();
 
+// Forward declaration
+Token lexer_peek_token(Lexer *lexer);
+
+
+
+
 int get_precedence(TokenType op)
 {
     switch (op)
@@ -267,6 +273,8 @@ static ASTNode *parse_return()
     return node;
 }
 
+
+
 static ASTNode *parse_assignment() {
     // Assume current token is TOKEN_IDENTIFIER
     char *name = strdup(parser.current.value);
@@ -277,6 +285,8 @@ static ASTNode *parse_assignment() {
         exit(1);
     }
 
+    // ❌ DO NOT add another advance here
+
     ASTNode *expr = parse_binary_expression();
 
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -286,11 +296,14 @@ static ASTNode *parse_assignment() {
     return node;
 }
 
+
+
 static ASTNode *parse_statement()
 {
-    printf("[DEBUG] parse_statement: token=%s (type=%d) line=%d\n",
-           parser.current.value, parser.current.type, parser.current.line);
+    //printf("[DEBUG] parse_statement: token=%s (type=%d) line=%d\n",
+     //      parser.current.value, parser.current.type, parser.current.line);
 
+    // Keyword-based statements
     if (parser.current.type == TOKEN_FUNCTION)
         return parse_function();
     if (parser.current.type == TOKEN_RETURN)
@@ -306,48 +319,38 @@ static ASTNode *parse_statement()
     if (parser.current.type == TOKEN_NOTE)
         return parse_note();
 
+    // Identifier-based logic
     if (parser.current.type == TOKEN_IDENTIFIER) {
-        printf("[DEBUG] parse_statement: identifier '%s', gcode_mode_active=%d\n", parser.current.value, gcode_mode_active);
-        // Lookahead for assignment
-        char *save = strdup(parser.current.value);
-        advance();
-        printf("[DEBUG] parse_statement: after advance, token=%s (type=%d)\n", parser.current.value, parser.current.type);
-        if (parser.current.type == TOKEN_EQUAL) {
-            printf("[DEBUG] parse_statement: Detected assignment for '%s'\n", save);
-            // It's an assignment, rewind and parse as assignment
-            parser.lexer->pos -= strlen(save);
-            parser.lexer->column -= strlen(save);
-            parser.current.type = TOKEN_IDENTIFIER;
-            parser.current.value = save;
+     //   printf("[DEBUG] parse_statement: identifier '%s', gcode_mode_active=%d\n",
+            //   parser.current.value, gcode_mode_active);
+
+        Token lookahead = lexer_peek_token(parser.lexer);  // ✅ Use peek, not advance
+
+        if (lookahead.type == TOKEN_EQUAL) {
+        //    printf("[DEBUG] parse_statement: Detected assignment for '%s'\n", parser.current.value);
             return parse_assignment();
         } else if (gcode_mode_active) {
-            printf("[DEBUG] parse_statement: Detected G-code coordinate for '%s'\n", save);
-            // Not assignment, treat as G-code coordinate
-            parser.lexer->pos -= strlen(save);
-            parser.lexer->column -= strlen(save);
-            parser.current.type = TOKEN_IDENTIFIER;
-            parser.current.value = save;
+        //    printf("[DEBUG] parse_statement: Detected G-code coordinate for '%s'\n", parser.current.value);
             return parse_gcode_coord_only();
         } else {
-            printf("[DEBUG] parse_statement: Detected primary/expression for '%s'\n", save);
-            // Not assignment, treat as expression/primary
-            parser.lexer->pos -= strlen(save);
-            parser.lexer->column -= strlen(save);
-            parser.current.type = TOKEN_IDENTIFIER;
-            parser.current.value = save;
+         //   printf("[DEBUG] parse_statement: Detected primary/expression for '%s'\n", parser.current.value);
             return parse_primary();
         }
     }
 
+    // G-code command like G0, G1, etc.
     if (parser.current.type == TOKEN_GCODE_WORD) {
-        printf("[DEBUG] parse_statement: Detected G-code word '%s'\n", parser.current.value);
+      //  printf("[DEBUG] parse_statement: Detected G-code word '%s'\n", parser.current.value);
         return parse_gcode();
     }
 
+    // Fallback error
     printf("[Parser] Unexpected token: %s (type %d) at line %d\n",
            parser.current.value, parser.current.type, parser.current.line);
     exit(1);
 }
+
+
 
 static ASTNode *parse_block()
 {
