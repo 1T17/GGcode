@@ -7,7 +7,7 @@ note {
   ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
   ╚═╝╚═╝└─┘└─┘─┴┘└─┘     Program ID: [id]  
 
-  Rose Pattern - Polar Spiral with Petals
+ Basic Square Pocket - ontinuous Spiral Cut
 }
 
 G90 G94 G17
@@ -17,10 +17,6 @@ T1 M6
 S6000 M3
 G54
 M8
-
-
-
-note {Basic Square Pocket - Continuous Spiral Cut}
 
 let pocket_width   = 20      // total width of pocket
 let pocket_height  = 20      // total height of pocket

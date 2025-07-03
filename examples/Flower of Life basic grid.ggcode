@@ -1,0 +1,77 @@
+
+// // GGcode test file
+let id = 2345
+
+note {
+  ╔═╗╔═╗┌─┐┌─┐┌┬┐┌─┐     File compiled : [ggcode_file_name]  
+  ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
+  ╚═╝╚═╝└─┘└─┘─┴┘└─┘     Program ID: [id]  
+
+  Accurate Flower of Life - Pure Hex Packing
+}
+
+G90 G94 G17
+G20
+G53 G0 Z0
+T1 M6
+S6000 M3
+G54
+M8
+
+
+
+note {Accurate Flower of Life - Pure Hex Packing Without Modulo}
+
+let radius      = 5
+let z_safe      = 5
+let z_cut       = -1
+let feed        = 300
+let step_deg    = 10
+let deg_to_rad  = DEG_TO_RAD
+let round_eps   = 0.0001
+
+let step_angle  = step_deg
+let spacing_x   = radius * 1.0
+let spacing_y   = radius * sqrt(3) / 2
+
+let cols = 13
+let rows = 13
+
+G0 Z[z_safe]
+
+// Loop rows and columns
+for row = 0..4 {
+    for col = 0..4 {
+        // Offset every other row by half-x spacing (using math instead of mod)
+        half_shift = (row - floor(row / 2) * 2) * 0.5 * spacing_x
+
+        cx = (col * spacing_x) + half_shift - (cols * spacing_x / 2)
+        cy = (row * spacing_y) - (rows * spacing_y / 2)
+
+        // Draw circle at (cx, cy)
+        angle = 0
+        raw_x = cx + radius * cos(angle * deg_to_rad)
+        raw_y = cy + radius * sin(angle * deg_to_rad)
+        x = floor(raw_x * 1000 + 0.5) / 1000
+        y = floor(raw_y * 1000 + 0.5) / 1000
+        G0 X[x] Y[y]
+        G1 Z[z_cut] F[feed]
+
+        for i = 1..360 {
+            angle = i * step_angle
+            raw_x = cx + radius * cos(angle * deg_to_rad)
+            raw_y = cy + radius * sin(angle * deg_to_rad)
+            x = floor(raw_x * 1000 + 0.5) / 1000
+            y = floor(raw_y * 1000 + 0.5) / 1000
+            if (abs(x) < round_eps) { x = 0 }
+            if (abs(y) < round_eps) { y = 0 }
+            G1 X[x] Y[y] F[feed]
+        }
+
+        G0 Z[z_safe]
+    }
+}
+
+
+
+
