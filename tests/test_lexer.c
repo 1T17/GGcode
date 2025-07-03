@@ -501,8 +501,25 @@ void test_builtin_constants_and_math_functions() {
 
 
 
+void test_step_and_dotdotlt() {
+    TokenList tokens = lex_source("for i = 1..<10 step 2 {}");
+    print_tokens(&tokens);
+    TEST_ASSERT_EQUAL(11, tokens.count); // for, i, =, 1, ..<, 10, step, 2, {, }, }, EOF
 
+    assert_token(tokens.tokens[0], TOKEN_FOR, "for");
+    assert_token(tokens.tokens[1], TOKEN_IDENTIFIER, "i");
+    assert_token(tokens.tokens[2], TOKEN_EQUAL, "=");
+    assert_token(tokens.tokens[3], TOKEN_NUMBER, "1");
+    assert_token(tokens.tokens[4], TOKEN_DOTDOT_LT, "..<");
+    assert_token(tokens.tokens[5], TOKEN_NUMBER, "10");
+    assert_token(tokens.tokens[6], TOKEN_STEP, "step");
+    assert_token(tokens.tokens[7], TOKEN_NUMBER, "2");
+    assert_token(tokens.tokens[8], TOKEN_LBRACE, "{");
+    assert_token(tokens.tokens[9], TOKEN_RBRACE, "}");
+    assert_token(tokens.tokens[10], TOKEN_EOF, "EOF");
 
+    free_token_list(&tokens);
+}
 
 // === UNITY HOOKS ===
 
@@ -510,7 +527,7 @@ void setUp(void) {}
 void tearDown(void) {}
 
 int main(void) {
-    UNITY_BEGIN();
+     UNITY_BEGIN();
     RUN_TEST(test_keywords_and_identifiers);
     RUN_TEST(test_symbols_and_operators);
     RUN_TEST(test_comments_skipped);
@@ -542,6 +559,8 @@ int main(void) {
 
 
    RUN_TEST(test_builtin_constants_and_math_functions);
+
+   RUN_TEST(test_step_and_dotdotlt);
 
     return UNITY_END();
 }

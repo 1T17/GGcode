@@ -42,6 +42,24 @@ struct ASTNode
     union
     {
 
+
+
+
+
+struct {
+    char *var;
+    ASTNode *from;
+    ASTNode *to;
+    ASTNode *step;
+    int exclusive;
+    ASTNode *body;
+} for_stmt;
+
+
+
+
+
+
 struct
 {
     char *name;
@@ -118,13 +136,7 @@ struct
             ASTNode *body;
         } while_stmt;
 
-        struct
-        { // for i = 0..5 { ... }
-            char *var;
-            double from;
-            double to;
-            ASTNode *body;
-        } for_stmt;
+
 
         struct
         { // block: { ... }

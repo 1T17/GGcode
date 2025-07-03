@@ -238,15 +238,19 @@ if (isalpha(c) || c == '_') {
         }
     }
 
-    // Special check for '...' and '..'
-    if (c == '.' && peek_next(lexer) == '.' && peek_ahead(lexer, 2) == '.') {
-        advance(lexer); advance(lexer); advance(lexer);
-        return make_token(TOKEN_DOTDOTDOT, "...", lexer->line, start_col);
-    }
-    if (c == '.' && peek_next(lexer) == '.') {
-        advance(lexer); advance(lexer);
-        return make_token(TOKEN_DOTDOT, "..", lexer->line, start_col);
-    }
+// Special check for '...', '..<', and '..'
+if (c == '.' && peek_next(lexer) == '.' && peek_ahead(lexer, 2) == '.') {
+    advance(lexer); advance(lexer); advance(lexer);
+    return make_token(TOKEN_DOTDOTDOT, "...", lexer->line, start_col);
+}
+if (c == '.' && peek_next(lexer) == '.' && peek_ahead(lexer, 2) == '<') {
+    advance(lexer); advance(lexer); advance(lexer);
+    return make_token(TOKEN_DOTDOT_LT, "..<", lexer->line, start_col);
+}
+if (c == '.' && peek_next(lexer) == '.') {
+    advance(lexer); advance(lexer);
+    return make_token(TOKEN_DOTDOT, "..", lexer->line, start_col);
+}
 
     // General operators, delimiters, dot
 #define X(text, type, str, ch) \

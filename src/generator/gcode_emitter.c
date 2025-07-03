@@ -202,15 +202,51 @@ static void emit_for_stmt(ASTNode *node, int debug) {
     }
 
     if (debug) {
-        printf("[Emit]yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy FOR %s = %.2f .. %.2f\n", node->for_stmt.var, node->for_stmt.from, node->for_stmt.to);
-        fflush(stdout);
+double from = eval_expr(node->for_stmt.from);
+double to = eval_expr(node->for_stmt.to);
+double step = node->for_stmt.step ? eval_expr(node->for_stmt.step) : 1.0;
+
+printf("[Emit] FOR %s = %.2f %s %.2f step %.2f\n",
+       node->for_stmt.var,
+       from,
+       node->for_stmt.exclusive ? "..<" : "..",
+       to,
+       step);
     }
 
-    for (int i = node->for_stmt.from; i <= node->for_stmt.to; i++) {
-        set_var(node->for_stmt.var, i);
-        emit_gcode(node->for_stmt.body, debug);
+double from = eval_expr(node->for_stmt.from);
+double to = eval_expr(node->for_stmt.to);
+double step = node->for_stmt.step ? eval_expr(node->for_stmt.step) : 1.0;
+    int exclusive = node->for_stmt.exclusive;
+
+    if (step == 0) {
+        fprintf(stderr, "[Emit] ERROR: FOR loop step cannot be zero\n");
+        return;
+    }
+
+    if (step > 0) {
+        double end = exclusive ? to : to + 1e-9;
+        for (double i = from; i < end; i += step) {
+            set_var(node->for_stmt.var, i);
+            emit_gcode(node->for_stmt.body, debug);
+        }
+    } else {
+        double end = exclusive ? to : to - 1e-9;
+        for (double i = from; i > end; i += step) {
+            set_var(node->for_stmt.var, i);
+            emit_gcode(node->for_stmt.body, debug);
+        }
     }
 }
+
+
+
+
+
+
+
+
+
 
 /// Emits a block of sequential AST statements.
 /// @param node BLOCK AST node.

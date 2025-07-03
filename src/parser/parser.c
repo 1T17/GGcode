@@ -487,6 +487,12 @@ static ASTNode *parse_let()
     return node;
 }
 
+
+
+
+
+
+
 static ASTNode *parse_for()
 {
     advance(); // skip 'for'
@@ -506,29 +512,34 @@ static ASTNode *parse_for()
         exit(1);
     }
 
-    if (parser.current.type != TOKEN_NUMBER)
-    {
-        printf("[Parser] Expected number after '=' in for loop\n");
+    // Parse 'from' expression
+    ASTNode *from = parse_binary_expression();
+
+    int exclusive = 0;
+    if (parser.current.type == TOKEN_DOTDOT_LT) {
+        exclusive = 1;
+        advance();
+    } else if (parser.current.type == TOKEN_DOTDOT) {
+        advance();
+    } else {
+        printf("[Parser] Expected '..' or '..<' in for loop range\n");
         exit(1);
     }
 
-    double from = atof(parser.current.value);
+    // Parse 'to' expression
+    ASTNode *to = parse_binary_expression();
+
+// Optional: support 'step' keyword
+ASTNode *step = NULL;
+if (parser.current.type == TOKEN_STEP) {
     advance();
-
-    if (!match(TOKEN_DOTDOT))
-    {
-        printf("[Parser] Expected '..' in for loop range\n");
-        exit(1);
-    }
-
-    if (parser.current.type != TOKEN_NUMBER)
-    {
-        printf("[Parser] Expected number after '..' in for loop\n");
-        exit(1);
-    }
-
-    double to = atof(parser.current.value);
-    advance();
+    step = parse_binary_expression();
+}
+if (!step) {
+    step = malloc(sizeof(ASTNode));
+    step->type = AST_NUMBER;
+    step->number.value = 1.0;
+}
 
     ASTNode *body = parse_block();
 
@@ -537,9 +548,22 @@ static ASTNode *parse_for()
     node->for_stmt.var = var;
     node->for_stmt.from = from;
     node->for_stmt.to = to;
+    node->for_stmt.step = step; // can be NULL (default to 1 later)
+    node->for_stmt.exclusive = exclusive;
     node->for_stmt.body = body;
     return node;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 static ASTNode *parse_note()
 {

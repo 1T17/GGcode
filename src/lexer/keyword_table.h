@@ -10,7 +10,8 @@
     X("else",    TOKEN_ELSE) \
     X("note",    TOKEN_NOTE) \
     X("function", TOKEN_FUNCTION) \
-    X("return", TOKEN_RETURN)
+    X("return", TOKEN_RETURN) \
+    X("step",    TOKEN_STEP)
 
 #define TOKEN_OPERATOR_LIST \
     X("==", TOKEN_EQUAL_EQUAL, "==", 0) \
@@ -41,6 +42,7 @@
 
 #define TOKEN_DOT_LIST \
     X("...", TOKEN_DOTDOTDOT, "...", 0) \
+    X("..<", TOKEN_DOTDOT_LT, "..<", 0) \
     X("..", TOKEN_DOTDOT, "..", 0) \
     X(".", TOKEN_DOT, ".", '.')
 
