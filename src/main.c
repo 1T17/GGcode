@@ -16,6 +16,20 @@
 
 
 
+#include <stdio.h>
+#include <string.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dirent.h>
+#endif
+#ifndef DT_REG
+#define DT_REG 8
+#endif
+
+
+
 #include <libgen.h>  // for basename()
 
 #ifdef __linux__
@@ -32,6 +46,31 @@ extern double get_var(const char* name);
 extern int var_exists(const char* name);
 
 const char* GGCODE_INPUT_FILENAME = NULL;
+void compile_file(const char* input_path, const char* output_path, int debug);
+
+
+
+
+void make_g_gcode_filename(const char *src, char *dst, size_t dst_size) {
+    size_t len = strlen(src);
+    if (len > 7 && strcmp(src + len - 7, ".ggcode") == 0) {
+        snprintf(dst, dst_size, "%.*s.g.gcode", (int)(len - 7), src);
+    } else {
+        snprintf(dst, dst_size, "%s.g.gcode", src);
+    }
+}
+
+
+
+// Helper to check if a string ends with .ggcode
+int ends_with_ggcode(const char *filename) {
+    size_t len = strlen(filename);
+    return len > 7 && strcmp(filename + len - 7, ".ggcode") == 0;
+}
+
+
+
+
 
 
 void compile_file(const char* input_path, const char* output_path, int debug) {
@@ -117,10 +156,59 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
 
 
 
+void compile_all_gg_files(int debug) {
+#ifdef _WIN32
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind = FindFirstFile("*.ggcode", &findFileData);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        printf("No .ggcode files found.\n");
+        return;
+    }
+    do {
+        if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+char out_name[MAX_PATH];
+make_g_gcode_filename(findFileData.cFileName, out_name, sizeof(out_name));
+printf("Compiling %s -> %s\n", findFileData.cFileName, out_name);
+compile_file(findFileData.cFileName, out_name, debug);
+        }
+    } while (FindNextFile(hFind, &findFileData) != 0);
+    FindClose(hFind);
+#else
+    DIR *dir = opendir(".");
+    if (!dir) {
+        perror("opendir");
+        return;
+    }
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG && ends_with_ggcode(entry->d_name)) {
+
+char out_name[272];
+make_g_gcode_filename(entry->d_name, out_name, sizeof(out_name));
+printf("Compiling %s -> %s\n", entry->d_name, out_name);
+compile_file(entry->d_name, out_name, debug);
+        }
+    }
+    closedir(dir);
+#endif
+}
+
+
+
+
+
 
 
 
 int main() {
-    compile_file(get_input_file(), get_output_file(), get_debug());
+    const char *input_file = get_input_file();
+    int debug = get_debug();
+if (input_file && strlen(input_file) > 0) {
+    char out_name[272];
+    make_g_gcode_filename(input_file, out_name, sizeof(out_name));
+    compile_file(input_file, out_name, debug);
+} else {
+    compile_all_gg_files(debug);
+}
     return 0;
 }

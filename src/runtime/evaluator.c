@@ -16,18 +16,21 @@
 #define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
 
+void enter_scope(void);
+void exit_scope(void);
 void register_function(ASTNode *node);
 void declare_var(const char *name, double value);
 
 static ASTNode* find_function(const char *name);
 static int runtime_has_returned = 0;
 static double runtime_return_value = 0.0;
-
+static int current_scope_level = 0;
 
 typedef struct
 {
     char *name;
     double value;
+        int scope_level; // <-- add this
 } Variable;
 
 typedef struct {
@@ -56,7 +59,7 @@ void eval_block(ASTNode *block) {
         printf("[Runtime] Invalid block node\n");
         return;
     }
-
+    enter_scope();
     for (int i = 0; i < block->block.count; ++i) {
         ASTNode *stmt = block->block.statements[i];
         switch (stmt->type) {
@@ -71,6 +74,7 @@ void eval_block(ASTNode *block) {
                 break;
         }
     }
+    exit_scope();
 }
 
 
@@ -348,24 +352,16 @@ double eval_function_call(ASTNode *node) {
     }
 
     // Save old variable values for parameters
-    double old_vars[32];
-    char *param_names[32];
+     enter_scope();
+
     int param_count = func->function_stmt.param_count;
     for (int i = 0; i < param_count; i++) {
-        param_names[i] = func->function_stmt.params[i];
-        if (var_exists(param_names[i]))
-            old_vars[i] = get_var(param_names[i]);
-        else
-            old_vars[i] = 0.0;
         double arg_val = 0.0;
         if (i < node->call_expr.arg_count)
             arg_val = eval_expr(node->call_expr.args[i]);
-        declare_var(param_names[i], arg_val);
+        declare_var(func->function_stmt.params[i], arg_val);
     }
 
-    int old_var_count = var_count;
-
-    // Evaluate body
     runtime_has_returned = 0;
     runtime_return_value = 0.0;
     ASTNode *body = func->function_stmt.body;
@@ -374,12 +370,7 @@ double eval_function_call(ASTNode *node) {
         if (runtime_has_returned) break;
     }
 
-    var_count = old_var_count;
-
-    // Restore old values
-    for (int i = 0; i < param_count; i++) {
-        set_var(param_names[i], old_vars[i]);
-    }
+    exit_scope();
 
     return runtime_return_value;
 }
@@ -435,12 +426,49 @@ void reset_runtime_state(void) {
 
 void declare_var(const char *name, double value)
 {
-    // Not found, create new
     if (var_count >= MAX_VARIABLES) {
         fprintf(stderr, "[declare_var] ERROR: variable limit reached.\n");
         exit(1);
     }
     variables[var_count].name = strdup(name);
     variables[var_count].value = value;
+    variables[var_count].scope_level = current_scope_level; // <-- set scope
     var_count++;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void enter_scope() {
+    current_scope_level++;
+}
+
+void exit_scope() {
+    // Remove all variables at the current scope level
+    for (int i = var_count - 1; i >= 0; --i) {
+        if (variables[i].scope_level == current_scope_level) {
+            free(variables[i].name);
+            // Shift down
+            for (int j = i; j < var_count - 1; ++j) {
+                variables[j] = variables[j + 1];
+            }
+            var_count--;
+        }
+    }
+    current_scope_level--;
 }

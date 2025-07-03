@@ -26,7 +26,8 @@ let feed         = 300
 let deg_to_rad   = DEG_TO_RAD
 let round_eps    = 0.0001
 let max_steps    = 500
-
+let x =0
+let y = 0
 // Basic round-to-3-decimals
 function round3(n) {
     return floor(n * 1000 + 0.5) / 1000
@@ -46,15 +47,15 @@ G1 Z[z_cut] F[feed]
 // Spiral Path with WHILE loop
 let i = 1
 while (i <= max_steps) {
-    let angle_deg = i * angle_step
-    let angle_rad = angle_deg * deg_to_rad
-    let radius    = i * radius_step
+     angle_deg = i * angle_step
+     angle_rad = angle_deg * deg_to_rad
+     radius    = i * radius_step
 
-    let raw_x = radius * cos(angle_rad)
-    let raw_y = radius * sin(angle_rad)
+     raw_x = radius * cos(angle_rad)
+     raw_y = radius * sin(angle_rad)
 
-    let x = round_zero(raw_x)
-    let y = round_zero(raw_y)
+     x = round_zero(raw_x)
+     y = round_zero(raw_y)
 
     G1 X[x] Y[y] F[feed]
 

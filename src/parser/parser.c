@@ -11,7 +11,6 @@
 
 
 
-
 static int gcode_mode_active = 0;
 static Parser parser;
 
@@ -600,7 +599,7 @@ static ASTNode *parse_note()
     }
 
     int len = parser.lexer->pos - start_pos - 1; // exclude final '}'
-    char *content = strndup(start, len);
+char *content = strndup_portable(start, len);
 
     // printf("[Parser] Raw captured string (%d bytes): \"", len);
     // fwrite(content, 1, len, stdout);

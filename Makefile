@@ -29,8 +29,7 @@ $(OUT): $(SRC)
 # Windows build target
 .PHONY: win
 win:
-	@mkdir -p win
-	$(CC_WIN) $(CFLAGS) -o win/$(OUT).exe $(SRC) -lm
+	$(CC_WIN) $(CFLAGS) -o $(OUT).exe $(SRC) -lm
 
 # Build all test binaries (excluding src/main.c to avoid duplicate main)
 tests: unity $(TEST_BINS)

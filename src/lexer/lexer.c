@@ -9,7 +9,6 @@
 
 
 
-
 int LEXER_DEBUG = 0; // Toggle lexer debug output
 
 
@@ -171,14 +170,17 @@ if (isalpha(c) || c == '_') {
     while (isalnum(peek(lexer)) || peek(lexer) == '_')
         advance(lexer);
 
-    int length = lexer->pos - start;
-    char *word = strndup(&lexer->source[start], length);
-    Token_Type type = keyword_lookup(word);
 
-    if (type == TOKEN_IDENTIFIER && (word[0] == 'G' || word[0] == 'M' || word[0] == 'T'))
-        type = TOKEN_GCODE_WORD;
+int len = lexer->pos - start;
+char *word = strndup_portable(&lexer->source[start], len);
 
-    return make_token(type, word, lexer->line, start_col);
+Token_Type type = keyword_lookup(word);
+
+if (type == TOKEN_IDENTIFIER && (word[0] == 'G' || word[0] == 'M' || word[0] == 'T'))
+    type = TOKEN_GCODE_WORD;
+
+return make_token(type, word, lexer->line, start_col);
+
 }
 
     // Number literals (including negative and dot-prefixed)
@@ -221,7 +223,7 @@ if (isalpha(c) || c == '_') {
             }
 
             int len = lexer->pos - start;
-            char *num = strndup(&lexer->source[start], len);
+         char *num = strndup_portable(&lexer->source[start], len);
             int j = 0, dot_seen = 0;
             for (int i = 0; i < len; i++) {
                 if (num[i] == '.') {
