@@ -18,6 +18,7 @@ Doxyfile
 test.nc
 r.sh
 g.sh
+*.gcode
 
 
 # Executable files
