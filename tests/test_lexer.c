@@ -550,16 +550,7 @@ int main(void) {
     RUN_TEST(test_numbers);
     RUN_TEST(test_dot_prefixed_and_negative_floats);
     RUN_TEST(test_ampersand_operator);
-
-
-
-
-
-
-
-
    RUN_TEST(test_builtin_constants_and_math_functions);
-
    RUN_TEST(test_step_and_dotdotlt);
 
     return UNITY_END();

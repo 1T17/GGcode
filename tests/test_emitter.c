@@ -4,7 +4,7 @@
 #include "runtime/evaluator.h"
 #include "generator/gcode_emitter.h"
 
-int debug = 0;
+int debug = 1;
 
 extern int statement_count;
 extern void reset_runtime_state(void);
@@ -174,9 +174,10 @@ void test_emit_function_call_returns_value(void)
     ASTNode *root = parse_script(code);
     emit_gcode(root, debug);
 
-    TEST_ASSERT_EQUAL_DOUBLE(9.0, get_var("r"));
-    TEST_ASSERT_EQUAL_DOUBLE(4.0, get_var("bb"));
-    TEST_ASSERT_EQUAL_INT(4, statement_count);
+TEST_ASSERT_EQUAL_DOUBLE(2.0, get_var("r"));     // r = 2
+TEST_ASSERT_EQUAL_DOUBLE(4.0, get_var("bb"));    // bb = square(2)
+TEST_ASSERT_EQUAL_INT(5, statement_count);
+
 
     free_ast(root);
 }
@@ -324,7 +325,7 @@ void test_emit_function_overwrite_var(void)
 {
     const char *code =
         "let x = 10\n"
-        
+
         "function setx(val) {\n"
         "   x = val\n"
         "  return x\n"
@@ -640,50 +641,48 @@ void test_emit_function_no_return(void)
 int main(void)
 {
     UNITY_BEGIN();
-    // RUN_TEST(test_builtin_math_functions_and_constants);
-    // RUN_TEST(test_builtin_min_max);
-    // RUN_TEST(test_builtin_clamp);
-    // RUN_TEST(test_builtin_trig_pow_hypot);
-    // RUN_TEST(test_builtin_deg_rad_sign);
-    // RUN_TEST(test_builtin_log);
-    // RUN_TEST(test_builtin_exp);
-    // RUN_TEST(test_builtin_noise_zero);
-    // RUN_TEST(test_emit_function_declaration_and_call);
-    // RUN_TEST(test_emit_simple_gcode_block);
+    RUN_TEST(test_builtin_math_functions_and_constants);
+    RUN_TEST(test_builtin_min_max);
+    RUN_TEST(test_builtin_clamp);
+    RUN_TEST(test_builtin_trig_pow_hypot);
+    RUN_TEST(test_builtin_deg_rad_sign);
+    RUN_TEST(test_builtin_log);
+    RUN_TEST(test_builtin_exp);
+    RUN_TEST(test_builtin_noise_zero);
+    RUN_TEST(test_emit_function_declaration_and_call);
+    RUN_TEST(test_emit_simple_gcode_block);
 
 
-    // RUN_TEST(test_emit_loop_and_conditionals);
-    // RUN_TEST(test_emit_nested_if_inside_loop);
-    // RUN_TEST(test_emit_while_loop_basic);
-    // RUN_TEST(test_emit_nested_if_inside_loop2);
-    // RUN_TEST(test_emit_bitwise_and);
-    // RUN_TEST(test_emit_function_call_inside_expression);
-    // RUN_TEST(test_emit_function_with_two_params);
-    // RUN_TEST(test_emit_function_many_args);
-    // RUN_TEST(test_emit_function_expr_args);
-    // RUN_TEST(test_emit_function_in_condition);
-
-
-
-    // RUN_TEST(test_emit_function_recursion);
-    // RUN_TEST(test_emit_function_no_return);
-    // RUN_TEST(test_emit_function_no_params_no_return);
-  //  RUN_TEST(test_emit_function_only_return);
-  //  RUN_TEST(test_emit_function_unused_param);
- //   RUN_TEST(test_emit_function_calls_function);
-   // RUN_TEST(test_emit_function_empty_body);
+    RUN_TEST(test_emit_loop_and_conditionals);
+    RUN_TEST(test_emit_nested_if_inside_loop);
+    RUN_TEST(test_emit_while_loop_basic);
+    RUN_TEST(test_emit_nested_if_inside_loop2);
+    RUN_TEST(test_emit_bitwise_and);
+    RUN_TEST(test_emit_function_call_inside_expression);
+    RUN_TEST(test_emit_function_with_two_params);
+    RUN_TEST(test_emit_function_many_args);
+    RUN_TEST(test_emit_function_expr_args);
+    RUN_TEST(test_emit_function_in_condition);
 
 
 
+    RUN_TEST(test_emit_function_recursion);
+    RUN_TEST(test_emit_function_no_return);
+    RUN_TEST(test_emit_function_no_params_no_return);
+   RUN_TEST(test_emit_function_only_return);
+   RUN_TEST(test_emit_function_unused_param);
+   RUN_TEST(test_emit_function_calls_function);
+   RUN_TEST(test_emit_function_empty_body);
 
-  //   RUN_TEST(test_emit_function_call_returns_value);
+
+
+
+    RUN_TEST(test_emit_function_call_returns_value);
 
      RUN_TEST(test_emit_function_overwrite_var);
 
-
-
-    // RUN_TEST(test_emit_function_early_return);
-    //  RUN_TEST(test_complex_gcode_logic);
+     RUN_TEST(test_emit_function_early_return);
+      RUN_TEST(test_complex_gcode_logic);
 
     /// 58
     return UNITY_END();

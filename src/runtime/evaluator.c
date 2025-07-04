@@ -80,37 +80,20 @@ void eval_block(ASTNode *block) {
 
 
 
-// Set or update variable
 void set_var(const char *name, double value)
 {
-    // Search from the end for an existing variable with this name
+    // Step 1: Try to update a variable with the same name in the current scope
     for (int i = var_count - 1; i >= 0; i--) {
         if (variables[i].name && strcmp(variables[i].name, name) == 0) {
-            variables[i].value = value;
-            return;
+            if (variables[i].scope_level == current_scope_level) {
+                variables[i].value = value;
+                return;
+            }
         }
     }
-    // Not found, create new
-    if (var_count >= MAX_VARIABLES) {
-        fprintf(stderr, "[set_var] ERROR: variable limit reached.aaaaaaaaaaaaaaaaaaaaaa\n");
-        exit(1);
-    }
-    variables[var_count].name = strdup(name);
-    variables[var_count].value = value;
-    var_count++;
-}
 
-// Check if variable exists
-int var_exists(const char *name)
-{
-    for (int i = 0; i < var_count; i++)
-    {
-        if (variables[i].name && strcmp(variables[i].name, name) == 0)
-        {
-            return 1;
-        }
-    }
-    return 0;
+    // Step 2: Not found in current scope — declare a new variable
+    declare_var(name, value);
 }
 
 // Retrieve variable value
@@ -127,6 +110,21 @@ double get_var(const char *name)
     fprintf(stderr, "[get_var] ERROR: variable '%s' not found.\n", name);
     exit(1);
 }
+
+
+// Check if variable exists
+int var_exists(const char *name)
+{
+    for (int i = 0; i < var_count; i++)
+    {
+        if (variables[i].name && strcmp(variables[i].name, name) == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 
 // Forward declaration
 double eval_function_call(ASTNode *node);

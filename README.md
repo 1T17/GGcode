@@ -11,7 +11,7 @@
 
 ## Features
 
-- Lightweight compiler for `.gg` source files
+- Lightweight compiler for `.ggcode` source files
 - Full support for variables with `let`
 - Arithmetic and logic expressions
 - Conditional execution: `if`, `else`, `else if`
@@ -72,10 +72,10 @@ Use the following commands to build and test the project:
 
 ## Usage
 
-Compile and run a `.gg` file:
+Compile and run a `.ggcode` file:
 
 ```sh
-./ggcode path/to/file.gg
+./ggcode path/to/file.ggcode
 ```
 
 **Example output:**
