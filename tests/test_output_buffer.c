@@ -4,20 +4,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void setUp(void) {
+void setUp(void)
+{
     init_output_buffer();
 }
 
-void tearDown(void) {
+void tearDown(void)
+{
     free_output_buffer();
 }
 
 // Test 1: Write and read
-void test_write_and_read_output_buffer(void) {
+void test_write_and_read_output_buffer(void)
+{
     write_to_output("G1 X10 Y20");
     write_to_output("G1 X30 Y40");
 
-    const char* buffer = get_output_buffer();
+    const char *buffer = get_output_buffer();
     size_t length = get_output_length();
 
     printf("[TEST] Buffer:\n%s\n", buffer);
@@ -30,7 +33,8 @@ void test_write_and_read_output_buffer(void) {
 }
 
 // Test 2: Check buffer length with newlines
-void test_output_buffer_length(void) {
+void test_output_buffer_length(void)
+{
     write_to_output("ABC");
     write_to_output("DEF");
 
@@ -40,24 +44,26 @@ void test_output_buffer_length(void) {
 }
 
 // Test 3: Prepend content
-void test_prepend_to_output_buffer(void) {
+void test_prepend_to_output_buffer(void)
+{
     write_to_output("XYZ");
     prepend_to_output_buffer("START-\n");
 
-    const char* buffer = get_output_buffer();
+    const char *buffer = get_output_buffer();
     printf("[TEST] Buffer after prepend:\n%s\n", buffer);
-    TEST_ASSERT_TRUE(strstr(buffer, "START-\n") == buffer);  // Must be at beginning
+    TEST_ASSERT_TRUE(strstr(buffer, "START-\n") == buffer); // Must be at beginning
 }
 
 // Test 4: Save to file
-void test_save_output_to_file(void) {
+void test_save_output_to_file(void)
+{
     write_to_output("File line A");
     write_to_output("File line B");
 
-    const char* filename = "test_output_buffer.tmp";
+    const char *filename = "test_output_buffer.tmp";
     save_output_to_file(filename);
 
-    FILE* f = fopen(filename, "r");
+    FILE *f = fopen(filename, "r");
     TEST_ASSERT_NOT_NULL(f);
 
     char content[256] = {0};
@@ -72,17 +78,10 @@ void test_save_output_to_file(void) {
     TEST_ASSERT_NOT_NULL(strstr(content, "File line B"));
 }
 
-
-
-
-
-
-
-
-
 // Test 5: Write nothing — buffer should be empty
-void test_empty_buffer_should_be_null_or_empty(void) {
-    const char* buffer = get_output_buffer();
+void test_empty_buffer_should_be_null_or_empty(void)
+{
+    const char *buffer = get_output_buffer();
     size_t length = get_output_length();
 
     printf("[TEST] Empty buffer length: %zu\n", length);
@@ -93,15 +92,16 @@ void test_empty_buffer_should_be_null_or_empty(void) {
 }
 
 // Test 6: Write a very long line to trigger realloc
-void test_very_long_line_reallocation(void) {
-    char* long_line = malloc(10000);
+void test_very_long_line_reallocation(void)
+{
+    char *long_line = malloc(10000);
     memset(long_line, 'X', 9999);
     long_line[9999] = '\0';
 
     write_to_output(long_line);
 
-    const char* buffer = get_output_buffer();
-    TEST_ASSERT_EQUAL_UINT(strlen(long_line) + 1, get_output_length());  // +1 for newline
+    const char *buffer = get_output_buffer();
+    TEST_ASSERT_EQUAL_UINT(strlen(long_line) + 1, get_output_length()); // +1 for newline
 
     TEST_ASSERT_NOT_NULL(buffer);
     TEST_ASSERT_TRUE(strstr(buffer, "XXXXX") != NULL); // crude sanity check
@@ -110,12 +110,13 @@ void test_very_long_line_reallocation(void) {
 }
 
 // Test 7: Prepend multiple times and check order
-void test_multiple_prepends_order(void) {
+void test_multiple_prepends_order(void)
+{
     write_to_output("MAIN");
     prepend_to_output_buffer("P2\n");
     prepend_to_output_buffer("P1\n");
 
-    const char* buffer = get_output_buffer();
+    const char *buffer = get_output_buffer();
     printf("[TEST] Buffer with multiple prepends:\n%s\n", buffer);
 
     // Order must be: P1\nP2\nMAIN\n
@@ -123,15 +124,16 @@ void test_multiple_prepends_order(void) {
 }
 
 // Test 8: Prepend after very large content
-void test_prepend_after_large_write(void) {
-    char* huge = malloc(5000);
+void test_prepend_after_large_write(void)
+{
+    char *huge = malloc(5000);
     memset(huge, 'A', 4999);
     huge[4999] = '\0';
 
     write_to_output(huge);
     prepend_to_output_buffer("START\n");
 
-    const char* buffer = get_output_buffer();
+    const char *buffer = get_output_buffer();
     TEST_ASSERT_NOT_NULL(buffer);
     TEST_ASSERT_TRUE(strstr(buffer, "START\n") == buffer);
 
@@ -139,12 +141,13 @@ void test_prepend_after_large_write(void) {
 }
 
 // Test 9: Save buffer without newline ending
-void test_no_trailing_newline_write(void) {
-    const char* raw = "G0 X5 Y5 Z5";
+void test_no_trailing_newline_write(void)
+{
+    const char *raw = "G0 X5 Y5 Z5";
     write_to_output(raw);
 
     size_t len = get_output_length();
-    const char* buffer = get_output_buffer();
+    const char *buffer = get_output_buffer();
 
     printf("[TEST] Raw length: %zu, With newline: %zu\n", strlen(raw), len);
 
@@ -152,24 +155,17 @@ void test_no_trailing_newline_write(void) {
     TEST_ASSERT_EQUAL_CHAR('\n', buffer[len - 1]);
 }
 
-
-
-
-
-
-
-
-
-int main(void) {
+int main(void)
+{
     UNITY_BEGIN();
-    RUN_TEST(test_write_and_read_output_buffer);
-    RUN_TEST(test_output_buffer_length);
-    RUN_TEST(test_prepend_to_output_buffer);
-    RUN_TEST(test_save_output_to_file);
-    RUN_TEST(test_empty_buffer_should_be_null_or_empty);
-    RUN_TEST(test_very_long_line_reallocation);
-    RUN_TEST(test_multiple_prepends_order);
-    RUN_TEST(test_prepend_after_large_write);
-    RUN_TEST(test_no_trailing_newline_write);
+    RUN_TEST(test_write_and_read_output_buffer);         // 1
+    RUN_TEST(test_output_buffer_length);                 // 2
+    RUN_TEST(test_prepend_to_output_buffer);             // 3
+    RUN_TEST(test_save_output_to_file);                  // 4
+    RUN_TEST(test_empty_buffer_should_be_null_or_empty); // 5
+    RUN_TEST(test_very_long_line_reallocation);          // 6
+    RUN_TEST(test_multiple_prepends_order);              // 7
+    RUN_TEST(test_prepend_after_large_write);            // 8
+    RUN_TEST(test_no_trailing_newline_write);            // 9
     return UNITY_END();
 }

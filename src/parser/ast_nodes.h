@@ -18,6 +18,7 @@ typedef enum
     AST_LET,
     AST_ASSIGN,
     AST_VAR,
+    AST_ARRAY_LITERAL, 
     AST_INDEX,
     AST_FUNCTION,
     AST_CALL,
@@ -31,12 +32,15 @@ typedef enum
     AST_NOTE,
     AST_IF,
     AST_UNARY,
+     AST_EMPTY ,
+    
     
     AST_NODE_TYPE_COUNT // <- this must always be the last
 } ASTNodeType;
 
 struct ASTNode
 {
+    struct ASTNode *parent;
     ASTNodeType type;
 
     union
@@ -44,6 +48,10 @@ struct ASTNode
 
 
 
+struct {
+    ASTNode **elements;  // array of ASTNode*
+    int count;           // number of elements
+} array_literal;
 
 
 struct {
@@ -165,7 +173,7 @@ struct
 };
 
 // Entry point
-ASTNode *parse_script(const char *source);
+ASTNode *parse_script();
 void free_ast(ASTNode *node);
 
 #endif // AST_NODES_H

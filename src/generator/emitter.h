@@ -1,5 +1,5 @@
-#ifndef GCODE_EMITTER_H
-#define GCODE_EMITTER_H
+#ifndef EMITTER_H
+#define EMITTER_H
 
 #include "parser/parser.h"
 
@@ -8,4 +8,4 @@ int get_statement_count();
 
 
 
-#endif // GCODE_EMITTER_H
+#endif // EMITTER_H

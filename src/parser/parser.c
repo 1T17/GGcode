@@ -4,7 +4,7 @@
 #include "parser.h"
 #include "../utils/compat.h"
 #include "../runtime/evaluator.h"
-
+#include "error/error.h"
 
 
 #define M_PI 3.14159265358979323846
@@ -12,9 +12,9 @@
 
 
 static int gcode_mode_active = 0;
-static Parser parser;
+ Parser parser;
 
-double eval_expr(ASTNode *node);
+
 
 static ASTNode *parse_binary_expression();
 static ASTNode *parse_block();
@@ -29,6 +29,9 @@ static ASTNode *parse_primary();
 static ASTNode *parse_function();
 static ASTNode *parse_return();
 static ASTNode *parse_assignment();
+static ASTNode *parse_postfix_expression();  // <-- add this
+
+
 
 // Forward declaration
 Token lexer_peek_token(Lexer *lexer);
@@ -62,7 +65,7 @@ int get_precedence(Token_Type op)
     }
 }
 
-static void advance()
+void advance()
 {
     parser.previous = parser.current;
     parser.current = lexer_next_token(parser.lexer);
@@ -78,24 +81,37 @@ static int match(Token_Type type)
     return 0;
 }
 
-static ASTNode *parse_unary()
-{
-    if (parser.current.type == TOKEN_BANG)
-    {
-        Token_Type op = parser.current.type;
-        advance(); // consume '!'
 
-        ASTNode *operand = parse_unary(); // recursive for !!x
+
+
+
+
+
+
+
+
+
+
+static ASTNode *parse_unary() {
+    if (parser.current.type == TOKEN_BANG || parser.current.type == TOKEN_MINUS) {
+        Token op = parser.current;
+        advance();
+
+        ASTNode *operand = parse_unary();  // recursive for !! or -- etc.
 
         ASTNode *node = malloc(sizeof(ASTNode));
         node->type = AST_UNARY;
-        node->unary_expr.op = op;
+        node->unary_expr.op = op.type;
         node->unary_expr.operand = operand;
         return node;
     }
 
-    return parse_primary();
+    return parse_postfix_expression();  // fallback to normal expression
 }
+
+
+
+
 
 static ASTNode *parse_primary() {
     // Handle parentheses
@@ -200,10 +216,115 @@ static ASTNode *parse_primary() {
         return node;
     }
 
+
+
+
+// Handle array literal: [1, 2, 3] or [[1, 2], [3, 4]]
+if (parser.current.type == TOKEN_LBRACKET) {
+    advance(); // consume '['
+
+    ASTNode **elements = NULL;
+    int count = 0, capacity = 0;
+
+    // Handle non-empty array
+    if (parser.current.type != TOKEN_RBRACKET) {
+        while (1) {
+            if (count >= capacity) {
+                capacity = capacity == 0 ? 4 : capacity * 2;
+                elements = realloc(elements, capacity * sizeof(ASTNode *));
+            }
+
+   elements[count++] = parse_binary_expression();
+
+
+            if (parser.current.type == TOKEN_COMMA) {
+                advance(); // consume comma and continue
+            } else if (parser.current.type == TOKEN_RBRACKET) {
+                break; // closing bracket
+            } else {
+                printf("[Parser] Expected ',' or ']' in array literal, found '%s'\n", parser.current.value);
+                exit(1);
+            }
+        }
+    }
+
+    match(TOKEN_RBRACKET); // consume final ']'
+
+    ASTNode *node = malloc(sizeof(ASTNode));
+    node->type = AST_ARRAY_LITERAL;
+    node->array_literal.elements = elements;
+    node->array_literal.count = count;
+
+
+
+
+
+    // Now parse chained index access like: a[1][2]
+    while (parser.current.type == TOKEN_LBRACKET) {
+        advance(); // consume '['
+        ASTNode *index = parse_binary_expression(); 
+        if (!match(TOKEN_RBRACKET)) {
+            printf("[Parser] Expected ']' after index\n");
+            exit(1);
+        }
+
+        ASTNode *index_node = malloc(sizeof(ASTNode));
+        index_node->type = AST_INDEX;
+        index_node->index_expr.array = node;
+        index_node->index_expr.index = index;
+        node = index_node; // chain it
+    }
+
+
+
+    return node;
+}
+
+
+
     // Fallback error
     printf("[Parser] Unexpected token in expression: %s\n", parser.current.value);
     exit(1);
 }
+
+
+
+
+
+
+static ASTNode *parse_postfix_expression() {
+    ASTNode *expr = parse_primary();
+
+    while (parser.current.type == TOKEN_LBRACKET) {
+        advance(); // consume '['
+        ASTNode *index = parse_binary_expression();
+        if (!match(TOKEN_RBRACKET)) {
+            printf("[Parser] Expected ']' after index\n");
+            exit(1);
+        }
+
+        ASTNode *index_node = malloc(sizeof(ASTNode));
+        index_node->type = AST_INDEX;
+        index_node->index_expr.array = expr;
+        index_node->index_expr.index = index;
+        expr = index_node;
+    }
+
+    return expr;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -215,7 +336,9 @@ static ASTNode *parse_primary() {
 
 static ASTNode *parse_binary_expression_prec(int min_prec)
 {
-    ASTNode *left = parse_unary();
+ASTNode *left = parse_unary();
+
+
 
     while (1)
     {
@@ -256,6 +379,16 @@ static ASTNode *parse_binary_expression()
 {
     return parse_binary_expression_prec(0);
 }
+
+
+
+
+
+
+
+
+
+
 
 static ASTNode *parse_function()
 {
@@ -311,6 +444,10 @@ static ASTNode *parse_function()
     return node;
 }
 
+
+
+
+
 static ASTNode *parse_return()
 {
     advance(); // skip 'return'
@@ -345,11 +482,9 @@ static ASTNode *parse_assignment() {
 }
 
 
-
-static ASTNode *parse_statement()
-{
-    //printf("[DEBUG] parse_statement: token=%s (type=%d) line=%d\n",
-     //      parser.current.value, parser.current.type, parser.current.line);
+static ASTNode *parse_statement() {
+    if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
+        return NULL;
 
     // Keyword-based statements
     if (parser.current.type == TOKEN_FUNCTION)
@@ -369,34 +504,26 @@ static ASTNode *parse_statement()
 
     // Identifier-based logic
     if (parser.current.type == TOKEN_IDENTIFIER) {
-     //   printf("[DEBUG] parse_statement: identifier '%s', gcode_mode_active=%d\n",
-            //   parser.current.value, gcode_mode_active);
-
-        Token lookahead = lexer_peek_token(parser.lexer);  // ✅ Use peek, not advance
+        Token lookahead = lexer_peek_token(parser.lexer);  // ✅ Lookahead for assignment or expression
 
         if (lookahead.type == TOKEN_EQUAL) {
-        //    printf("[DEBUG] parse_statement: Detected assignment for '%s'\n", parser.current.value);
             return parse_assignment();
         } else if (gcode_mode_active) {
-        //    printf("[DEBUG] parse_statement: Detected G-code coordinate for '%s'\n", parser.current.value);
             return parse_gcode_coord_only();
         } else {
-         //   printf("[DEBUG] parse_statement: Detected primary/expression for '%s'\n", parser.current.value);
-            return parse_primary();
+            return parse_postfix_expression();
         }
     }
 
     // G-code command like G0, G1, etc.
     if (parser.current.type == TOKEN_GCODE_WORD) {
-      //  printf("[DEBUG] parse_statement: Detected G-code word '%s'\n", parser.current.value);
         return parse_gcode();
     }
 
-    // Fallback error
-    printf("[Parser] Unexpected token: %s (type %d) at line %d\n",
-           parser.current.value, parser.current.type, parser.current.line);
-    exit(1);
+    // Final fallback: try parsing a general expression
+    return parse_binary_expression();
 }
+
 
 
 
@@ -779,6 +906,9 @@ static ASTNode *parse_if()
 
     advance(); // skip 'if'
 
+   //  fprintf(stderr, "[Parser IF]\n");
+
+
     // Parse condition
     node->if_stmt.condition = parse_binary_expression();
 
@@ -818,35 +948,108 @@ static ASTNode *parse_if()
     return node;
 }
 
-ASTNode *parse_script(const char *source)
-{
-    parser.lexer = lexer_new(source);
-    advance();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ASTNode *parse_script() {
     ASTNode **statements = NULL;
-    int capacity = 0, count = 0;
+    int count = 0;
+    int capacity = 0;
 
-    while (parser.current.type != TOKEN_EOF)
-    {
-        if (count >= capacity)
-        {
-            capacity = capacity == 0 ? 4 : capacity * 2;
-            statements = realloc(statements, capacity * sizeof(ASTNode *));
+  //  printf("[DEBUG parse_script] Entering parse_script()\n");
+
+    while (parser.current.type != TOKEN_EOF) {
+        if (parser.current.type == TOKEN_NEWLINE) {
+            advance();
+            continue;
         }
 
-        statements[count++] = parse_statement();
+        ASTNode *stmt = parse_statement();
 
-        // Skip any newlines between statements
-        while (parser.current.type == TOKEN_NEWLINE)
-            advance();
+        if (!stmt) {
+            printf("[DEBUG] Skipping NULL stmt\n");
+            continue;
+        }
+
+       // printf("[DEBUG] Parsed stmt type: %d\n", stmt->type);
+
+if (stmt->type == AST_EMPTY || stmt->type == AST_NOP)
+    continue;
+
+
+        if (count >= capacity) {
+            int new_capacity = (capacity == 0) ? 4 : capacity * 2;
+         //   printf("[DEBUG] Growing statement array: %d → %d\n", capacity, new_capacity);
+            ASTNode **new_array = malloc(new_capacity * sizeof(ASTNode *));
+            if (!new_array) {
+                fprintf(stderr, "Memory allocation failed for statement array\n");
+                exit(1);
+            }
+            if (statements) {
+                memcpy(new_array, statements, count * sizeof(ASTNode *));
+                free(statements);
+            }
+            statements = new_array;
+            capacity = new_capacity;
+        }
+
+        statements[count++] = stmt;
     }
 
-    ASTNode *root = malloc(sizeof(ASTNode));
-    root->type = AST_BLOCK;
-    root->block.statements = statements;
-    root->block.count = count;
-    return root;
+  //  printf("[DEBUG] Finished loop, count = %d\n", count);
+
+    ASTNode *block = malloc(sizeof(ASTNode));
+    if (!block) {
+        fprintf(stderr, "Memory allocation failed for block\n");
+        exit(1);
+    }
+
+    block->type = AST_BLOCK;
+    block->block.statements = statements;
+    block->block.count = count;
+
+
+
+
+
+
+
+    return block;
 }
+
+
+
+
+
+
+
+#include <execinfo.h>  // for backtrace
+#include <unistd.h>    // for STDERR_FILENO
+
+#include <execinfo.h>
+void print_backtrace() {
+    void *bt[20];
+    int size = backtrace(bt, 20);
+    backtrace_symbols_fd(bt, size, STDERR_FILENO);
+}
+
+
+
+
+
 
 
 
@@ -863,15 +1066,11 @@ void free_ast(ASTNode *node)
         free_ast(node->binary_expr.right);
         break;
 
-    case AST_FUNCTION:
-        free(node->function_stmt.name);
-        for (int i = 0; i < node->function_stmt.param_count; i++)
-        {
-            free(node->function_stmt.params[i]);
-        }
-        free(node->function_stmt.params);
-        free_ast(node->function_stmt.body);
-        break;
+case AST_FUNCTION:
+    fprintf(stderr, "[free_ast]------------------- Skipping function: %s\n", node->function_stmt.name);
+    return;
+
+
     case AST_RETURN:
         free_ast(node->return_stmt.expr);
         break;
@@ -918,13 +1117,24 @@ void free_ast(ASTNode *node)
         free(node->for_stmt.var);
         free_ast(node->for_stmt.body);
         break;
-    case AST_BLOCK:
-        for (int i = 0; i < node->block.count; i++)
-        {
-            free_ast(node->block.statements[i]);
+
+
+
+case AST_BLOCK:
+    for (int i = 0; i < node->block.count; i++)
+    {
+        ASTNode *stmt = node->block.statements[i];
+        if (stmt->type != AST_FUNCTION) {
+            free_ast(stmt);  // only free non-function nodes
         }
-        free(node->block.statements);
-        break;
+        // else: skip function — it's owned by the registry and already freed
+    }
+    free(node->block.statements);
+    break;
+
+
+
+
     case AST_INDEX:
         free_ast(node->index_expr.array);
         free_ast(node->index_expr.index);

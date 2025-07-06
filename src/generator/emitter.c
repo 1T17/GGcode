@@ -1,39 +1,61 @@
-/// gcode_emitter.c
+///emitter.c
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "gcode_emitter.h"
+#include "emitter.h"
 #include "runtime/evaluator.h"
 #include "utils/output_buffer.h"
 #include "config.h"
+#include "error/error.h"
+
 
 // Forward declarations of utility functions
 extern char RUNTIME_TIME[64];
 // Forward declaration of the runtime filename
 extern char RUNTIME_FILENAME[256];
 
+#define MAX_WHILE_ITERATIONS 1000000  // adjust this as needed
 
-// Global variable to track the number of emitted statements
+// Value constructors
+Value *make_number_value(double num);
+
+
+
+double get_number(Value *val); 
+
+
+
+
+
+Value *make_number_value(double num) {
+    Value *val = malloc(sizeof(Value));
+    if (!val) {
+
+        report_error("[make_number_value] Out of memory");
+
+        exit(1);
+    }
+    val->type = VAL_NUMBER;
+    val->number = num;
+    return val;
+}
+
 int statement_count = 0;
 
-/// Returns the number of statements emitted so far.
-/// @return Total emitted AST statements.
 int get_statement_count()
 {
     return statement_count;
 }
 
-/// Emits a NOTE comment block as G-code comments.
-/// Replaces [vars] like [time], [ggcode_file_name], and user variables.
-/// @param node NOTE AST node.
-/// @param debug Enables debug output.
 static void emit_note_stmt(ASTNode *node, int debug) {
     statement_count++;
     const char *content = node->note.content;
     if (!content) {
-        fprintf(stderr, "[Emit] WARNING: NOTE content is NULL\n");
+
+        report_error("[Emit] NOTE content is NULL");
+
         return;
     }
 
@@ -44,7 +66,8 @@ static void emit_note_stmt(ASTNode *node, int debug) {
 
     char *copy = strdup(content);
     if (!copy) {
-        fprintf(stderr, "[Emit] ERROR: strdup failed for note content\n");
+        report_error("[Emit] strdup failed for note content");
+
         return;
     }
 
@@ -70,8 +93,12 @@ static void emit_note_stmt(ASTNode *node, int debug) {
                 if (replacement) {
                     out += sprintf(out, "%s", replacement);
                 } else {
-                    double val = get_var(varname);
-                    out += sprintf(out, "%.6g", val);
+Value *val = get_var(varname);
+if (val && val->type == VAL_NUMBER) {
+    out += sprintf(out, "%.6g", val->number);
+} else {
+    out += sprintf(out, "0");  // fallback for missing or non-number
+}
                 }
             } else {
                 *out++ = *p++;
@@ -89,35 +116,44 @@ static void emit_note_stmt(ASTNode *node, int debug) {
     free(copy);
 }
 
-/// Emits a LET assignment, setting a variable from an expression.
-/// @param node LET AST node.
-/// @param debug Enables debug output.
+
 static void emit_let_stmt(ASTNode *node, int debug) {
     statement_count++;
 
     if (!node->let_stmt.name) {
-        fprintf(stderr, "[Emit] ERROR: LET statement missing name\n");
+        report_error("[Emit] LET statement missing name");
         return;
     }
 
-    double val = eval_expr(node->let_stmt.expr);
+    Value *val = eval(node->let_stmt.expr);
     if (debug) {
-        printf("[Emit] LET %s = %.5f\n", node->let_stmt.name, val);
+        if (val) {
+            if (val->type == VAL_NUMBER) {
+                printf("[Emit] LET %s = %.5f\n", node->let_stmt.name, val->number);
+            } else if (val->type == VAL_ARRAY) {
+                printf("[Emit] LET %s = [array with %zu items]\n", node->let_stmt.name, val->array.count);
+            }
+        } else {
+            printf("[Emit] LET %s = NULL\n", node->let_stmt.name);
+        }
         fflush(stdout);
+    }
+
+    if (!val) {
+        report_error("[Emit] LET %s = NULL (defaulting to 0)", node->let_stmt.name);
+        val = make_number_value(0);
     }
 
     set_var(node->let_stmt.name, val);
 }
 
-/// Emits a raw G-code instruction, including optional axes/params.
-/// Adds line numbers and compresses repeated G1 codes.
-/// @param node GCODE AST node.
-/// @param debug Enables debug output.
+
 static void emit_gcode_stmt(ASTNode *node, int debug) {
         statement_count++;
         if (!node->gcode_stmt.code)
         {
-            fprintf(stderr, "[Emit] ERROR: GCODE missing command code\n");
+            report_error("[Emit] GCODE missing command code");
+
             return;
         }
 
@@ -158,7 +194,15 @@ static void emit_gcode_stmt(ASTNode *node, int debug) {
 
             if (node->gcode_stmt.args[i].indexExpr)
             {
-                val = eval_expr(node->gcode_stmt.args[i].indexExpr);
+          Value *v = eval_expr(node->gcode_stmt.args[i].indexExpr);
+if (!v || v->type != VAL_NUMBER) {
+   report_error("[Emit] GCODE arg[%d] is not a number", i);
+
+    val = 0.0;
+} else {
+    val = v->number;
+}
+
             }
 
             snprintf(segment, sizeof(segment), " %s%.6g", node->gcode_stmt.args[i].key, val);
@@ -174,9 +218,12 @@ static void emit_gcode_stmt(ASTNode *node, int debug) {
         write_to_output(line);
 }
 
-/// Emits a WHILE loop, repeatedly emitting the body while the condition is true.
-/// @param node WHILE AST node.
-/// @param debug Enables debug output.
+
+
+
+
+
+
 static void emit_while_stmt(ASTNode *node, int debug) {
     statement_count++;
 
@@ -185,72 +232,105 @@ static void emit_while_stmt(ASTNode *node, int debug) {
         fflush(stdout);
     }
 
-    while (eval_expr(node->while_stmt.condition)) {
+    int iteration = 0;
+    while (1) {
+        Value *cond = eval_expr(node->while_stmt.condition);
+        if (!cond || cond->type != VAL_NUMBER) {
+            report_error("[Emit] WHILE condition is invalid (null or not a number)");
+            break;
+        }
+
+        if (cond->number == 0) break;
+
+        if (iteration >= MAX_WHILE_ITERATIONS) {
+            report_error("[Emit] WHILE loop exceeded maximum iterations (%d)", MAX_WHILE_ITERATIONS);
+            break;
+        }
+
+        if (debug) {
+            printf("[Emit] WHILE iteration %d\n", iteration);
+            fflush(stdout);
+        }
+
         emit_gcode(node->while_stmt.body, debug);
+        iteration++;
+    }
+
+    if (debug) {
+        printf("[Emit] WHILE loop completed after %d iteration(s)\n", iteration);
+        fflush(stdout);
     }
 }
 
+
+
+
+
+
+
+
 /// Emits a FOR loop from `from` to `to`, assigning the loop variable and emitting the body.
 /// @param node FOR AST node.
-/// @param debug Enables debug output.
 static void emit_for_stmt(ASTNode *node, int debug) {
     statement_count++;
 
     if (!node->for_stmt.var || !node->for_stmt.body) {
-        fprintf(stderr, "[Emit] ERROR: FOR loop missing variable or body\n");
+
+        report_error("[Emit] FOR loop missing variable or body");
+
         return;
     }
 
-    if (debug) {
-double from = eval_expr(node->for_stmt.from);
-double to = eval_expr(node->for_stmt.to);
-double step = node->for_stmt.step ? eval_expr(node->for_stmt.step) : 1.0;
+    Value *v_from = eval_expr(node->for_stmt.from);
+    Value *v_to = eval_expr(node->for_stmt.to);
+    Value *v_step = node->for_stmt.step ? eval_expr(node->for_stmt.step) : make_number_value(1.0);
 
-printf("[Emit] FOR %s = %.2f %s %.2f step %.2f\n",
-       node->for_stmt.var,
-       from,
-       node->for_stmt.exclusive ? "..<" : "..",
-       to,
-       step);
+    if (!v_from || !v_to || !v_step ||
+        v_from->type != VAL_NUMBER || v_to->type != VAL_NUMBER || v_step->type != VAL_NUMBER) {
+
+       report_error("[Emit] FOR loop expects numeric values");
+
+        return;
     }
 
-double from = eval_expr(node->for_stmt.from);
-double to = eval_expr(node->for_stmt.to);
-double step = node->for_stmt.step ? eval_expr(node->for_stmt.step) : 1.0;
+    double from = v_from->number;
+    double to = v_to->number;
+    double step = v_step->number;
     int exclusive = node->for_stmt.exclusive;
 
+    if (debug) {
+        printf("[Emit] FOR %s = %.2f %s %.2f step %.2f\n",
+               node->for_stmt.var,
+               from,
+               exclusive ? "..<" : "..",
+               to,
+               step);
+    }
+
     if (step == 0) {
-        fprintf(stderr, "[Emit] ERROR: FOR loop step cannot be zero\n");
+
+       report_error("[Emit] FOR loop step cannot be zero");
+
         return;
     }
 
     if (step > 0) {
         double end = exclusive ? to : to + 1e-9;
         for (double i = from; i < end; i += step) {
-            set_var(node->for_stmt.var, i);
+            set_var(node->for_stmt.var, make_number_value(i));
             emit_gcode(node->for_stmt.body, debug);
         }
     } else {
         double end = exclusive ? to : to - 1e-9;
         for (double i = from; i > end; i += step) {
-            set_var(node->for_stmt.var, i);
+            set_var(node->for_stmt.var, make_number_value(i));
             emit_gcode(node->for_stmt.body, debug);
         }
     }
 }
 
-
-
-
-
-
-
-
-
-
 /// Emits a block of sequential AST statements.
 /// @param node BLOCK AST node.
-/// @param debug Enables debug output.
 static void emit_block_stmt(ASTNode *node, int debug) {
     if (debug) {
         printf("[Emit] BLOCK with %d statements\n", node->block.count);
@@ -259,7 +339,9 @@ static void emit_block_stmt(ASTNode *node, int debug) {
 
     for (int i = 0; i < node->block.count; i++) {
         if (!node->block.statements[i]) {
-            fprintf(stderr, "[Emit] WARNING: NULL statement in block index %d\n", i);
+
+           report_error("[Emit] NULL statement in block index %d", i);
+
             continue;
         }
 
@@ -269,10 +351,8 @@ static void emit_block_stmt(ASTNode *node, int debug) {
 
 /// Emits a FUNCTION declaration (not executed, only registered/logged).
 /// @param node FUNCTION AST node.
-/// @param debug Enables debug output.
 static void emit_function_stmt(ASTNode *node, int debug) {
     statement_count++;
-    // Register function in global table
     extern void register_function(ASTNode *node);
     register_function(node);
 
@@ -283,6 +363,7 @@ static void emit_function_stmt(ASTNode *node, int debug) {
         fflush(stdout);
     }
 }
+
 
 /// Emits a function call expression by evaluating it.
 /// @param node CALL AST node.
@@ -299,9 +380,9 @@ static void emit_function_stmt(ASTNode *node, int debug) {
 //     }
 // }
 
+
 /// Emits an IF/ELSE conditional branch depending on the evaluated condition.
 /// @param node IF AST node.
-/// @param debug Enables debug output.
 static void emit_if_stmt(ASTNode *node, int debug) {
     statement_count++;
 
@@ -310,38 +391,122 @@ static void emit_if_stmt(ASTNode *node, int debug) {
         fflush(stdout);
     }
 
-    if (eval_expr(node->if_stmt.condition)) {
+    Value *cond_val = eval_expr(node->if_stmt.condition);
+    if (!cond_val) {
+
+        report_error("[Emit] IF condition evaluated to NULL");
+
+        return; // Or exit(1) if this should be fatal
+    }
+
+    if (cond_val->type != VAL_NUMBER) {
+
+        report_error("[Emit] IF condition did not return a number (type: %d)", cond_val->type);
+
+        return;
+    }
+
+    double cond = cond_val->number;
+
+    if (cond) {
         if (debug) {
             printf("[Emit] IF condition TRUE, executing THEN branch\n");
+            fflush(stdout);
         }
         emit_gcode(node->if_stmt.then_branch, debug);
     } else if (node->if_stmt.else_branch) {
         if (debug) {
             printf("[Emit] IF condition FALSE, executing ELSE branch\n");
+            fflush(stdout);
         }
         emit_gcode(node->if_stmt.else_branch, debug);
+    } else {
+        if (debug) {
+            printf("[Emit] IF condition FALSE, no ELSE branch\n");
+            fflush(stdout);
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 /// Dispatches AST nodes to their respective emit_* handlers.
 /// Logs errors for unknown or unsupported types.
 /// @param node Any AST node.
-/// @param debug Enables debug output.
 void emit_gcode(ASTNode *node, int debug) {
+
     if (!node) return;
     switch (node->type) {
         case AST_NOTE:     emit_note_stmt(node, debug); break;
         case AST_LET:      emit_let_stmt(node, debug); break;
-          case AST_ASSIGN:   eval_expr(node); break;      // <-- add this line
+
+
+case AST_ASSIGN: {
+    statement_count++;
+    Value *val = eval_expr(node->assign_stmt.expr);
+    if (!val || val->type != VAL_NUMBER) {
+        report_error("[Emit] ASSIGN %s failed, invalid expression", node->assign_stmt.name);
+        val = make_number_value(0);  // fallback
+    }
+
+    set_var(node->assign_stmt.name, val);
+
+    if (debug) {
+        printf("[Emit] ASSIGN %s = %.6f\n", node->assign_stmt.name, val->number);
+        fflush(stdout);
+    }
+    break;
+}
+
+
+
+
         case AST_GCODE:    emit_gcode_stmt(node, debug); break;
-        case AST_WHILE:    emit_while_stmt(node, debug); break;
+      
+
+
+// case AST_WHILE:
+//     printf("[Emit] WHILE node executing...\n");
+//     emit_while_stmt(node, debug);  // or just: eval_while(node); if you merged logic
+//     break;
+
         case AST_FOR:      emit_for_stmt(node, debug); break;
+              case AST_WHILE:    emit_while_stmt(node, debug); break;
         case AST_BLOCK:    emit_block_stmt(node, debug); break;
         case AST_FUNCTION: emit_function_stmt(node, debug); break;
         case AST_IF:       emit_if_stmt(node, debug); break;
         case AST_CALL:     eval_expr(node); break; // <-- Add this line
+
+
+
+        case AST_ARRAY_LITERAL:
+           statement_count++;
+            if (debug) {
+                printf("[Emit] ARRAY_LITERAL with %d elements\n", node->array_literal.count);
+                for (int i = 0; i < node->array_literal.count; ++i) {
+                    printf(" - Element [%d]:\n", i);
+                    emit_gcode(node->array_literal.elements[i], debug);
+                }
+                
+            }
+            break;
+
+
         default:
-            fprintf(stderr, "[Emit] WARNING: Unrecognized node type: %d\n", node->type);
+
+            report_error("[Emit] Unrecognized node type: %d", node->type);
+
             break;
     }
+
+
+    
 }

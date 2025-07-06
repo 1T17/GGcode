@@ -8,7 +8,7 @@ CFLAGS = -Wall -Werror -Wpedantic -Wextra \
 CC_WIN = x86_64-w64-mingw32-gcc
 
 # Main source files
-SRC = $(wildcard src/*.c src/lexer/*.c src/parser/*.c src/semantic/*.c src/generator/*.c src/runtime/*.c src/utils/*.c)
+SRC = $(wildcard src/*.c src/lexer/*.c src/error/*.c src/parser/*.c src/semantic/*.c src/generator/*.c src/runtime/*.c src/utils/*.c)
 OUT = ggcode
 
 # Test discovery

@@ -8,9 +8,10 @@
 #include "parser/parser.h"
 #include "runtime/evaluator.h"
 #include "utils/output_buffer.h"
-#include "generator/gcode_emitter.h"
+#include "generator/emitter.h"
 #include "utils/file_utils.h"
 #include "utils/report.h"
+#include "error/error.h"
 
 #include "utils/time_utils.h"
 
@@ -42,10 +43,12 @@
 
 
 // Declare the runtime variable lookup functions from evaluator.c
-extern double get_var(const char* name);
-extern int var_exists(const char* name);
+
+
 
 const char* GGCODE_INPUT_FILENAME = NULL;
+
+
 void compile_file(const char* input_path, const char* output_path, int debug);
 
 
@@ -104,23 +107,36 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     // Parse timing
     Timer parse_timer;
     start_timer(&parse_timer);
-    ASTNode* root = parse_script(source);
+
+
+ASTNode* root = parse_script_from_string(source);
+
+
     double parse_time = end_timer(&parse_timer);
 
     // Emit timing
     Timer emit_timer;
     start_timer(&emit_timer);
+
+    reset_line_number();
+
     emit_gcode(root, debug);
     double emit_time = end_timer(&emit_timer);
 
     // ➤ Insert G-code header at the beginning AFTER emit
     char preamble[128] = "%\n";
     char id_line[64];
-    if (var_exists("id")) {
-        snprintf(id_line, sizeof(id_line), "%.0f", get_var("id"));
+if (var_exists("id")) {
+    Value *id_val = get_var("id");
+    if (id_val && id_val->type == VAL_NUMBER) {
+        snprintf(id_line, sizeof(id_line), "%.0f", id_val->number);
     } else {
         snprintf(id_line, sizeof(id_line), "000");
     }
+} else {
+    snprintf(id_line, sizeof(id_line), "000");
+}
+
     strcat(preamble, id_line);
     strcat(preamble, "\n");
     prepend_to_output_buffer(preamble);
@@ -152,7 +168,55 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     free_ast(root);
     free(source);
     free_output_buffer();
+
+
+if (has_errors()) {
+    fprintf(stderr, "\n⚠️ Compilation finished with errors:\n");
+    print_errors();
+    clear_errors();  // Reset for next file (if compiling multiple)
 }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -201,6 +265,9 @@ compile_file(entry->d_name, out_name, debug);
 
 
 int main() {
+
+
+
     const char *input_file = get_input_file();
     int debug = get_debug();
 if (input_file && strlen(input_file) > 0) {
@@ -210,5 +277,8 @@ if (input_file && strlen(input_file) > 0) {
 } else {
     compile_all_gg_files(debug);
 }
+
+
+
     return 0;
 }

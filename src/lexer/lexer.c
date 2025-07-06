@@ -19,6 +19,8 @@ int LEXER_DEBUG = 0; // Toggle lexer debug output
 /// @return Pointer to a new Lexer
 Lexer *lexer_new(const char *source)
 {
+
+
     Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
     lexer->source = source;
     lexer->pos = 0;
@@ -56,21 +58,42 @@ void lexer_free(Lexer *lexer)
 /// @brief Peeks at the current character
 static char peek(Lexer *lexer)
 {
+    if (!lexer || !lexer->source)
+        return '\0';
+
     return lexer->source[lexer->pos];
 }
 
+
+
+
 /// @brief Peeks at the next character
+
 static char peek_next(Lexer *lexer)
 {
+    if (!lexer || !lexer->source)
+        return '\0';
+
     return lexer->source[lexer->pos + 1];
 }
 
+
+
 /// @brief Peeks ahead by a fixed offset
+
 static char peek_ahead(Lexer *lexer, int offset)
 {
+    if (!lexer || !lexer->source)
+        return '\0';
+
     int pos = lexer->pos + offset;
     return lexer->source[pos] != '\0' ? lexer->source[pos] : '\0';
 }
+
+
+
+
+
 
 /// @brief Advances the lexer by one character
 static char advance(Lexer *lexer)
