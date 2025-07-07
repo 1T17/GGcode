@@ -6,15 +6,10 @@
 #include "../runtime/evaluator.h"
 #include "error/error.h"
 
-
 #define M_PI 3.14159265358979323846
-
-
 
 static int gcode_mode_active = 0;
  Parser parser;
-
-
 
 static ASTNode *parse_binary_expression();
 static ASTNode *parse_block();
@@ -25,9 +20,7 @@ static ASTNode *parse_let();
 static ASTNode *parse_note();
 static ASTNode *parse_gcode();
 
-
 //static ASTNode *parse_gcode_coord_only();
-
 
 static ASTNode *parse_primary();
 static ASTNode *parse_function();
@@ -35,13 +28,8 @@ static ASTNode *parse_return();
 static ASTNode *parse_assignment();
 static ASTNode *parse_postfix_expression();  // <-- add this
 
-
-
 // Forward declaration
 Token lexer_peek_token(Lexer *lexer);
-
-
-
 
 int get_precedence(Token_Type op)
 {
@@ -85,17 +73,6 @@ static int match(Token_Type type)
     return 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 static ASTNode *parse_unary() {
     if (parser.current.type == TOKEN_BANG || parser.current.type == TOKEN_MINUS) {
         Token op = parser.current;
@@ -112,12 +89,6 @@ static ASTNode *parse_unary() {
 
     return parse_postfix_expression();  // fallback to normal expression
 }
-
-
-
-
-
-
 
 
 
@@ -306,11 +277,6 @@ return dummy;
 
 }
 
-
-
-
-
-
 static ASTNode *parse_postfix_expression() {
     ASTNode *expr = parse_primary();
 
@@ -331,27 +297,6 @@ static ASTNode *parse_postfix_expression() {
 
     return expr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_binary_expression_prec(int min_prec)
 {
@@ -384,31 +329,10 @@ ASTNode *left = parse_unary();
     return left;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 static ASTNode *parse_binary_expression()
 {
     return parse_binary_expression_prec(0);
 }
-
-
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_function()
 {
@@ -464,10 +388,6 @@ static ASTNode *parse_function()
     return node;
 }
 
-
-
-
-
 static ASTNode *parse_return()
 {
     advance(); // skip 'return'
@@ -486,13 +406,20 @@ static ASTNode *parse_return()
 
 
 
-
 static ASTNode *parse_assignment() {
     ASTNode *lhs = parse_postfix_expression();  // Handles maze[py][px]
 
     if (!match(TOKEN_EQUAL)) {
+
+
+
+
         printf("[Parser] Expected '=' in assignment\n");
         exit(1);
+
+
+
+        
     }
 
     ASTNode *rhs = parse_binary_expression();
@@ -519,18 +446,6 @@ static ASTNode *parse_assignment() {
 
     return node;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -570,10 +485,6 @@ static ASTNode *parse_statement() {
     // Fallback: just evaluate a normal expression
     return parse_binary_expression();
 }
-
-
-
-
 
 static ASTNode *parse_block()
 {
@@ -664,9 +575,6 @@ static ASTNode *parse_let()
 
 
 
-
-
-
 static ASTNode *parse_for()
 {
     advance(); // skip 'for'
@@ -734,11 +642,6 @@ if (!step) {
 
 
 
-
-
-
-
-
 static ASTNode *parse_note()
 {
     advance(); // skip 'note'
@@ -790,16 +693,6 @@ char *content = strndup_portable(start, len);
     return node;
 }
 
-
-
-
-
-
-
-
-
-
-
 // Add this to lexer.c or a shared header
 Token lexer_peek_token(Lexer *lexer) {
     int saved_pos = lexer->pos;
@@ -811,14 +704,6 @@ Token lexer_peek_token(Lexer *lexer) {
     lexer->column = saved_column;
     return next;
 }
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_gcode()
 {
@@ -881,27 +766,17 @@ static ASTNode *parse_gcode()
     return node;
 }
 
-
-
-
-
-
-
-
 // static ASTNode *parse_gcode_coord_only()
 // {
 //     GArg *args = NULL;
 //     int count = 0, capacity = 0;
-
 //     while (parser.current.type == TOKEN_IDENTIFIER)
 //     {
 //         Token lookahead = lexer_peek_token(parser.lexer);
 //         if (lookahead.type == TOKEN_EQUAL)
 //             break;
-
 //         char *key = strdup(parser.current.value);
 //         advance();
-
 //         ASTNode *index = NULL;
 //         if (parser.current.type == TOKEN_LBRACKET)
 //         {
@@ -913,18 +788,15 @@ static ASTNode *parse_gcode()
 //                 exit(1);
 //             }
 //         }
-
 //         if (count >= capacity)
 //         {
 //             capacity = capacity == 0 ? 4 : capacity * 2;
 //             args = realloc(args, capacity * sizeof(GArg));
 //         }
 //         args[count++] = (GArg){key, index};
-
 //         if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
 //             break;
 //     }
-
 //     ASTNode *node = malloc(sizeof(ASTNode));
 //     node->type = AST_GCODE;
 //     node->gcode_stmt.code = strdup("G1");
@@ -932,20 +804,6 @@ static ASTNode *parse_gcode()
 //     node->gcode_stmt.argCount = count;
 //     return node;
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_if()
 {
@@ -996,22 +854,6 @@ static ASTNode *parse_if()
     return node;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ASTNode *parse_script() {
     ASTNode **statements = NULL;
     int count = 0;
@@ -1032,7 +874,7 @@ ASTNode *parse_script() {
             continue;
         }
 
-        printf("[DEBUG] Parsed stmt type: %d\n", stmt->type);
+        //printf("[DEBUG] Parsed stmt type: %d\n", stmt->type);
 
 if (stmt->type == AST_EMPTY || stmt->type == AST_NOP)
     continue;
@@ -1077,30 +919,6 @@ if (stmt->type == AST_EMPTY || stmt->type == AST_NOP)
 
     return block;
 }
-
-
-
-
-
-
-
-#include <execinfo.h>  // for backtrace
-#include <unistd.h>    // for STDERR_FILENO
-
-#include <execinfo.h>
-void print_backtrace() {
-    void *bt[20];
-    int size = backtrace(bt, 20);
-    backtrace_symbols_fd(bt, size, STDERR_FILENO);
-}
-
-
-
-
-
-
-
-
 
 void free_ast(ASTNode *node)
 {

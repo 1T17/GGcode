@@ -3,6 +3,9 @@
 
 #include "parser/parser.h"
 
+extern int statement_count; 
+
+
 void emit_gcode(ASTNode* node, int debug);
 int get_statement_count();
 

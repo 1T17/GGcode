@@ -17,11 +17,24 @@
 
 
 
+
+
+#include <sys/types.h>
+
+#include <unistd.h>
+
+
+
+
+
+
 #include <stdio.h>
 #include <string.h>
 
 #ifdef _WIN32
+#include <tchar.h>
 #include <windows.h>
+#include <psapi.h>
 #else
 #include <dirent.h>
 #endif
@@ -34,12 +47,16 @@
 #include <libgen.h>  // for basename()
 
 #ifdef __linux__
+#include <sys/wait.h>
 #include <sys/resource.h>
 #endif
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+
+
+ // int statement_count = 0;
 
 
 // Declare the runtime variable lookup functions from evaluator.c
@@ -79,6 +96,14 @@ int ends_with_ggcode(const char *filename) {
 void compile_file(const char* input_path, const char* output_path, int debug) {
     GGCODE_INPUT_FILENAME = input_path;
     long input_size_bytes = 0;
+          statement_count = 0;
+          reset_runtime_state(); 
+
+
+  ///  print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb, );
+
+
+
 
     // Store filename only (no path)
 #if defined(_WIN32)
@@ -141,13 +166,22 @@ if (var_exists("id")) {
     strcat(preamble, "\n");
     prepend_to_output_buffer(preamble);
 
-    // Measure memory usage (only supported on Linux/macOS)
-    long memory_kb = 0;
+
+// Measure memory usage (Linux/macOS/Windows)
+long memory_kb = 0;
+
 #if defined(__linux__) || defined(__APPLE__)
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage);
     memory_kb = usage.ru_maxrss;
+
+#elif defined(_WIN32)
+    PROCESS_MEMORY_COUNTERS pmc;
+    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+        memory_kb = pmc.PeakWorkingSetSize / 1024;
+    }
 #endif
+
 
     // Output
     if (get_output_to_file()) {
@@ -163,7 +197,9 @@ if (var_exists("id")) {
     }
 
     long gcode_size_bytes = get_output_length();
-    print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb, get_statement_count());
+
+
+    print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb,statement_count);
 
     free_ast(root);
     free(source);
@@ -232,8 +268,10 @@ void compile_all_gg_files(int debug) {
         if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 char out_name[MAX_PATH];
 make_g_gcode_filename(findFileData.cFileName, out_name, sizeof(out_name));
-printf("Compiling %s -> %s\n", findFileData.cFileName, out_name);
+printf("\nCompiling %s -> %s\n", findFileData.cFileName, out_name);
+
 compile_file(findFileData.cFileName, out_name, debug);
+
         }
     } while (FindNextFile(hFind, &findFileData) != 0);
     FindClose(hFind);
@@ -249,8 +287,28 @@ compile_file(findFileData.cFileName, out_name, debug);
 
 char out_name[272];
 make_g_gcode_filename(entry->d_name, out_name, sizeof(out_name));
-printf("Compiling %s -> %s\n", entry->d_name, out_name);
-compile_file(entry->d_name, out_name, debug);
+printf("\033[38;5;208m\nGGCODE Compiling\033[0m \033[1m%s\033[0m → \033[1;32m%s\033[0m\n", entry->d_name, out_name);
+
+
+
+
+pid_t pid = fork();
+if (pid == 0) {
+    // 👶 Child process
+    compile_file(entry->d_name, out_name, debug);
+    exit(0);  // Exit cleanly so parent doesn't run more compiles
+} else if (pid > 0) {
+    // 👴 Parent process — wait for the child
+    int status;
+    waitpid(pid, &status, 0);
+} else {
+    perror("fork failed");
+}
+
+
+
+
+
         }
     }
     closedir(dir);

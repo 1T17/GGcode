@@ -9,7 +9,7 @@
 
 
 
-int LEXER_DEBUG = 1; // Toggle lexer debug output
+int LEXER_DEBUG = 0; // Toggle lexer debug output
 
 
 

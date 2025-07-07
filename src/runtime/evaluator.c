@@ -208,13 +208,13 @@ set_parents_recursive(root, NULL);  // ✅ Add this line
 Value *copy_value(Value *val)
 {
     if (!val) {
-        printf("[copy_value] NULL input\n");
+        //printf("[copy_value] NULL input\n");
         return NULL;
     }
 
     Value *copy = malloc(sizeof(Value));
     if (!copy) {
-        printf("[copy_value] malloc failed for Value\n");
+        //printf("[copy_value] malloc failed for Value\n");
         return NULL;
     }
 
@@ -222,12 +222,12 @@ Value *copy_value(Value *val)
 
     if (val->type == VAL_NUMBER)
     {
-        printf("[copy_value] Copying VAL_NUMBER: %.5f\n", val->number);
+        //printf("[copy_value] Copying VAL_NUMBER: %.5f\n", val->number);
         copy->number = val->number;
     }
     else if (val->type == VAL_ARRAY)
     {
-        printf("[copy_value] Copying VAL_ARRAY of size %zu\n", val->array.count);
+        //printf("[copy_value] Copying VAL_ARRAY of size %zu\n", val->array.count);
         copy->array.count = val->array.count;
         copy->array.items = malloc(sizeof(Value *) * val->array.count);
         if (!copy->array.items) {
@@ -238,7 +238,7 @@ Value *copy_value(Value *val)
 
         for (size_t i = 0; i < val->array.count; ++i)
         {
-            printf("[copy_value] -> Copying array element %zu\n", i);
+            //printf("[copy_value] -> Copying array element %zu\n", i);
             copy->array.items[i] = copy_value(val->array.items[i]);
         }
     }
@@ -337,7 +337,7 @@ case AST_VAR:
         case TOKEN_EQUAL_EQUAL:
         {
             double result = left == right ? 1.0 : 0.0;
-            printf("[Eval evaluator] %.2f == %.2f => %.2f\n", left, right, result);
+            //printf("[Eval evaluator] %.2f == %.2f => %.2f\n", left, right, result);
             return make_number_value(result);
         }
 
@@ -349,7 +349,7 @@ case AST_VAR:
         case TOKEN_OR:
         {
             double result = (left != 0.0 || right != 0.0) ? 1.0 : 0.0;
-            printf("[Eval] OR: %.2f || %.2f => %.2f\n", left, right, result);
+            //printf("[Eval] OR: %.2f || %.2f => %.2f\n", left, right, result);
             return make_number_value(result);
         }
 
@@ -1030,7 +1030,7 @@ void free_value(Value *val) {
 
 void reset_runtime_state(void)
 {
-    printf("[Runtime] Resetting runtime state...\n");
+    //printf("[Runtime] Resetting runtime state...\n");
 
     for (int i = 0; i < var_count; i++) {
         free(variables[i].name);
@@ -1040,7 +1040,7 @@ void reset_runtime_state(void)
     var_count = 0;
     function_count = 0;
     current_scope_level = 0;
-    printf("[Runtime] Reset complete.\n");
+    //printf("[Runtime] Reset complete.\n");
 }
 
 
@@ -1048,7 +1048,7 @@ void reset_runtime_state(void)
 void enter_scope()
 {
     current_scope_level++;
-    printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
+    //printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
 }
 
 
@@ -1073,13 +1073,13 @@ void enter_scope()
 
 void exit_scope()
 {
-    printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
+    //printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
 
     for (int i = var_count - 1; i >= 0; --i)
     {
         if (variables[i].scope_level == current_scope_level)
         {
-            printf("  [Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
+            //printf("[Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
 
             free(variables[i].name);
 
@@ -1088,14 +1088,14 @@ void exit_scope()
             {
                 if (variables[i].val->type == VAL_ARRAY)
                 {
-                    printf("    [Free] Array value with %zu items\n", variables[i].val->array.count);
+                    //printf("[Free] Array value with %zu items\n", variables[i].val->array.count);
                     for (size_t j = 0; j < variables[i].val->array.count; j++)
                     {
                         free(variables[i].val->array.items[j]);
                     }
                     free(variables[i].val->array.items);
                 }
-                printf("[Free] Value struct\n");
+                //printf("[Free] Value struct\n");
 
 
 
@@ -1128,7 +1128,7 @@ void exit_scope()
 
     
     current_scope_level--;
-    printf("[Scope] Scope level decreased to %d\n", current_scope_level);
+    //printf("[Scope] Scope level decreased to %d\n", current_scope_level);
 }
 
 
@@ -1158,7 +1158,7 @@ void set_var(const char *name, Value *val)
 
     for (int i = var_count - 1; i >= 0; i--) {
         if (variables[i].name && strcmp(variables[i].name, name) == 0) {
-            printf("[set_var] Updating existing variable '%s' with value: %f\n", name, copy->number);
+            //printf("[set_var] Updating existing variable '%s' with value: %f\n", name, copy->number);
 
             free_value(variables[i].val);     // Free old value
             variables[i].val = copy;          // Assign new copy
@@ -1166,6 +1166,6 @@ void set_var(const char *name, Value *val)
         }
     }
 
-    printf("[set_var] Declaring new variable '%s' with value: %f\n", name, copy->number);
+    //printf("[set_var] Declaring new variable '%s' with value: %f\n", name, copy->number);
     declare_var(name, copy);  // Pass copy to declare_var (already safe)
 }

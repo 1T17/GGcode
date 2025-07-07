@@ -9,7 +9,7 @@ CC_WIN = x86_64-w64-mingw32-gcc
 
 # Main source files
 SRC = $(wildcard src/*.c src/lexer/*.c src/error/*.c src/parser/*.c src/semantic/*.c src/generator/*.c src/runtime/*.c src/utils/*.c)
-OUT = ggcode
+OUT = GGCODE/ggcode
 
 # Test discovery
 TEST_SRC := $(wildcard tests/test_*.c)
@@ -26,10 +26,11 @@ all: $(OUT)
 $(OUT): $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^ -lm
 
-# Windows build target
+
+# Windows build target with psapi for memory info
 .PHONY: win
 win:
-	$(CC_WIN) $(CFLAGS) -o $(OUT).exe $(SRC) -lm
+	$(CC_WIN) $(CFLAGS) -o $(OUT).exe $(SRC) -lm -lpsapi
 
 # Build all test binaries (excluding src/main.c to avoid duplicate main)
 tests: unity $(TEST_BINS)

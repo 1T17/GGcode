@@ -10,7 +10,6 @@
 #include "config.h"
 #include "error/error.h"
 
-
 // Forward declarations of utility functions
 extern char RUNTIME_TIME[64];
 // Forward declaration of the runtime filename
@@ -21,13 +20,7 @@ extern char RUNTIME_FILENAME[256];
 // Value constructors
 Value *make_number_value(double num);
 
-
-
 double get_number(Value *val); 
-
-
-
-
 
 Value *make_number_value(double num) {
     Value *val = malloc(sizeof(Value));
@@ -44,10 +37,14 @@ Value *make_number_value(double num) {
 
 int statement_count = 0;
 
+
+
 int get_statement_count()
 {
     return statement_count;
 }
+
+
 
 static void emit_note_stmt(ASTNode *node, int debug) {
     statement_count++;
@@ -116,7 +113,6 @@ if (val && val->type == VAL_NUMBER) {
     free(copy);
 }
 
-
 static void emit_let_stmt(ASTNode *node, int debug) {
     statement_count++;
 
@@ -146,7 +142,6 @@ static void emit_let_stmt(ASTNode *node, int debug) {
 
     set_var(node->let_stmt.name, val);
 }
-
 
 static void emit_gcode_stmt(ASTNode *node, int debug) {
         statement_count++;
@@ -218,12 +213,6 @@ if (!v || v->type != VAL_NUMBER) {
         write_to_output(line);
 }
 
-
-
-
-
-
-
 static void emit_while_stmt(ASTNode *node, int debug) {
     statement_count++;
 
@@ -261,13 +250,6 @@ static void emit_while_stmt(ASTNode *node, int debug) {
         fflush(stdout);
     }
 }
-
-
-
-
-
-
-
 
 /// Emits a FOR loop from `from` to `to`, assigning the loop variable and emitting the body.
 /// @param node FOR AST node.
@@ -380,7 +362,6 @@ static void emit_function_stmt(ASTNode *node, int debug) {
 //     }
 // }
 
-
 /// Emits an IF/ELSE conditional branch depending on the evaluated condition.
 /// @param node IF AST node.
 static void emit_if_stmt(ASTNode *node, int debug) {
@@ -427,16 +408,6 @@ static void emit_if_stmt(ASTNode *node, int debug) {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 /// Dispatches AST nodes to their respective emit_* handlers.
 /// Logs errors for unknown or unsupported types.
