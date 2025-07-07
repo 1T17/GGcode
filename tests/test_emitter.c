@@ -18,22 +18,7 @@ void setUp(void)
 
 void tearDown(void) {}
 
-void test_array_assignment_and_access(void)
-{
-    const char *code =
-        "let grid = [[1, 2], [3, 4]]\n"
-        "let val = grid[1][0]\n";
 
-    ASTNode *root = parse_script_from_string(code); // ✅ Use the helper that accepts string
-    emit_gcode(root, debug);                        // ✅ Emitter evaluates and sets vars
-    if (has_errors()){print_errors();}
-
-    Value *val = get_var("val"); // ✅ Retrieve as a Value*
-    TEST_ASSERT_NOT_NULL(val);
-    TEST_ASSERT_EQUAL_DOUBLE(3.0, val->number); // ✅ Check the actual value
-
-    free_ast(root);
-}
 
 void test_emit_simple_gcode_block(void)
 {
@@ -768,15 +753,92 @@ void test_emit_function_no_return(void)
     free_ast(root);
 }
 
+
+
+void test_array_assignment_and_access(void)
+{
+    reset_runtime_state();  // 🔥 This clears variables, errors, etc.
+
+    const char *code =
+        "let grid = [[1, 2], [3, 4]]\n"
+        "let val = grid[1][0]\n";
+
+    ASTNode *root = parse_script_from_string(code);
+    emit_gcode(root, 0);
+
+    if (has_errors()) print_errors();
+
+    Value *val = get_var("val");
+    TEST_ASSERT_NOT_NULL(val);
+    TEST_ASSERT_EQUAL_DOUBLE(3.0, val->number);
+
+    free_ast(root);
+}
+
+
+
+
+
+void test_emit_maze_generator_program(void)
+{
+    reset_runtime_state();  // 🔥 Also here
+
+    const char *code =
+        "let maze = []\n"
+        "let row = []\n"
+        "row[0] = 1\n"
+        "row[1] = 1\n"
+        "row[2] = 1\n"
+        "maze[0] = row\n"
+        "let px = 1\n"
+        "let py = 0\n"
+        "maze[py][px] = 0\n";
+
+    ASTNode *root = parse_script_from_string(code);
+    emit_gcode(root, 0);
+
+    Value *maze = get_var("maze");
+    TEST_ASSERT_NOT_NULL(maze);
+    TEST_ASSERT_EQUAL(VAL_ARRAY, maze->type);
+    TEST_ASSERT_TRUE(maze->array.count > 0);
+
+    Value *row0 = maze->array.items[0];
+    TEST_ASSERT_NOT_NULL(row0);
+    TEST_ASSERT_EQUAL(VAL_ARRAY, row0->type);
+    TEST_ASSERT_EQUAL_DOUBLE(0.0, row0->array.items[1]->number);
+
+    free_ast(root);
+}
+
+
+
+
+
 int main(void)
 {
     UNITY_BEGIN();
+
+    RUN_TEST(test_array_assignment_and_access);
+
+
+
+      RUN_TEST(test_emit_maze_generator_program);
+
+
 
      RUN_TEST(test_emit_function_overwrite_var);
     RUN_TEST(test_emit_function_unused_param);
     RUN_TEST(test_emit_function_only_return);
     RUN_TEST(test_emit_function_no_params_no_return);
-    RUN_TEST(test_array_assignment_and_access);
+
+
+
+
+
+
+
+
+
     RUN_TEST(test_emit_loop_and_conditionals);
     RUN_TEST(test_emit_while_loop_basic);
     RUN_TEST(test_emit_nested_if_inside_loop);

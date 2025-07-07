@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Werror -Wpedantic -Wextra \
+CFLAGS = -g -Wall -Werror -Wpedantic -Wextra \
          -DUNITY_SUPPORT_64 -DUNITY_INCLUDE_DOUBLE \
          -I./include -Isrc -Isrc/lexer -Isrc/parser -Isrc/runtime -Isrc/semantic -Isrc/generator -Isrc/utils
 

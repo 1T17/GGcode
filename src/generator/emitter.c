@@ -487,6 +487,76 @@ case AST_ASSIGN: {
 
 
 
+
+case AST_ASSIGN_INDEX: {
+    statement_count++;
+
+    ASTNode *index_node = node->assign_index.target;
+
+    if (!index_node || index_node->type != AST_INDEX) {
+        report_error("[Emit] ASSIGN_INDEX: target is not an index expression");
+        break;
+    }
+
+    Value *array = eval_expr(index_node->index_expr.array);
+    Value *index_val = eval_expr(index_node->index_expr.index);
+    Value *value = eval_expr(node->assign_index.value);
+
+    if (!array || array->type != VAL_ARRAY) {
+        report_error("[Emit] ASSIGN_INDEX: array is not valid");
+        break;
+    }
+
+    if (!index_val || index_val->type != VAL_NUMBER) {
+        report_error("[Emit] ASSIGN_INDEX: index is not a number");
+        break;
+    }
+
+    if (!value) {
+        report_error("[Emit] ASSIGN_INDEX: value is NULL");
+        value = make_number_value(0);  // fallback
+    }
+
+    int i = (int)(index_val->number);
+    if (i < 0) {
+        report_error("[Emit] ASSIGN_INDEX: index %d is negative", i);
+        break;
+    }
+
+    if ((size_t)i >= array->array.count) {
+        // Expand array
+        size_t new_count = i + 1;
+        Value **new_items = realloc(array->array.items, sizeof(Value *) * new_count);
+        if (!new_items) {
+            report_error("[Emit] ASSIGN_INDEX: realloc failed");
+            break;
+        }
+
+        // Initialize new elements
+        for (size_t j = array->array.count; j < new_count; j++) {
+            new_items[j] = make_number_value(0); // or NULL if you want sparse arrays
+        }
+
+        array->array.items = new_items;
+        array->array.count = new_count;
+    }
+
+if (array->array.items[i]) {
+    free(array->array.items[i]);
+}
+array->array.items[i] = value;
+
+
+    if (debug) {
+        printf("[Emit] ASSIGN_INDEX [%d] = %.6f\n", i, value->type == VAL_NUMBER ? value->number : 0);
+        fflush(stdout);
+    }
+
+    break;
+}
+
+        
+
         case AST_ARRAY_LITERAL:
            statement_count++;
             if (debug) {

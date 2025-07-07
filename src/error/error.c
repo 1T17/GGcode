@@ -22,6 +22,7 @@ const char *get_ast_type_name(int type) {
         case AST_LET: return "AST_LET";
         case AST_ASSIGN: return "AST_ASSIGN";
         case AST_VAR: return "AST_VAR";
+        case AST_ASSIGN_INDEX: return "AST_ASSIGN_INDEX";
         case AST_ARRAY_LITERAL: return "AST_ARRAY_LITERAL";
         case AST_INDEX: return "AST_INDEX";
         case AST_FUNCTION: return "AST_FUNCTION";

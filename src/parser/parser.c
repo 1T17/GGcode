@@ -24,7 +24,11 @@ static ASTNode *parse_if();
 static ASTNode *parse_let();
 static ASTNode *parse_note();
 static ASTNode *parse_gcode();
-static ASTNode *parse_gcode_coord_only();
+
+
+//static ASTNode *parse_gcode_coord_only();
+
+
 static ASTNode *parse_primary();
 static ASTNode *parse_function();
 static ASTNode *parse_return();
@@ -108,6 +112,13 @@ static ASTNode *parse_unary() {
 
     return parse_postfix_expression();  // fallback to normal expression
 }
+
+
+
+
+
+
+
 
 
 
@@ -336,6 +347,7 @@ static ASTNode *parse_postfix_expression() {
 
 static ASTNode *parse_binary_expression_prec(int min_prec)
 {
+    
 ASTNode *left = parse_unary();
 
 
@@ -460,26 +472,62 @@ static ASTNode *parse_return()
 
 
 
+
+
+
+
+
+
+
 static ASTNode *parse_assignment() {
-    // Assume current token is TOKEN_IDENTIFIER
-    char *name = strdup(parser.current.value);
-    advance(); // consume identifier
+    ASTNode *lhs = parse_postfix_expression();  // Handles maze[py][px]
 
     if (!match(TOKEN_EQUAL)) {
-        printf("[Parser] Expected '=' after identifier in assignment\n");
+        printf("[Parser] Expected '=' in assignment\n");
         exit(1);
     }
 
-    // ❌ DO NOT add another advance here
-
-    ASTNode *expr = parse_binary_expression();
+    ASTNode *rhs = parse_binary_expression();
 
     ASTNode *node = malloc(sizeof(ASTNode));
-    node->type = AST_ASSIGN;
-    node->assign_stmt.name = name;
-    node->assign_stmt.expr = expr;
+    memset(node, 0, sizeof(ASTNode));
+    node->parent = NULL;
+
+    if (lhs->type == AST_VAR) {
+        // Simple variable assignment
+        node->type = AST_ASSIGN;
+        node->assign_stmt.name = lhs->var.name;
+        node->assign_stmt.expr = rhs;
+        // Don't free lhs here — we reuse its name
+    } else if (lhs->type == AST_INDEX) {
+        // Array element assignment
+        node->type = AST_ASSIGN_INDEX;
+        node->assign_index.target = lhs;
+        node->assign_index.value = rhs;
+    } else {
+        printf("[Parser] Invalid assignment target\n");
+        exit(1);
+    }
+
     return node;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 static ASTNode *parse_statement() {
@@ -487,42 +535,34 @@ static ASTNode *parse_statement() {
         return NULL;
 
     // Keyword-based statements
-    if (parser.current.type == TOKEN_FUNCTION)
-        return parse_function();
-    if (parser.current.type == TOKEN_RETURN)
-        return parse_return();
-    if (parser.current.type == TOKEN_WHILE)
-        return parse_while();
-    if (parser.current.type == TOKEN_FOR)
-        return parse_for();
-    if (parser.current.type == TOKEN_IF)
-        return parse_if();
-    if (parser.current.type == TOKEN_LET)
-        return parse_let();
-    if (parser.current.type == TOKEN_NOTE)
-        return parse_note();
+    if (parser.current.type == TOKEN_FUNCTION) return parse_function();
+    if (parser.current.type == TOKEN_RETURN)   return parse_return();
+    if (parser.current.type == TOKEN_WHILE)    return parse_while();
+    if (parser.current.type == TOKEN_FOR)      return parse_for();
+    if (parser.current.type == TOKEN_IF)       return parse_if();
+    if (parser.current.type == TOKEN_LET)      return parse_let();
+    if (parser.current.type == TOKEN_NOTE)     return parse_note();
 
-    // Identifier-based logic
-    if (parser.current.type == TOKEN_IDENTIFIER) {
-        Token lookahead = lexer_peek_token(parser.lexer);  // ✅ Lookahead for assignment or expression
+    // Identifier-based logic (e.g., x = 1, maze[i][j] = 0, or expressions)
+   if (parser.current.type == TOKEN_IDENTIFIER) {
+    return parse_assignment();
+}
 
-        if (lookahead.type == TOKEN_EQUAL) {
-            return parse_assignment();
-        } else if (gcode_mode_active) {
-            return parse_gcode_coord_only();
-        } else {
-            return parse_postfix_expression();
-        }
-    }
 
-    // G-code command like G0, G1, etc.
+
+
+
+
+
+    // G-code commands like G1, G0, M3, etc.
     if (parser.current.type == TOKEN_GCODE_WORD) {
         return parse_gcode();
     }
 
-    // Final fallback: try parsing a general expression
+    // Fallback: just evaluate a normal expression
     return parse_binary_expression();
 }
+
 
 
 
@@ -840,50 +880,50 @@ static ASTNode *parse_gcode()
 
 
 
-static ASTNode *parse_gcode_coord_only()
-{
-    GArg *args = NULL;
-    int count = 0, capacity = 0;
+// static ASTNode *parse_gcode_coord_only()
+// {
+//     GArg *args = NULL;
+//     int count = 0, capacity = 0;
 
-    while (parser.current.type == TOKEN_IDENTIFIER)
-    {
-        Token lookahead = lexer_peek_token(parser.lexer);
-        if (lookahead.type == TOKEN_EQUAL)
-            break;
+//     while (parser.current.type == TOKEN_IDENTIFIER)
+//     {
+//         Token lookahead = lexer_peek_token(parser.lexer);
+//         if (lookahead.type == TOKEN_EQUAL)
+//             break;
 
-        char *key = strdup(parser.current.value);
-        advance();
+//         char *key = strdup(parser.current.value);
+//         advance();
 
-        ASTNode *index = NULL;
-        if (parser.current.type == TOKEN_LBRACKET)
-        {
-            advance();
-            index = parse_binary_expression();
-            if (!match(TOKEN_RBRACKET))
-            {
-                printf("[Parser] Expected ']'\n");
-                exit(1);
-            }
-        }
+//         ASTNode *index = NULL;
+//         if (parser.current.type == TOKEN_LBRACKET)
+//         {
+//             advance();
+//             index = parse_binary_expression();
+//             if (!match(TOKEN_RBRACKET))
+//             {
+//                 printf("[Parser] Expected ']'\n");
+//                 exit(1);
+//             }
+//         }
 
-        if (count >= capacity)
-        {
-            capacity = capacity == 0 ? 4 : capacity * 2;
-            args = realloc(args, capacity * sizeof(GArg));
-        }
-        args[count++] = (GArg){key, index};
+//         if (count >= capacity)
+//         {
+//             capacity = capacity == 0 ? 4 : capacity * 2;
+//             args = realloc(args, capacity * sizeof(GArg));
+//         }
+//         args[count++] = (GArg){key, index};
 
-        if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
-            break;
-    }
+//         if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
+//             break;
+//     }
 
-    ASTNode *node = malloc(sizeof(ASTNode));
-    node->type = AST_GCODE;
-    node->gcode_stmt.code = strdup("G1");
-    node->gcode_stmt.args = args;
-    node->gcode_stmt.argCount = count;
-    return node;
-}
+//     ASTNode *node = malloc(sizeof(ASTNode));
+//     node->type = AST_GCODE;
+//     node->gcode_stmt.code = strdup("G1");
+//     node->gcode_stmt.args = args;
+//     node->gcode_stmt.argCount = count;
+//     return node;
+// }
 
 
 
@@ -969,7 +1009,7 @@ ASTNode *parse_script() {
     int count = 0;
     int capacity = 0;
 
-  //  printf("[DEBUG parse_script] Entering parse_script()\n");
+    printf("[DEBUG parse_script] Entering parse_script()\n");
 
     while (parser.current.type != TOKEN_EOF) {
         if (parser.current.type == TOKEN_NEWLINE) {
@@ -984,7 +1024,7 @@ ASTNode *parse_script() {
             continue;
         }
 
-       // printf("[DEBUG] Parsed stmt type: %d\n", stmt->type);
+        printf("[DEBUG] Parsed stmt type: %d\n", stmt->type);
 
 if (stmt->type == AST_EMPTY || stmt->type == AST_NOP)
     continue;
@@ -1066,6 +1106,15 @@ void free_ast(ASTNode *node)
         free_ast(node->binary_expr.right);
         break;
 
+
+
+case AST_ASSIGN_INDEX:
+    free_ast(node->assign_index.target);
+    free_ast(node->assign_index.value);
+    break;
+
+
+
 case AST_FUNCTION:
     fprintf(stderr, "[free_ast]------------------- Skipping function: %s\n", node->function_stmt.name);
     return;
@@ -1130,6 +1179,15 @@ case AST_BLOCK:
         // else: skip function — it's owned by the registry and already freed
     }
     free(node->block.statements);
+    break;
+
+
+
+case AST_ARRAY_LITERAL:
+    for (int i = 0; i < node->array_literal.count; i++) {
+        free_ast(node->array_literal.elements[i]);
+    }
+    free(node->array_literal.elements);
     break;
 
 

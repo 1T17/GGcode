@@ -12,6 +12,10 @@ typedef struct
     ASTNode *indexExpr; // expression inside []
 } GArg;
 
+
+
+
+
 typedef enum
 {
     AST_NOP,
@@ -20,6 +24,7 @@ typedef enum
     AST_VAR,
     AST_ARRAY_LITERAL, 
     AST_INDEX,
+    AST_ASSIGN_INDEX,
     AST_FUNCTION,
     AST_CALL,
     AST_RETURN,
@@ -48,6 +53,24 @@ struct ASTNode
 
 
 
+
+
+
+struct {
+    char *name;
+    ASTNode *expr;
+} assign_stmt;
+
+
+struct {
+    ASTNode *target;  // should be AST_INDEX node
+    ASTNode *value;   // right-hand side
+} assign_index;
+
+
+
+        
+
 struct {
     ASTNode **elements;  // array of ASTNode*
     int count;           // number of elements
@@ -66,13 +89,6 @@ struct {
 
 
 
-
-
-struct
-{
-    char *name;
-    ASTNode *expr;
-} assign_stmt;
 
         struct
         {

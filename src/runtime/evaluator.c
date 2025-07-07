@@ -11,15 +11,7 @@
 
 extern Parser parser;
 
-ASTNode *parse_script_from_string(const char *source)
-{
-    parser.lexer = lexer_new(source);
-    advance();
 
-    ASTNode *root = parse_script();
-
-    return root;
-}
 
 #define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
@@ -106,6 +98,105 @@ Value *get_array_item(Value *arr, int index)
     return arr->array.items[index];
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void set_parents_recursive(ASTNode *node, ASTNode *parent) {
+    if (!node) return;
+
+    node->parent = parent;
+
+    switch (node->type) {
+        case AST_LET:
+            set_parents_recursive(node->let_stmt.expr, node);
+            break;
+        case AST_ASSIGN:
+            set_parents_recursive(node->assign_stmt.expr, node);
+            break;
+        case AST_UNARY:
+            set_parents_recursive(node->unary_expr.operand, node);
+            break;
+        case AST_BINARY:
+            set_parents_recursive(node->binary_expr.left, node);
+            set_parents_recursive(node->binary_expr.right, node);
+            break;
+        case AST_IF:
+            set_parents_recursive(node->if_stmt.condition, node);
+            set_parents_recursive(node->if_stmt.then_branch, node);
+            if (node->if_stmt.else_branch)
+                set_parents_recursive(node->if_stmt.else_branch, node);
+            break;
+        case AST_WHILE:
+            set_parents_recursive(node->while_stmt.condition, node);
+            set_parents_recursive(node->while_stmt.body, node);
+            break;
+        case AST_FOR:
+            set_parents_recursive(node->for_stmt.from, node);
+            set_parents_recursive(node->for_stmt.to, node);
+            if (node->for_stmt.step)
+                set_parents_recursive(node->for_stmt.step, node);
+            set_parents_recursive(node->for_stmt.body, node);
+            break;
+        case AST_FUNCTION:
+            set_parents_recursive(node->function_stmt.body, node);
+            break;
+        case AST_CALL:
+            for (int i = 0; i < node->call_expr.arg_count; i++)
+                set_parents_recursive(node->call_expr.args[i], node);
+            break;
+        case AST_ARRAY_LITERAL:
+            for (int i = 0; i < node->array_literal.count; i++)
+                set_parents_recursive(node->array_literal.elements[i], node);
+            break;
+        case AST_BLOCK:
+            for (int i = 0; i < node->block.count; i++)
+                set_parents_recursive(node->block.statements[i], node);
+            break;
+        case AST_INDEX:
+            set_parents_recursive(node->index_expr.array, node);
+            set_parents_recursive(node->index_expr.index, node);
+            break;
+        case AST_RETURN:
+            set_parents_recursive(node->return_stmt.expr, node);
+            break;
+        default:
+            // AST_VAR, AST_NUMBER, etc. do not have children
+            break;
+    }
+}
+
+
+
+
+
+
+
+
+
+ASTNode *parse_script_from_string(const char *source)
+{
+    parser.lexer = lexer_new(source);
+    advance();
+
+    ASTNode *root = parse_script();
+set_parents_recursive(root, NULL);  // ✅ Add this line
+    return root;
+}
 
 
 
