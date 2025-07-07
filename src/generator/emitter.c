@@ -445,8 +445,20 @@ void emit_gcode(ASTNode *node, int debug) {
 
     if (!node) return;
     switch (node->type) {
+
+
+case AST_NOP:
+    // Do nothing, this is a placeholder node
+    break;
+
+
+
         case AST_NOTE:     emit_note_stmt(node, debug); break;
         case AST_LET:      emit_let_stmt(node, debug); break;
+
+
+
+
 
 
 case AST_ASSIGN: {

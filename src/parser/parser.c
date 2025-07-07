@@ -129,10 +129,11 @@ static ASTNode *parse_primary() {
     if (parser.current.type == TOKEN_LPAREN) {
         advance(); // consume '('
         ASTNode *expr = parse_binary_expression();
-        if (!match(TOKEN_RPAREN)) {
-            printf("[Parser] Expected ')' after expression\n");
-            exit(1);
-        }
+        
+if (!match(TOKEN_RPAREN)) {
+    report_error("[Parser] Expected ')' after expression");
+    return NULL;
+}
         return expr;
     }
 
@@ -253,8 +254,9 @@ if (parser.current.type == TOKEN_LBRACKET) {
             } else if (parser.current.type == TOKEN_RBRACKET) {
                 break; // closing bracket
             } else {
-                printf("[Parser] Expected ',' or ']' in array literal, found '%s'\n", parser.current.value);
-                exit(1);
+report_error("[Parser] Expected ',' or ']' in array literal, found '%s'", parser.current.value);
+return NULL;
+
             }
         }
     }
@@ -293,9 +295,15 @@ if (parser.current.type == TOKEN_LBRACKET) {
 
 
 
-    // Fallback error
-    printf("[Parser] Unexpected token in expression: %s\n", parser.current.value);
-    exit(1);
+report_error("[Parser] Unexpected token in expression: '%s'", parser.current.value);
+advance();
+
+// Return dummy NOP node to avoid crashing
+ASTNode *dummy = malloc(sizeof(ASTNode));
+dummy->type = AST_NOP;
+return dummy;
+
+
 }
 
 
@@ -1101,6 +1109,14 @@ void free_ast(ASTNode *node)
 
     switch (node->type)
     {
+
+
+
+case AST_NOP:
+    // Nothing to free
+    break;
+
+
     case AST_BINARY:
         free_ast(node->binary_expr.left);
         free_ast(node->binary_expr.right);
