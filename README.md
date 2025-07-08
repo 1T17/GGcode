@@ -87,36 +87,46 @@ for i = 0..3 {
 - GCC or Clang
 - `make`
 
-### Build
+### 🛠️ Build 
 
-Use the following commands to build and test the project:
+Use the following `make` targets to build, test, and manage the project:
 
-| Command             | Description                                      |
-|---------------------|--------------------------------------------------|
-| `make` or `make all`| Build the main `ggcode` compiler binary          |
-| `make tests`        | Build all test binaries in the `bin/` directory  |
-| `make test`         | Run all tests and show a summary                 |
-| `make clean`        | Remove build artifacts and test binaries         |
-
-- The main binary will be named **`ggcode`** and generated in the root folder.
-- Test binaries are built from files matching `tests/test_*.c`.
-- Running `make test` will execute all tests and print a summary.
-
+| Command             | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| `make` or `make all`| Build the main `ggcode` compiler binary                                     |
+| `make clean`        | Remove all compiled binaries and build artifacts                            |
+| `make node`         | Build the `libggcode.so` shared library for use in Node.js (via N-API)      |
+| `make win`          | Cross-compile a Windows-compatible executable (`ggcode.exe`)                |
+| `make test`         | Compile and Run all tests and display a summary                             |
+| `make tests`        | Compile all unit test binaries into the `bin/` directory                    |
 ---
 
-## Usage
+📦 **Output**
 
-Compile and run a `.ggcode` file:
+- The main compiler binary is built as **`ggcode`** (or **`ggcode.exe`** on Windows) and placed in the project root.
+- Unit test binaries are compiled from `tests/test_*.c` and output to the `bin/` folder.
+- The Node.js-compatible shared library is built as **`libggcode.so`** via `make node`.
+- `make test` runs all available tests and outputs a unified pass/fail summary.
+
+## 🚀 Usage
+
+To compile and run a `.ggcode` file:
 
 ```sh
 ./ggcode path/to/file.ggcode
 ```
 
-**Example output:**
-```
-(EXPECT: X123 — should trigger)
-N10 G1 X123
-```
+### 🖱️ Double-Click or Run from Terminal
+
+- On **Linux** or **Windows**, you can launch the executable directly from the terminal:
+  ```sh
+  ./ggcode                # Compiles all `.ggcode` files in the current directory
+  ./ggcode myfile.ggcode # Compiles only the specified file
+  ```
+
+### 📁 Batch Compilation
+
+If no file is specified, GGcode will automatically compile **all `.ggcode` files** in the current directory.
 
 ---
 
