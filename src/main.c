@@ -1,35 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-#include <string.h>
-
-#include "config.h"
-#include "parser/parser.h"
-#include "runtime/evaluator.h"
-#include "utils/output_buffer.h"
-#include "generator/emitter.h"
-#include "utils/file_utils.h"
-#include "utils/report.h"
-#include "error/error.h"
-
-#include "utils/time_utils.h"
-
-
-
-
-
 #include <sys/types.h>
-
 #include <unistd.h>
-
-
-
-
-
-
-#include <stdio.h>
 #include <string.h>
+#include <libgen.h>  
 
 #ifdef _WIN32
 #include <tchar.h>
@@ -42,10 +17,6 @@
 #define DT_REG 8
 #endif
 
-
-
-#include <libgen.h>  // for basename()
-
 #ifdef __linux__
 #include <sys/wait.h>
 #include <sys/resource.h>
@@ -54,6 +25,24 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+
+#include "config.h"
+#include "parser/parser.h"
+#include "runtime/evaluator.h"
+#include "utils/output_buffer.h"
+#include "generator/emitter.h"
+#include "utils/file_utils.h"
+#include "utils/report.h"
+#include "error/error.h"
+#include "utils/time_utils.h"
+
+
+
+
+
+
+
+
 
 
  // int statement_count = 0;

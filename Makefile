@@ -76,8 +76,21 @@ unity:
 		echo "Unity already present."; \
 	fi
 
+
+
+.PHONY: node
+node:
+	@mkdir -p node
+	$(CC) -shared -fPIC -o node/libggcode.so \
+	    src/bindings/nodejs.c $(SRC) \
+	    $(CFLAGS) -lm
+
+
+
+
+
 # Clean build and test artifacts
 .PHONY: clean
 clean:
-	@mkdir -p bin win
+	@mkdir -p bin
 	rm -f $(OUT) bin/* win/*.exe .testlog.tmp

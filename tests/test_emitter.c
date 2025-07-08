@@ -18,8 +18,6 @@ void setUp(void)
 
 void tearDown(void) {}
 
-
-
 void test_emit_simple_gcode_block(void)
 {
     const char *code =
@@ -322,14 +320,6 @@ void test_emit_bitwise_and(void)
     free_ast(root);
 }
 
-
-
-
-
-
-
-
-
 void test_emit_function_overwrite_var(void)
 {
     const char *code =
@@ -345,21 +335,13 @@ void test_emit_function_overwrite_var(void)
     reset_runtime_state();
     emit_gcode(root, debug);
 
-
-
-    if (has_errors()){print_errors();}
-
-
+    if (has_errors())
+    {
+        print_errors();
+    }
 
     Value *x = get_var("x");
     Value *y = get_var("y");
-
-
-
-
-
-
-
 
     TEST_ASSERT_NOT_NULL(x);
     TEST_ASSERT_NOT_NULL(y);
@@ -370,18 +352,6 @@ void test_emit_function_overwrite_var(void)
 
     free_ast(root);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 void test_emit_function_no_params_no_return(void)
 {
@@ -753,20 +723,20 @@ void test_emit_function_no_return(void)
     free_ast(root);
 }
 
-
-
 void test_array_assignment_and_access(void)
 {
-    reset_runtime_state();  // 🔥 This clears variables, errors, etc.
+
 
     const char *code =
         "let grid = [[1, 2], [3, 4]]\n"
         "let val = grid[1][0]\n";
 
     ASTNode *root = parse_script_from_string(code);
+        reset_runtime_state();
     emit_gcode(root, 0);
 
-    if (has_errors()) print_errors();
+    if (has_errors())
+        print_errors();
 
     Value *val = get_var("val");
     TEST_ASSERT_NOT_NULL(val);
@@ -775,13 +745,9 @@ void test_array_assignment_and_access(void)
     free_ast(root);
 }
 
-
-
-
-
 void test_emit_maze_generator_program(void)
 {
-    reset_runtime_state();  // 🔥 Also here
+
 
     const char *code =
         "let maze = []\n"
@@ -810,61 +776,42 @@ void test_emit_maze_generator_program(void)
     free_ast(root);
 }
 
-
-
-
-
 int main(void)
 {
     UNITY_BEGIN();
 
-    RUN_TEST(test_array_assignment_and_access);
-
-
-
-      RUN_TEST(test_emit_maze_generator_program);
-
-
-
-     RUN_TEST(test_emit_function_overwrite_var);
-    RUN_TEST(test_emit_function_unused_param);
-    RUN_TEST(test_emit_function_only_return);
-    RUN_TEST(test_emit_function_no_params_no_return);
-
-
-
-
-
-
-
-
-
-    RUN_TEST(test_emit_loop_and_conditionals);
-    RUN_TEST(test_emit_while_loop_basic);
-    RUN_TEST(test_emit_nested_if_inside_loop);
-    RUN_TEST(test_emit_simple_gcode_block); 
-    RUN_TEST(test_builtin_clamp);
-    RUN_TEST(test_builtin_math_functions_and_constants);
-    RUN_TEST(test_emit_nested_if_inside_loop2);
-    RUN_TEST(test_emit_function_declaration_and_call);
-    RUN_TEST(test_emit_function_call_returns_value);
-    RUN_TEST(test_emit_function_call_inside_expression);
-    RUN_TEST(test_emit_function_with_two_params);
-    RUN_TEST(test_emit_function_recursion);
-    RUN_TEST(test_emit_function_in_condition);
-    RUN_TEST(test_emit_bitwise_and);
-    RUN_TEST(test_emit_function_calls_function);
-    RUN_TEST(test_emit_function_early_return);
-    RUN_TEST(test_complex_gcode_logic);
-    RUN_TEST(test_builtin_exp);
-    RUN_TEST(test_builtin_deg_rad_sign);
-    RUN_TEST(test_emit_function_no_return);
-    RUN_TEST(test_builtin_log);
-    RUN_TEST(test_builtin_noise_zero);
-    RUN_TEST(test_builtin_trig_pow_hypot);
-    RUN_TEST(test_emit_function_expr_args);
-    RUN_TEST(test_builtin_min_max);
-    RUN_TEST(test_emit_function_empty_body);
+    RUN_TEST(test_array_assignment_and_access);          // 1
+    RUN_TEST(test_emit_maze_generator_program);          // 2
+    RUN_TEST(test_emit_function_overwrite_var);          // 3
+    RUN_TEST(test_emit_function_unused_param);           // 4
+    RUN_TEST(test_emit_function_only_return);            // 5
+    RUN_TEST(test_emit_function_no_params_no_return);    // 6
+    RUN_TEST(test_emit_loop_and_conditionals);           // 7
+    RUN_TEST(test_emit_while_loop_basic);                // 8
+    RUN_TEST(test_emit_nested_if_inside_loop);           // 9
+    RUN_TEST(test_emit_simple_gcode_block);              // 10
+    RUN_TEST(test_builtin_clamp);                        // 11
+    RUN_TEST(test_builtin_math_functions_and_constants); // 12
+    RUN_TEST(test_emit_nested_if_inside_loop2);          // 13
+    RUN_TEST(test_emit_function_declaration_and_call);   // 14
+    RUN_TEST(test_emit_function_call_returns_value);     // 15
+    RUN_TEST(test_emit_function_call_inside_expression); // 16
+    RUN_TEST(test_emit_function_with_two_params);        // 17
+    RUN_TEST(test_emit_function_recursion);              // 18
+    RUN_TEST(test_emit_function_in_condition);           // 19
+    RUN_TEST(test_emit_bitwise_and);                     // 20
+    RUN_TEST(test_emit_function_calls_function);         // 21
+    RUN_TEST(test_emit_function_early_return);           // 22
+    RUN_TEST(test_complex_gcode_logic);                  // 23
+    RUN_TEST(test_builtin_exp);                          // 24
+    RUN_TEST(test_builtin_deg_rad_sign);                 // 25
+    RUN_TEST(test_emit_function_no_return);              // 26
+    RUN_TEST(test_builtin_log);                          // 27
+    RUN_TEST(test_builtin_noise_zero);                   // 28
+    RUN_TEST(test_builtin_trig_pow_hypot);               // 29
+    RUN_TEST(test_emit_function_expr_args);              // 30
+    RUN_TEST(test_builtin_min_max);                      // 31
+    RUN_TEST(test_emit_function_empty_body);             // 32
 
     return UNITY_END();
 }

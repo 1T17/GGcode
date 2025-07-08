@@ -182,23 +182,36 @@ void set_parents_recursive(ASTNode *node, ASTNode *parent) {
 
 
 
-
-
-
+void reset_parser_state() {
+    memset(&parser, 0, sizeof(Parser));  // full reset
+}
 
 
 
 ASTNode *parse_script_from_string(const char *source)
 {
-    parser.lexer = lexer_new(source);
-    advance();
+        reset_parser_state();          // ✅ ← Add this!
+   // //printf("[C] parse_script_from_string() begin\n");
 
-    ASTNode *root = parse_script();
-set_parents_recursive(root, NULL);  // ✅ Add this line
+ 
+   // //printf("[C] INPUT:\n------------------\n%s\n------------------\n", source);
+
+    parser.lexer = lexer_new(source);
+   // //printf("[C] lexer initialized\n");
+
+
+
+    parser_advance();  
+    //printf("[C] parser_advance() finished\n");
+
+    ASTNode *root = parse_script();  
+    //printf("[C] parse_script() returned\n");
+
+    set_parents_recursive(root, NULL);
+    //printf("[C] set_parents_recursive() done\n");
+
     return root;
 }
-
-
 
 
 
@@ -231,7 +244,7 @@ Value *copy_value(Value *val)
         copy->array.count = val->array.count;
         copy->array.items = malloc(sizeof(Value *) * val->array.count);
         if (!copy->array.items) {
-            printf("[copy_value] malloc failed for array.items\n");
+            //printf("[copy_value] malloc failed for array.items\n");
             free(copy);
             return NULL;
         }
@@ -618,7 +631,7 @@ Value *eval_function_call(ASTNode *node)
         return make_number_value(hypot(x2 - x1, y2 - y1));
     }
 
-    // --- Optional / Advanced ---
+    // --- Optional / parser_advanced ---
     if (strcmp(name, "sign") == 0 && argc == 1)
     {
         double x = SCALAR(0);

@@ -6,10 +6,15 @@
 #include "../runtime/evaluator.h"
 #include "error/error.h"
 
+
 #define M_PI 3.14159265358979323846
+
+
 
 static int gcode_mode_active = 0;
  Parser parser;
+
+
 
 static ASTNode *parse_binary_expression();
 static ASTNode *parse_block();
@@ -20,7 +25,9 @@ static ASTNode *parse_let();
 static ASTNode *parse_note();
 static ASTNode *parse_gcode();
 
+
 //static ASTNode *parse_gcode_coord_only();
+
 
 static ASTNode *parse_primary();
 static ASTNode *parse_function();
@@ -28,8 +35,12 @@ static ASTNode *parse_return();
 static ASTNode *parse_assignment();
 static ASTNode *parse_postfix_expression();  // <-- add this
 
+
+
 // Forward declaration
 Token lexer_peek_token(Lexer *lexer);
+
+
 
 int get_precedence(Token_Type op)
 {
@@ -57,17 +68,20 @@ int get_precedence(Token_Type op)
     }
 }
 
-void advance()
-{
+void parser_advance() {
+    //printf("[Parser parser_advance()] calling lexer_next_token...\n");
     parser.previous = parser.current;
     parser.current = lexer_next_token(parser.lexer);
+    //printf("[Parser parser_advance()] got token: type=%d, value=%s\n", parser.current.type, parser.current.value);
 }
+
+
 
 static int match(Token_Type type)
 {
     if (parser.current.type == type)
     {
-        advance();
+        parser_advance();
         return 1;
     }
     return 0;
@@ -76,7 +90,7 @@ static int match(Token_Type type)
 static ASTNode *parse_unary() {
     if (parser.current.type == TOKEN_BANG || parser.current.type == TOKEN_MINUS) {
         Token op = parser.current;
-        advance();
+        parser_advance();
 
         ASTNode *operand = parse_unary();  // recursive for !! or -- etc.
 
@@ -90,15 +104,10 @@ static ASTNode *parse_unary() {
     return parse_postfix_expression();  // fallback to normal expression
 }
 
-
-
-
-
-
 static ASTNode *parse_primary() {
     // Handle parentheses
     if (parser.current.type == TOKEN_LPAREN) {
-        advance(); // consume '('
+        parser_advance(); // consume '('
         ASTNode *expr = parse_binary_expression();
         
 if (!match(TOKEN_RPAREN)) {
@@ -110,7 +119,7 @@ if (!match(TOKEN_RPAREN)) {
 
     // Handle unary minus
     if (parser.current.type == TOKEN_MINUS) {
-        advance(); // consume '-'
+        parser_advance(); // consume '-'
         ASTNode *right = parse_primary();
 
         ASTNode *zero = malloc(sizeof(ASTNode));
@@ -143,7 +152,7 @@ if (!match(TOKEN_RPAREN)) {
             default: break;
         }
 
-        advance(); // consume the constant
+        parser_advance(); // consume the constant
         ASTNode *node = malloc(sizeof(ASTNode));
         node->type = AST_NUMBER;
         node->number.value = val;
@@ -155,10 +164,10 @@ if (!match(TOKEN_RPAREN)) {
         (parser.current.type >= TOKEN_FUNC_ABS && parser.current.type <= TOKEN_FUNC_EXP)) {
 
         char *name = strdup(parser.current.value);
-        advance(); // consume function or variable name
+        parser_advance(); // consume function or variable name
 
         if (parser.current.type == TOKEN_LPAREN) {
-            advance(); // consume '('
+            parser_advance(); // consume '('
 
             ASTNode **args = NULL;
             int arg_count = 0, arg_capacity = 0;
@@ -170,7 +179,7 @@ if (!match(TOKEN_RPAREN)) {
                 }
                 args[arg_count++] = parse_binary_expression();
                 if (parser.current.type == TOKEN_COMMA)
-                    advance(); // consume comma
+                    parser_advance(); // consume comma
             }
 
             match(TOKEN_RPAREN); // consume ')'
@@ -195,7 +204,7 @@ if (!match(TOKEN_RPAREN)) {
         ASTNode *node = malloc(sizeof(ASTNode));
         node->type = AST_NUMBER;
         node->number.value = atof(parser.current.value);
-        advance(); // consume number
+        parser_advance(); // consume number
         return node;
     }
 
@@ -204,7 +213,7 @@ if (!match(TOKEN_RPAREN)) {
 
 // Handle array literal: [1, 2, 3] or [[1, 2], [3, 4]]
 if (parser.current.type == TOKEN_LBRACKET) {
-    advance(); // consume '['
+    parser_advance(); // consume '['
 
     ASTNode **elements = NULL;
     int count = 0, capacity = 0;
@@ -221,7 +230,7 @@ if (parser.current.type == TOKEN_LBRACKET) {
 
 
             if (parser.current.type == TOKEN_COMMA) {
-                advance(); // consume comma and continue
+                parser_advance(); // consume comma and continue
             } else if (parser.current.type == TOKEN_RBRACKET) {
                 break; // closing bracket
             } else {
@@ -245,7 +254,7 @@ return NULL;
 
     // Now parse chained index access like: a[1][2]
     while (parser.current.type == TOKEN_LBRACKET) {
-        advance(); // consume '['
+        parser_advance(); // consume '['
         ASTNode *index = parse_binary_expression(); 
         if (!match(TOKEN_RBRACKET)) {
             printf("[Parser] Expected ']' after index\n");
@@ -267,7 +276,7 @@ return NULL;
 
 
 report_error("[Parser] Unexpected token in expression: '%s'", parser.current.value);
-advance();
+parser_advance();
 
 // Return dummy NOP node to avoid crashing
 ASTNode *dummy = malloc(sizeof(ASTNode));
@@ -281,7 +290,7 @@ static ASTNode *parse_postfix_expression() {
     ASTNode *expr = parse_primary();
 
     while (parser.current.type == TOKEN_LBRACKET) {
-        advance(); // consume '['
+        parser_advance(); // consume '['
         ASTNode *index = parse_binary_expression();
         if (!match(TOKEN_RBRACKET)) {
             printf("[Parser] Expected ']' after index\n");
@@ -313,7 +322,7 @@ ASTNode *left = parse_unary();
         if (prec < min_prec)
             break;
 
-        advance(); // consume operator
+        parser_advance(); // consume operator
 
         ASTNode *right = parse_binary_expression_prec(prec + 1);
 
@@ -336,7 +345,7 @@ static ASTNode *parse_binary_expression()
 
 static ASTNode *parse_function()
 {
-    advance(); // skip 'function'
+    parser_advance(); // skip 'function'
 
     if (parser.current.type != TOKEN_IDENTIFIER)
     {
@@ -345,7 +354,7 @@ static ASTNode *parse_function()
     }
 
     char *name = strdup(parser.current.value);
-    advance();
+    parser_advance();
 
     if (!match(TOKEN_LPAREN))
     {
@@ -370,12 +379,12 @@ static ASTNode *parse_function()
             params = realloc(params, param_capacity * sizeof(char *));
         }
         params[param_count++] = strdup(parser.current.value);
-        advance();
+        parser_advance();
 
         if (parser.current.type == TOKEN_COMMA)
-            advance();
+            parser_advance();
     }
-    advance(); // consume ')'
+    parser_advance(); // consume ')'
 
     ASTNode *body = parse_block();
 
@@ -390,7 +399,7 @@ static ASTNode *parse_function()
 
 static ASTNode *parse_return()
 {
-    advance(); // skip 'return'
+    parser_advance(); // skip 'return'
     ASTNode *expr = parse_binary_expression();
     ASTNode *node = malloc(sizeof(ASTNode));
     node->type = AST_RETURN;
@@ -401,28 +410,20 @@ static ASTNode *parse_return()
 
 
 
-
-
-
-
-
 static ASTNode *parse_assignment() {
     ASTNode *lhs = parse_postfix_expression();  // Handles maze[py][px]
 
-    if (!match(TOKEN_EQUAL)) {
+    ASTNode *rhs = NULL;
 
-
-
-
-        printf("[Parser] Expected '=' in assignment\n");
-        exit(1);
-
-
-
-        
+    if (match(TOKEN_EQUAL)) {
+        rhs = parse_binary_expression();
+    } else {
+        printf("[Parser] '=' missing in assignment, defaulting to 0\n");
+        rhs = malloc(sizeof(ASTNode));
+        memset(rhs, 0, sizeof(ASTNode));
+        rhs->type = AST_NUMBER;
+        rhs->number.value = 0.0;
     }
-
-    ASTNode *rhs = parse_binary_expression();
 
     ASTNode *node = malloc(sizeof(ASTNode));
     memset(node, 0, sizeof(ASTNode));
@@ -446,7 +447,6 @@ static ASTNode *parse_assignment() {
 
     return node;
 }
-
 
 
 
@@ -515,7 +515,7 @@ static ASTNode *parse_block()
 
         // Skip any newlines between statements in a block
         while (parser.current.type == TOKEN_NEWLINE)
-            advance();
+            parser_advance();
     }
 
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -528,9 +528,9 @@ static ASTNode *parse_block()
 static ASTNode *parse_while()
 {
 
-    // printf("[DEBUG] Inside parse_while. Current token before advance: type=%d, value='%s'\n",parser.current.type, parser.current.value);
+    // printf("[DEBUG] Inside parse_while. Current token before parser_advance: type=%d, value='%s'\n",parser.current.type, parser.current.value);
 
-    advance(); // skip 'while'
+    parser_advance(); // skip 'while'
 
     ASTNode *condition = parse_binary_expression(); // allow full expression
 
@@ -544,9 +544,14 @@ static ASTNode *parse_while()
     return node;
 }
 
+
+
+
+
+
 static ASTNode *parse_let()
 {
-    advance(); // skip 'let'
+    parser_advance(); // skip 'let'
 
     if (parser.current.type != TOKEN_IDENTIFIER)
     {
@@ -555,7 +560,7 @@ static ASTNode *parse_let()
     }
 
     char *name = strdup(parser.current.value);
-    advance();
+    parser_advance();
 
     if (!match(TOKEN_EQUAL))
     {
@@ -575,9 +580,20 @@ static ASTNode *parse_let()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 static ASTNode *parse_for()
 {
-    advance(); // skip 'for'
+    parser_advance(); // skip 'for'
 
     if (parser.current.type != TOKEN_IDENTIFIER)
     {
@@ -586,7 +602,7 @@ static ASTNode *parse_for()
     }
 
     char *var = strdup(parser.current.value);
-    advance();
+    parser_advance();
 
     if (!match(TOKEN_EQUAL))
     {
@@ -600,9 +616,9 @@ static ASTNode *parse_for()
     int exclusive = 0;
     if (parser.current.type == TOKEN_DOTDOT_LT) {
         exclusive = 1;
-        advance();
+        parser_advance();
     } else if (parser.current.type == TOKEN_DOTDOT) {
-        advance();
+        parser_advance();
     } else {
         printf("[Parser] Expected '..' or '..<' in for loop range\n");
         exit(1);
@@ -614,7 +630,7 @@ static ASTNode *parse_for()
 // Optional: support 'step' keyword
 ASTNode *step = NULL;
 if (parser.current.type == TOKEN_STEP) {
-    advance();
+    parser_advance();
     step = parse_binary_expression();
 }
 if (!step) {
@@ -636,15 +652,9 @@ if (!step) {
     return node;
 }
 
-
-
-
-
-
-
 static ASTNode *parse_note()
 {
-    advance(); // skip 'note'
+    parser_advance(); // skip 'note'
 
     // printf("[Parser] Saw 'note'\n");
 
@@ -662,7 +672,7 @@ static ASTNode *parse_note()
 
     // printf("[Parser] Found '{' at position %d\n", parser.lexer->pos);
 
-    advance(); // consume '{'
+    parser_advance(); // consume '{'
     int brace_depth = 1;
 
     while (parser.current.type != TOKEN_EOF && brace_depth > 0)
@@ -679,13 +689,13 @@ static ASTNode *parse_note()
     int len = parser.lexer->pos - start_pos - 1; // exclude final '}'
 char *content = strndup_portable(start, len);
 
-    // printf("[Parser] Raw captured string (%d bytes): \"", len);
+    // //printf("[Parser] Raw captured string (%d bytes): \"", len);
     // fwrite(content, 1, len, stdout);
-    // printf("\"\n");
+    // //printf("\"\n");
 
-    advance(); // consume final '}'
+    parser_advance(); // consume final '}'
 
-    //  printf("[Parser] Consumed '}'\n");
+    //  //printf("[Parser] Consumed '}'\n");
 
     ASTNode *node = malloc(sizeof(ASTNode));
     node->type = AST_NOTE;
@@ -717,7 +727,7 @@ static ASTNode *parse_gcode()
             line[line_pos++] = ' '; // add space between tokens
         int len = snprintf(line + line_pos, sizeof(line) - line_pos, "%s", parser.current.value);
         line_pos += len;
-        advance();
+        parser_advance();
     }
     char *code = strdup(line);
 
@@ -731,16 +741,16 @@ static ASTNode *parse_gcode()
             break;
 
         char *key = strdup(parser.current.value);
-        advance();
+        parser_advance();
 
         ASTNode *index = NULL;
         if (parser.current.type == TOKEN_LBRACKET)
         {
-            advance();
+            parser_advance();
             index = parse_binary_expression();
             if (!match(TOKEN_RBRACKET))
             {
-                printf("[Parser] Expected ']'\n");
+                //printf("[Parser] Expected ']'\n");
                 exit(1);
             }
         }
@@ -766,6 +776,13 @@ static ASTNode *parse_gcode()
     return node;
 }
 
+
+
+
+
+
+
+
 // static ASTNode *parse_gcode_coord_only()
 // {
 //     GArg *args = NULL;
@@ -776,11 +793,11 @@ static ASTNode *parse_gcode()
 //         if (lookahead.type == TOKEN_EQUAL)
 //             break;
 //         char *key = strdup(parser.current.value);
-//         advance();
+//         parser_advance();
 //         ASTNode *index = NULL;
 //         if (parser.current.type == TOKEN_LBRACKET)
 //         {
-//             advance();
+//             parser_advance();
 //             index = parse_binary_expression();
 //             if (!match(TOKEN_RBRACKET))
 //             {
@@ -810,7 +827,7 @@ static ASTNode *parse_if()
     ASTNode *node = malloc(sizeof(ASTNode));
     node->type = AST_IF;
 
-    advance(); // skip 'if'
+    parser_advance(); // skip 'if'
 
    //  fprintf(stderr, "[Parser IF]\n");
 
@@ -830,7 +847,7 @@ static ASTNode *parse_if()
     // Optional else
     if (parser.current.type == TOKEN_ELSE)
     {
-        advance(); // consume 'else'
+        parser_advance(); // consume 'else'
         if (parser.current.type == TOKEN_IF)
         {
             node->if_stmt.else_branch = parse_if(); // recursively parse chained if
@@ -859,11 +876,11 @@ ASTNode *parse_script() {
     int count = 0;
     int capacity = 0;
 
-    printf("[DEBUG parse_script] Entering parse_script()\n");
+    //printf("[DEBUG parse_script] Entering parse_script()\n");
 
     while (parser.current.type != TOKEN_EOF) {
         if (parser.current.type == TOKEN_NEWLINE) {
-            advance();
+            parser_advance();
             continue;
         }
 
@@ -882,7 +899,7 @@ if (stmt->type == AST_EMPTY || stmt->type == AST_NOP)
 
         if (count >= capacity) {
             int new_capacity = (capacity == 0) ? 4 : capacity * 2;
-         //   printf("[DEBUG] Growing statement array: %d → %d\n", capacity, new_capacity);
+         //   //printf("[DEBUG] Growing statement array: %d → %d\n", capacity, new_capacity);
             ASTNode **new_array = malloc(new_capacity * sizeof(ASTNode *));
             if (!new_array) {
                 fprintf(stderr, "Memory allocation failed for statement array\n");
@@ -899,7 +916,7 @@ if (stmt->type == AST_EMPTY || stmt->type == AST_NOP)
         statements[count++] = stmt;
     }
 
-  //  printf("[DEBUG] Finished loop, count = %d\n", count);
+  //  //printf("[DEBUG] Finished loop, count = %d\n", count);
 
     ASTNode *block = malloc(sizeof(ASTNode));
     if (!block) {

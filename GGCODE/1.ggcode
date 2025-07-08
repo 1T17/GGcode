@@ -1,0 +1,12 @@
+
+y= 100
+id = 123456
+
+note {HI THERE y is [y]}
+
+for x=1..100{
+
+
+G1 x[x] y[x*0.2]
+
+}

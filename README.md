@@ -11,15 +11,62 @@
 
 ## Features
 
-- Lightweight compiler for `.ggcode` source files
-- Full support for variables with `let`
-- Arithmetic and logic expressions
-- Conditional execution: `if`, `else`, `else if`
-- Loops: `while`, `for`
-- Dynamic G-code generation (`G1`, `M3`, etc.)
-- Runtime `note {}` blocks with variable interpolation
-- Human-readable debug output
-- Clean, raw G-code output
+✨ Features
+
+    🪶 Lightweight, embeddable compiler for .ggcode source files
+
+    🔤 Human-readable syntax — like JavaScript but for G-code
+
+    📥 Variables and assignments using let and dynamic evaluation
+
+        Supports negative numbers, runtime expressions, and reassignments
+
+    🧠 Full arithmetic + logical expression support
+
+        +, -, *, /, mod, comparison operators, ! (not), and nested expressions
+
+    🔁 Control flow constructs:
+
+        if, else, else if with full expression logic
+
+        while and for loops with scoped iteration and condition evaluation
+
+    🧮 Built-in math function library
+
+        abs, mod, floor, ceil, sqrt, hypot, distance, sin, cos, atan2, etc.
+
+        Constants like PI, E, DEG_TO_RAD, TAU
+
+    🧩 Functions
+
+        Define reusable logic blocks with function keyword
+
+        Supports recursive calls and nested scope resolution
+
+    🗂️ Arrays
+
+        1D and 2D arrays with full indexing: maze[y][x] = 1
+
+        Array assignment, indexing, mutation, and dynamic size
+
+    🔄 Full recursion-safe call tree
+
+        Internal tree tracking for call structure
+
+        Output as collapsible HTML structure with recursion detection
+
+    📄 G-code generation support
+
+        Emits raw G0, G1, M commands based on logic
+
+        Math-based parametric paths and programmable toolpaths
+
+    🗨️ note {} blocks
+
+        Embedded runtime documentation, debug output, and comments
+
+        Supports dynamic variable interpolation: note {Loop #[i]}
+
 
 ---
 

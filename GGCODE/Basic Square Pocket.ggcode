@@ -18,8 +18,8 @@ S6000 M3
 G54
 M8
 
-let pocket_width   = 20      // total width of pocket
-let pocket_height  = 20      // total height of pocket
+let pocket_width   = 200      // total width of pocket
+let pocket_height  = 200      // total height of pocket
 let step_over      = 1       // tool stepover per inward pass
 let z_safe         = 5
 let z_cut          = -1

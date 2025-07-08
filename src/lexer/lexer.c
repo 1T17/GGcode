@@ -14,20 +14,56 @@ int LEXER_DEBUG = 0; // Toggle lexer debug output
 
 
 
-/// @brief Creates a new lexer instance
-/// @param source The input string to lex
-/// @return Pointer to a new Lexer
-Lexer *lexer_new(const char *source)
-{
 
+Lexer *lexer_new(const char *source) {
+     //printf("[lexer_new]\n");
+    if (!source) {
+        printf("[Lexer] ERROR: source is NULL!\n");
+        return NULL;
+    }
+
+    // printf("[Lexer] Raw input bytes (first 100 chars):\n");
+    // for (int i = 0; i < 100 && source[i] != '\0'; i++) {
+    //     printf("%02X ", (unsigned char)source[i]);
+    // }
+    // printf("\n");
+
+    // const char *null_pos = strchr(source, '\0');
+    // if (null_pos) {
+    //     printf("[Lexer] NULL terminator found at offset: %ld\n", null_pos - source);
+    // } else {
+    //     printf("[Lexer] WARNING: No NULL terminator found!\n");
+    // }
+
+    //printf("[Lexer] Input length (strlen): %zu\n", strlen(source));
+
+    // Safe defensive copy
+    char *copy = strdup(source);
+    if (!copy) {
+        printf("[Lexer] ERROR: strdup failed\n");
+        return NULL;
+    }
+
+    //printf("[Lexer] Copied string to internal buffer:\n---\n%s\n---\n", copy);
 
     Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
-    lexer->source = source;
+    if (!lexer) {
+        printf("[Lexer] ERROR: malloc failed for lexer struct\n");
+        free(copy);
+        return NULL;
+    }
+
+    lexer->source = copy;
     lexer->pos = 0;
     lexer->line = 1;
     lexer->column = 1;
+
+    //printf("[Lexer] Lexer successfully created. Starting at line 1, column 1\n");
+
     return lexer;
 }
+
+
 
 /// @brief Frees the memory for a lexer
 /// @param lexer The lexer to free
@@ -96,17 +132,32 @@ static char peek_ahead(Lexer *lexer, int offset)
 
 
 /// @brief Advances the lexer by one character
+
+
+
 static char advance(Lexer *lexer)
 {
     char c = lexer->source[lexer->pos++];
     lexer->column++;
+
+    //printf("[advance] Char: '%c' (0x%02X), Pos: %d, Line: %d, Column: %d\n",
+       //    (c >= 32 && c <= 126) ? c : '.', // printable char or dot
+       //    (unsigned char)c,
+        //   lexer->pos - 1,
+         //  lexer->line,
+         //  lexer->column - 1);
+
     if (c == '\n')
     {
         lexer->line++;
         lexer->column = 1;
+        //printf("[advance] Newline encountered → Line: %d, Reset Column to 1\n", lexer->line);
     }
+
     return c;
 }
+
+
 
 /// @brief Skips whitespace and comments
 static void skip_whitespace(Lexer *lexer)
@@ -150,17 +201,10 @@ static void skip_whitespace(Lexer *lexer)
     }
 }
 
-/// @brief Creates a token object
-// static Token make_token(Token_Type type, const char *value, int line, int column)
-// {
-//     Token token;
-//     token.type = type;
-//     token.value = strdup(value);
-//     token.line = line;
-//     token.column = column;
-//     print_token(token);
-//     return token;
-// }
+
+
+
+
 
 /// @brief Lookup keyword and return its token type
 static Token_Type keyword_lookup(const char *word)
@@ -174,9 +218,16 @@ static Token_Type keyword_lookup(const char *word)
 
 
 /// @brief Main lexer function to get the next token
+
+
+
 Token lexer_next_token(Lexer *lexer)
 {
+
+    //printf("[lexer_next_token] peek: '%c' (0x%02X) at pos: %d\n", peek(lexer), peek(lexer), lexer->pos);
+
     skip_whitespace(lexer);
+
 
 
     int start_col = lexer->column;

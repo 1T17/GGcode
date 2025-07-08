@@ -9,6 +9,8 @@ BACKUP/
 tests/temp/
 BK/
 ggcode
+node_modules/
+node/
 
 function_report.html
 function_report.txt

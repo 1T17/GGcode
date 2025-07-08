@@ -7,6 +7,10 @@
 extern int LEXER_DEBUG;
 
 /// @brief Create a new token instance
+
+
+
+
 Token make_token(Token_Type type, const char *value, int line, int column) {
     Token token;
     token.type = type;
@@ -17,6 +21,10 @@ Token make_token(Token_Type type, const char *value, int line, int column) {
     print_token(token);
     return token;
 }
+
+
+
+
 
 /// @brief Free memory allocated for a token's value
 void token_free(Token token) {

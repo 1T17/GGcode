@@ -10,7 +10,7 @@ typedef struct {
     Token previous;
 } Parser;
 
-void advance(void); 
+void parser_advance(void); 
 ASTNode* parse_inline_expression(const char* expr);
 ASTNode* parse_script(void);
 void free_ast(ASTNode* node);

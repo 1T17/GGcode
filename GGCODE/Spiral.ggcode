@@ -18,14 +18,14 @@ S6000 M3
 G54
 M8
 
-let angle_step   = 10
-let radius_step  = 0.1
+let angle_step   = 1
+let radius_step  = 0.001
 let z_safe       = 5
 let z_cut        = -1
 let feed         = 300
 let deg_to_rad   = DEG_TO_RAD
-let round_eps    = 0.0001
-let max_steps    = 500
+let round_eps    = 0.0002
+let max_steps    = 500000
 let x =0
 let y = 0
 // Basic round-to-3-decimals
