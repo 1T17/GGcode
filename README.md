@@ -80,13 +80,6 @@ for i = 0..3 {
 
 ---
 
-## Getting Started
-
-### Requirements
-
-- GCC or Clang
-- `make`
-
 ### 🛠️ Build 
 
 Use the following `make` targets to build, test, and manage the project:
@@ -144,12 +137,12 @@ If no file is specified, GGcode will automatically compile **all `.ggcode` files
 | `return`      | Return a value from within a function                                       |
 | `note {}`     | Runtime log/debug message with variable interpolation (`note {x = [x]}`)    |
 | `G0`, `G1`, `G2`, `G3`, `M3`, etc. | Emit raw G-code motion and control commands            |
-| `[` `]`       | Index into arrays or interpolate expressions in coordinates (`X[x+10]`)      |
+| `[` `]`       | Index into arrays or interpolate expressions in coordinates (`X[x+10]`)     |
 | `maze[y][x]`  | 2D array access and mutation                                                |
-| `!`, `&&`, `||` | Logical NOT, AND, OR expressions                                           |
+| `!`, `&&`, `||` | Logical NOT, AND, OR expressions                                          |
 | `==`, `!=`, `<`, `>`, `<=`, `>=` | Comparison operators                                     |
 | `+`, `-`, `*`, `/`, `mod` | Arithmetic and modulo                                           |
-| Built-in functions | `abs()`, `sqrt()`, `floor()`, `hypot()`, `distance()`, `sin()`, etc.  |
+| Built-in functions | `abs()`, `sqrt()`, `floor()`, `hypot()`, `distance()`, `sin()`, etc.   |
 
 ---
 
