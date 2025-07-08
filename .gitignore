@@ -12,8 +12,8 @@ ggcode
 node_modules/
 node/
 
-function_report.html
-function_report.txt
+function.html
+function.txt
 
 Doxyfile
 
