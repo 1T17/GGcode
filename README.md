@@ -9,64 +9,51 @@
 
 ---
 
-## Features
+## ✨ Features
 
-✨ Features
+**🪶 Lightweight & Embeddable**  
+- Tiny, standalone compiler for `.ggcode` source files  
+- Easy to embed in toolchains or CNC preprocessors
 
-    🪶 Lightweight, embeddable compiler for .ggcode source files
+**🔤 Human-Readable Syntax**  
+- JavaScript-like structure tailored for G-code logic  
+- Clean, readable syntax for operators, conditionals, and loops
 
-    🔤 Human-readable syntax — like JavaScript but for G-code
+**📥 Variables & Assignments**  
+- Use `let` to define and reassign variables  
+- Supports negative numbers, runtime expressions, and math logic
 
-    📥 Variables and assignments using let and dynamic evaluation
+**🧠 Expression Support**  
+- Full arithmetic and logical expressions: `+`, `-`, `*`, `/`, `mod`, `!`, comparisons  
+- Nested expressions and grouped logic fully supported
 
-        Supports negative numbers, runtime expressions, and reassignments
+**🔁 Control Flow**  
+- Conditional blocks: `if`, `else`, `else if` with any expression  
+- Looping constructs: `while`, `for` with scoped variables and dynamic conditions
 
-    🧠 Full arithmetic + logical expression support
+**🧮 Built-in Math Library**  
+- Functions: `abs`, `mod`, `floor`, `ceil`, `sqrt`, `hypot`, `distance`, `sin`, `cos`, `atan2`, etc.  
+- Constants: `PI`, `E`, `TAU`, `DEG_TO_RAD`, and more
 
-        +, -, *, /, mod, comparison operators, ! (not), and nested expressions
+**🧩 Functions**  
+- Define reusable logic with the `function` keyword  
+- Support for recursion, parameters, and local scopes
 
-    🔁 Control flow constructs:
+**🗂️ Arrays (1D & 2D)**  
+- Declare and mutate arrays: `grid[1][2] = 5`  
+- Dynamic indexing, assignment, and array-length flexibility
 
-        if, else, else if with full expression logic
+**🔄 Recursion-Safe Call Tree Output**  
+- Internal tree generation with recursion tracking  
+- Exported as collapsible HTML tree with auto-loop detection
 
-        while and for loops with scoped iteration and condition evaluation
+**📄 Parametric G-code Generation**  
+- Emit raw `G0`, `G1`, `M3`, etc. from script logic  
+- Generate toolpaths dynamically using math and variables
 
-    🧮 Built-in math function library
-
-        abs, mod, floor, ceil, sqrt, hypot, distance, sin, cos, atan2, etc.
-
-        Constants like PI, E, DEG_TO_RAD, TAU
-
-    🧩 Functions
-
-        Define reusable logic blocks with function keyword
-
-        Supports recursive calls and nested scope resolution
-
-    🗂️ Arrays
-
-        1D and 2D arrays with full indexing: maze[y][x] = 1
-
-        Array assignment, indexing, mutation, and dynamic size
-
-    🔄 Full recursion-safe call tree
-
-        Internal tree tracking for call structure
-
-        Output as collapsible HTML structure with recursion detection
-
-    📄 G-code generation support
-
-        Emits raw G0, G1, M commands based on logic
-
-        Math-based parametric paths and programmable toolpaths
-
-    🗨️ note {} blocks
-
-        Embedded runtime documentation, debug output, and comments
-
-        Supports dynamic variable interpolation: note {Loop #[i]}
-
+**🗨️ `note {}` Blocks**  
+- Embed runtime comments, debug logs, or human-readable G-code remarks  
+- Supports variable interpolation: `note {Pass #[i], Z = [z]}`
 
 ---
 
