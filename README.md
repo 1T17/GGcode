@@ -130,20 +130,31 @@ If no file is specified, GGcode will automatically compile **all `.ggcode` files
 
 ---
 
-## Supported Syntax
+## 🧾 Supported Syntax
 
-| Keyword   | Description                        |
-|-----------|------------------------------------|
-| `let`     | Define variables                   |
-| `if`      | Conditional execution              |
-| `else if` | Chained conditional logic          |
-| `else`    | Fallback execution                 |
-| `while`   | Loop while condition is true       |
-| `for`     | Range-based loop                   |
-| `note`    | Insert runtime comments            |
-| `G1`, `M3`| G-code statements with parameters  |
+| Keyword       | Description                                                                 |
+|---------------|-----------------------------------------------------------------------------|
+| `let`         | Define or update variables (`let x = 10`)                                   |
+| `if`          | Execute conditionally based on expression truth                             |
+| `else if`     | Chain additional conditions to an `if` block                                |
+| `else`        | Execute fallback logic if no prior condition matched                        |
+| `while`       | Loop while a condition remains true (`while x < 10 { ... }`)                |
+| `for`         | Loop over a numeric range (`for i = 0..10 { ... }`)                         |
+| `function`    | Define reusable logic blocks with arguments and return values               |
+| `return`      | Return a value from within a function                                       |
+| `note {}`     | Runtime log/debug message with variable interpolation (`note {x = [x]}`)    |
+| `G0`, `G1`, `G2`, `G3`, `M3`, etc. | Emit raw G-code motion and control commands            |
+| `[` `]`       | Index into arrays or interpolate expressions in coordinates (`X[x+10]`)      |
+| `maze[y][x]`  | 2D array access and mutation                                                |
+| `!`, `&&`, `||` | Logical NOT, AND, OR expressions                                           |
+| `==`, `!=`, `<`, `>`, `<=`, `>=` | Comparison operators                                     |
+| `+`, `-`, `*`, `/`, `mod` | Arithmetic and modulo                                           |
+| Built-in functions | `abs()`, `sqrt()`, `floor()`, `hypot()`, `distance()`, `sin()`, etc.  |
 
 ---
+
+GGcode supports nesting, recursion, dynamic expressions, scoped variables, and parametric G-code generation.
+
 
 
 ## 📜 License
