@@ -160,16 +160,24 @@ static char advance(Lexer *lexer)
 
 
 /// @brief Skips whitespace and comments
+
+
+
+
 static void skip_whitespace(Lexer *lexer)
 {
     while (1)
     {
         char c = peek(lexer);
 
-        if (isspace(c))
-        {
-            advance(lexer);
-        }
+ if (c == '\n') {
+    advance(lexer);
+    lexer->line++;
+    lexer->column = 1;
+} else if (isspace(c)) {
+    advance(lexer);
+}
+
         else if (c == '/' && peek_next(lexer) == '/')
         {
             while (peek(lexer) != '\n' && peek(lexer) != '\0')
@@ -200,6 +208,35 @@ static void skip_whitespace(Lexer *lexer)
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

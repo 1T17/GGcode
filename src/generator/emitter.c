@@ -7,7 +7,7 @@
 #include "emitter.h"
 #include "runtime/evaluator.h"
 #include "utils/output_buffer.h"
-#include "config.h"
+#include "config/config.h"
 #include "error/error.h"
 
 // Forward declarations of utility functions
@@ -22,6 +22,9 @@ Value *make_number_value(double num);
 
 double get_number(Value *val); 
 
+
+
+
 Value *make_number_value(double num) {
     Value *val = malloc(sizeof(Value));
     if (!val) {
@@ -35,7 +38,14 @@ Value *make_number_value(double num) {
     return val;
 }
 
+
+
+
+
+
 int statement_count = 0;
+
+int debug = 0;
 
 
 
@@ -43,6 +53,11 @@ int get_statement_count()
 {
     return statement_count;
 }
+
+
+
+
+
 
 
 
@@ -57,8 +72,8 @@ static void emit_note_stmt(ASTNode *node, int debug) {
     }
 
     if (debug) {
-        printf("[Emit] NOTE (raw content): %s\n", content);
-        fflush(stdout);
+      //  printf("[Emit] NOTE (raw content): %s\n", content);
+       // fflush(stdout);
     }
 
     char *copy = strdup(content);
@@ -68,50 +83,81 @@ static void emit_note_stmt(ASTNode *node, int debug) {
         return;
     }
 
-    char *line = strtok(copy, "\n");
-    while (line) {
-        char parsed[256] = {0}, *out = parsed;
-        const char *p = line;
+  char *line = strtok(copy, "\n");
+while (line) {
+    // Strip trailing \r if present (Windows CRLF line endings)
+    size_t len = strlen(line);
 
-        while (*p) {
-            if (*p == '[') {
-                char varname[64] = {0};
-                p++; int vi = 0;
-                while (*p && *p != ']' && vi < 63) varname[vi++] = *p++;
-                varname[vi] = '\0';
-                if (*p == ']') p++;
-
-                const char *replacement = NULL;
-                if (strcmp(varname, "time") == 0)
-                    replacement = RUNTIME_TIME;
-                else if (strcmp(varname, "ggcode_file_name") == 0)
-                    replacement = RUNTIME_FILENAME;
-
-                if (replacement) {
-                    out += sprintf(out, "%s", replacement);
-                } else {
-Value *val = get_var(varname);
-if (val && val->type == VAL_NUMBER) {
-    out += sprintf(out, "%.6g", val->number);
-} else {
-    out += sprintf(out, "0");  // fallback for missing or non-number
-}
-                }
-            } else {
-                *out++ = *p++;
-            }
-        }
-        *out = '\0';
-
-        char gcode_comment[300];
-        snprintf(gcode_comment, sizeof(gcode_comment), "(%s)", parsed);
-        write_to_output(gcode_comment);
-
-        line = strtok(NULL, "\n");
+    if (len > 0 && line[len - 1] == '\r') {
+        line[len - 1] = ' ';
     }
+
+    char parsed[256] = {0}, *out = parsed;
+    const char *p = line;
+
+    while (*p) {
+        if (*p == '[') {
+            char varname[64] = {0};
+            p++; int vi = 0;
+            while (*p && *p != ']' && vi < 63) varname[vi++] = *p++;
+            varname[vi] = '\0';
+            if (*p == ']') p++;
+
+            const char *replacement = NULL;
+            if (strcmp(varname, "time") == 0)
+                replacement = RUNTIME_TIME;
+            else if (strcmp(varname, "ggcode_file_name") == 0)
+                replacement = RUNTIME_FILENAME;
+
+            if (replacement) {
+                out += sprintf(out, "%s", replacement);
+            } else {
+                Value *val = get_var(varname);
+                if (val && val->type == VAL_NUMBER) {
+                    out += sprintf(out, "%.6g", val->number);
+                } else {
+                    out += sprintf(out, "0");
+                }
+            }
+        } else {
+            *out++ = *p++;
+        }
+    }
+    *out = '\0';
+
+    char gcode_comment[300];
+    snprintf(gcode_comment, sizeof(gcode_comment), "(%s)", parsed);
+    write_to_output(gcode_comment);
+
+    line = strtok(NULL, "\n");
+}
+
 
     free(copy);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 static void emit_let_stmt(ASTNode *node, int debug) {
     statement_count++;
@@ -368,7 +414,7 @@ static void emit_if_stmt(ASTNode *node, int debug) {
     statement_count++;
 
     if (debug) {
-        printf("[Emit] IF condition...\n");
+        printf("[Emit dddddddddddddddd] IF condition...\n");
         fflush(stdout);
     }
 
@@ -414,6 +460,34 @@ static void emit_if_stmt(ASTNode *node, int debug) {
 /// @param node Any AST node.
 void emit_gcode(ASTNode *node, int debug) {
 
+
+// printf("[emit_gcode] %s → %s\n", get_ast_type_name(node->type),
+//     node->type == AST_ASSIGN        ? node->assign_stmt.name :
+//     node->type == AST_VAR           ? node->var.name :
+//     node->type == AST_LET           ? node->let_stmt.name :
+//     node->type == AST_NOTE          ? node->note.content :
+//     node->type == AST_CALL          ? node->call_expr.name :
+//     node->type == AST_FUNCTION      ? node->function_stmt.name :
+//     node->type == AST_RETURN        ? "(return)" :
+//     node->type == AST_NUMBER        ? "(number)" :
+//     node->type == AST_BINARY        ? "(binary)" :
+//     node->type == AST_GCODE         ? node->gcode_stmt.code :
+//     node->type == AST_WHILE         ? "(while)" :
+//     node->type == AST_FOR           ? node->for_stmt.var :
+//     node->type == AST_ARRAY_LITERAL ? "(array)" :
+//     node->type == AST_ASSIGN_INDEX  ? "(assign_index)" :
+//     node->type == AST_INDEX         ? "(index)" :
+//     node->type == AST_BLOCK         ? "(block)" :
+//     node->type == AST_IF            ? "(if)" :
+//     node->type == AST_UNARY         ? "(unary)" :
+//     node->type == AST_NOP           ? "(nop)" :
+//     node->type == AST_EMPTY         ? "(empty)" :
+//     "N/A"
+// );
+
+
+   
+
     if (!node) return;
     switch (node->type) {
 
@@ -436,7 +510,9 @@ case AST_ASSIGN: {
     statement_count++;
     Value *val = eval_expr(node->assign_stmt.expr);
     if (!val || val->type != VAL_NUMBER) {
+
         report_error("[Emit] ASSIGN %s failed, invalid expression", node->assign_stmt.name);
+
         val = make_number_value(0);  // fallback
     }
 

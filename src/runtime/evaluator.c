@@ -8,6 +8,8 @@
 #include <math.h>
 #include "../parser/parser.h"
 #include "error/error.h"
+#include "config/config.h"
+
 
 extern Parser parser;
 
@@ -56,6 +58,9 @@ double get_scalar(ASTNode *node)
     return v->number;
 }
 
+
+
+
 Value *eval_let(ASTNode *node)
 {
     const char *name = node->let_stmt.name;
@@ -63,6 +68,11 @@ Value *eval_let(ASTNode *node)
     declare_var(name, value);
     return make_number_value(0.0); // Return a default value, since LET is not an expression
 }
+
+
+
+
+
 
 Value *eval(ASTNode *node)
 {
@@ -81,6 +91,12 @@ Value *get_var(const char *name)
     report_error("[Runtime evaluator] Variable not found: %s", name);
     return NULL;
 }
+
+
+
+
+
+
 
 Value *get_array_item(Value *arr, int index)
 {
@@ -182,41 +198,96 @@ void set_parents_recursive(ASTNode *node, ASTNode *parent) {
 
 
 
+
+
+
+
+void reset_runtime_state(void)
+{
+    //printf("\n[Runtime] 🔄 Resetting runtime state...\n");
+   // printf("[Runtime] Current variable count: %d\n", var_count);
+
+    for (int i = 0; i < var_count; i++) {
+        // printf("[Runtime] ➤ Cleaning variable[%d]: name='%s', scope=%d\n",
+        //        i,
+        //        variables[i].name ? variables[i].name : "(null)",
+        //        variables[i].scope_level);
+
+        // Free variable name
+        if (variables[i].name) {
+         //   printf("[Runtime--------------------]   ↳ Freeing name: %s\n", variables[i].name);
+            free(variables[i].name);
+        }
+
+        // Free variable value (recursive for arrays)
+        if (variables[i].val) {
+        //    printf("[Runtime-------------------]   ↳ Freeing value (type = %d)...\n", variables[i].val->type);
+            free(variables[i].val);  // This already logs inner array free if needed
+        }
+    }
+
+    var_count = 0;
+    function_count = 0;
+    current_scope_level = 0;
+    runtime_has_returned = 0;
+
+    if (runtime_return_value) {
+        printf("[Runtime]   ↳ Freeing runtime return value\n");
+        free(runtime_return_value);
+        runtime_return_value = NULL;
+    }
+
+    printf("[Runtime] ✅ Reset complete. All variables and memory freed.\n");
+}
+
+
+
+
+
+
+void enter_scope()
+{
+    current_scope_level++;
+    printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
+}
+
+
+
+
+
+
+
+
 void reset_parser_state() {
     memset(&parser, 0, sizeof(Parser));  // full reset
 }
 
 
 
+
 ASTNode *parse_script_from_string(const char *source)
 {
-        reset_parser_state();          // ✅ ← Add this!
-   // //printf("[C] parse_script_from_string() begin\n");
 
+
+
+    enter_scope();        
+    runtime_has_returned = 0;
+    current_scope_level = 0;
  
-   // //printf("[C] INPUT:\n------------------\n%s\n------------------\n", source);
-
     parser.lexer = lexer_new(source);
-   // //printf("[C] lexer initialized\n");
-
-
 
     parser_advance();  
-    //printf("[C] parser_advance() finished\n");
-
     ASTNode *root = parse_script();  
-    //printf("[C] parse_script() returned\n");
-
     set_parents_recursive(root, NULL);
-    //printf("[C] set_parents_recursive() done\n");
+    reset_parser_state();
+    reset_line_number();
+
+
 
     return root;
 }
 
 
-
-
-#include <stdio.h> // for printf
 
 Value *copy_value(Value *val)
 {
@@ -238,23 +309,33 @@ Value *copy_value(Value *val)
         //printf("[copy_value] Copying VAL_NUMBER: %.5f\n", val->number);
         copy->number = val->number;
     }
-    else if (val->type == VAL_ARRAY)
+else if (val->type == VAL_ARRAY)
+{
+    //printf("[copy_value] Copying VAL_ARRAY of size %zu\n", val->array.count);
+    copy->array.count = val->array.count;
+    copy->array.items = malloc(sizeof(Value *) * val->array.count);
+    if (!copy->array.items) {
+        free(copy);
+        return NULL;
+    }
+
+    for (size_t i = 0; i < val->array.count; ++i)
     {
-        //printf("[copy_value] Copying VAL_ARRAY of size %zu\n", val->array.count);
-        copy->array.count = val->array.count;
-        copy->array.items = malloc(sizeof(Value *) * val->array.count);
-        if (!copy->array.items) {
-            //printf("[copy_value] malloc failed for array.items\n");
+        //printf("[copy_value] -> Copying array element %zu\n", i);
+        copy->array.items[i] = copy_value(val->array.items[i]);
+        if (!copy->array.items[i]) {
+            printf("[copy_value] ❌ Failed to copy element %zu — cleaning up\n", i);
+            // Free previously allocated items
+            for (size_t j = 0; j < i; ++j) {
+                if (copy->array.items[j]) free(copy->array.items[j]);
+            }
+            free(copy->array.items);
             free(copy);
             return NULL;
         }
-
-        for (size_t i = 0; i < val->array.count; ++i)
-        {
-            //printf("[copy_value] -> Copying array element %zu\n", i);
-            copy->array.items[i] = copy_value(val->array.items[i]);
-        }
     }
+}
+
     else
     {
         printf("[copy_value] Unknown Value type: %d\n", val->type);
@@ -1041,30 +1122,6 @@ void free_value(Value *val) {
 
 
 
-void reset_runtime_state(void)
-{
-    //printf("[Runtime] Resetting runtime state...\n");
-
-    for (int i = 0; i < var_count; i++) {
-        free(variables[i].name);
-    }
-
-
-    var_count = 0;
-    function_count = 0;
-    current_scope_level = 0;
-    //printf("[Runtime] Reset complete.\n");
-}
-
-
-
-void enter_scope()
-{
-    current_scope_level++;
-    //printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
-}
-
-
 
 
 
@@ -1086,13 +1143,13 @@ void enter_scope()
 
 void exit_scope()
 {
-    //printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
+    printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
 
     for (int i = var_count - 1; i >= 0; --i)
     {
         if (variables[i].scope_level == current_scope_level)
         {
-            //printf("[Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
+            printf("[Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
 
             free(variables[i].name);
 
@@ -1101,14 +1158,14 @@ void exit_scope()
             {
                 if (variables[i].val->type == VAL_ARRAY)
                 {
-                    //printf("[Free] Array value with %zu items\n", variables[i].val->array.count);
+                    printf("[Free] Array value with %zu items\n", variables[i].val->array.count);
                     for (size_t j = 0; j < variables[i].val->array.count; j++)
                     {
                         free(variables[i].val->array.items[j]);
                     }
                     free(variables[i].val->array.items);
                 }
-                //printf("[Free] Value struct\n");
+                printf("[Free] Value struct\n");
 
 
 
@@ -1141,7 +1198,7 @@ void exit_scope()
 
     
     current_scope_level--;
-    //printf("[Scope] Scope level decreased to %d\n", current_scope_level);
+    printf("[Scope] Scope level decreased to %d\n", current_scope_level);
 }
 
 
@@ -1170,12 +1227,17 @@ void set_var(const char *name, Value *val)
     }
 
     for (int i = var_count - 1; i >= 0; i--) {
+
+
         if (variables[i].name && strcmp(variables[i].name, name) == 0) {
             //printf("[set_var] Updating existing variable '%s' with value: %f\n", name, copy->number);
 
             free_value(variables[i].val);     // Free old value
+
             variables[i].val = copy;          // Assign new copy
             return;
+
+
         }
     }
 

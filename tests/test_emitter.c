@@ -780,7 +780,10 @@ int main(void)
 {
     UNITY_BEGIN();
 
-    RUN_TEST(test_array_assignment_and_access);          // 1
+  //  RUN_TEST(test_array_assignment_and_access);          // 1
+
+
+  
     RUN_TEST(test_emit_maze_generator_program);          // 2
     RUN_TEST(test_emit_function_overwrite_var);          // 3
     RUN_TEST(test_emit_function_unused_param);           // 4

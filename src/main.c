@@ -26,7 +26,7 @@
 #define _GNU_SOURCE
 #endif
 
-#include "config.h"
+#include "config/config.h"
 #include "parser/parser.h"
 #include "runtime/evaluator.h"
 #include "utils/output_buffer.h"
@@ -312,8 +312,9 @@ if (pid == 0) {
 
 
 int main() {
+//int x =0 ;
 
-
+//scanf("%d",&x);
 
     const char *input_file = get_input_file();
     int debug = get_debug();
