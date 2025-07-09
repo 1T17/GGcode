@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GGcode Compiler</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;
+      color: #ddd;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    #ggform {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+    }
+
+    .left-panel,
+    .right-panel {
+      flex: 1;
+      position: relative;
+      border: 1px solid #444;
+    }
+
+    #editor,
+    #output {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .bottom-bar {
+      height: 60px;
+      background: #111;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      border-top: 1px solid #333;
+      padding: 0 20px;
+    }
+
+    .logo-button, .control-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-button img {
+      width: 50px;
+      height: auto;
+    }
+
+    .control-button img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .control-button:hover {
+      color: #6cf;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="ggform" action="/compile" method="POST" onsubmit="syncEditors()">
+    <!-- Editor and Output -->
+    <div class="main-content">
+      <div class="left-panel"><div id="editor"></div></div>
+      <div class="right-panel">
+        <% if (output) { %>
+          <div id="output"></div>
+        <% } %>
+      </div>
+    </div>
+
+    <textarea name="ggcode" id="ggcode" style="display:none;"><%= input %></textarea>
+
+    <!-- Bottom Control Bar -->
+    <div class="bottom-bar">
+
+
+
+
+
+<button type="submit" class="control-button" title="Compile GGcode">
+  ⚙️ <span>Compile</span>
+</button>
+
+
+
+
+
+
+      <button type="button" class="control-button" onclick="copyOutput()" title="Copy output G-code">
+        📋 <span>Copy G-code</span>
+      </button>
+
+      <button type="button" class="control-button" onclick="saveOutput()" title="Save output G-code to file">
+        💾 <span>Download G-code</span>
+      </button>
+
+      <button type="button" class="control-button" onclick="saveGGcode()" title="Save GGcode input to file">
+        💾 <span>Download GGcode</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Monaco loader -->
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <script>
+    let editor, outputEditor;
+
+    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+
+    require(['vs/editor/editor.main'], function () {
+
+
+
+
+monaco.languages.register({ id: 'ggcode' });
+
+monaco.editor.defineTheme('ggcode-dark', {
+  base: 'vs-dark',
+  inherit: true,
+  rules: [
+    { token: 'keyword', foreground: '6FBAE3' },
+    { token: 'gcode', foreground: '#F21B3F' },
+    { token: 'axis', foreground: 'ff66cc' },
+    { token: 'number', foreground: 'D0ECB1' },
+    { token: 'comment', foreground: '#577834', fontStyle: 'italic' },
+    { token: 'variable', foreground: 'ffaa00' },
+    { token: 'constant', foreground: '00ff99' },
+    { token: 'predefined', foreground: 'ff66cc' },
+    { token: 'identifier', foreground: '#F5F5F5' },
+
+  // Custom axis colors
+    // Axis color-coded per CNC convention
+{ token: 'axis.x', foreground: '#D9372B' },   // Soft red
+{ token: 'axis.y', foreground: '#57C24F' },   // Soft green
+
+{ token: 'axis.z', foreground: '#3B65B8' },   // Soft blue
+
+{ token: 'axis.a', foreground: 'ff99ff' },   // Soft magenta
+{ token: 'axis.b', foreground: '99ffff' },   // Soft cyan
+{ token: 'axis.c', foreground: 'ffff99' },   // Soft yellow
+{ token: 'axis.e', foreground: 'ffdddd' },   // Soft light red
+{ token: 'axis.f', foreground: 'aaaaaa' },   // Soft gray
+{ token: 'axis.s', foreground: 'ffbb66' },   // Soft orange
+{ token: 'axis.t', foreground: 'dddddd' },   // Soft white
+{ token: 'axis.h', foreground: 'bbbbff' },   // Soft light blue
+{ token: 'axis.r', foreground: 'aaffaa' },   // Soft light green
+{ token: 'axis.p', foreground: 'bbffff' },   // Soft pale cyan
+
+{ token: 'axis.t', foreground: '#B02BD9' },   // Soft pale cyan
+
+{ token: 'nline', foreground: '#5C5C5C' },   // Soft pale cyan
+
+  ],
+  colors: {} // ✅ Add this line to prevent the crash
+});
+
+
+
+monaco.languages.setMonarchTokensProvider('ggcode', {
+  keywords: ['let', 'if', 'else', 'for', 'while', 'function', 'return', 'note'],
+  constants: ['PI', 'E', 'TAU', 'DEG_TO_RAD'],
+  builtins: ['abs', 'mod', 'sin', 'cos', 'tan', 'sqrt', 'hypot', 'floor', 'ceil', 'round', 'clamp', 'distance'],
+
+  operators: ['=', '+', '-', '*', '/', '%', '..'],
+  symbols: /[=><!~?:&|+\-*\/\^%]+/,
+
+  tokenizer: {
+    root: [
+
+
+
+
+
+// Axis with values (each treated separately)
+
+
+
+
+
+// Axis with bracketed variables (e.g., X[f], Y[y+1])
+[/\bX\[[^\]]+\]/, 'axis.x'],
+[/\bY\[[^\]]+\]/, 'axis.y'],
+[/\bZ\[[^\]]+\]/, 'axis.z'],
+[/\bA\[[^\]]+\]/, 'axis.a'],
+[/\bB\[[^\]]+\]/, 'axis.b'],
+[/\bC\[[^\]]+\]/, 'axis.c'],
+[/\bE\[[^\]]+\]/, 'axis.e'],
+[/\bF\[[^\]]+\]/, 'axis.f'],
+[/\bS\[[^\]]+\]/, 'axis.s'],
+[/\bT\[[^\]]+\]/, 'axis.t'],
+[/\bH\[[^\]]+\]/, 'axis.h'],
+[/\bR\[[^\]]+\]/, 'axis.r'],
+[/\bP\[[^\]]+\]/, 'axis.p'],
+
+[/\bP\[[^\]]+\]/, 'axis.t'],
+
+
+
+[/\bX[+-]?[0-9.]+\b/, 'axis.x'],
+[/\bY[+-]?[0-9.]+\b/, 'axis.y'],
+[/\bZ[+-]?[0-9.]+\b/, 'axis.z'],
+[/\bA[+-]?[0-9.]+\b/, 'axis.a'],
+[/\bB[+-]?[0-9.]+\b/, 'axis.b'],
+[/\bC[+-]?[0-9.]+\b/, 'axis.c'],
+[/\bE[+-]?[0-9.]+\b/, 'axis.e'],  // NEW
+[/\bF[+-]?[0-9.]+\b/, 'axis.f'],
+[/\bS[+-]?[0-9.]+\b/, 'axis.s'],
+[/\bT[+-]?[0-9.]+\b/, 'axis.t'],
+[/\bH[+-]?[0-9.]+\b/, 'axis.h'],
+[/\bR[+-]?[0-9.]+\b/, 'axis.r'],
+[/\bP[+-]?[0-9.]+\b/, 'axis.p'],
+
+[/\bP[+-]?[0-9.]+\b/, 'axis.t'],
+
+[/\bN[+-]?[0-9.]+\b/, 'nline'],
+
+      // Keywords
+      [/\b(let|if|else|for|while|function|return|note)\b/, 'keyword'],
+      
+      // Built-in constants
+      [/\b(PI|E|TAU|DEG_TO_RAD)\b/, 'constant'],
+
+      // Built-in functions
+      [/\b(abs|mod|sin|cos|tan|sqrt|hypot|floor|ceil|round|clamp|distance)\b/, 'predefined'],
+
+      // G-code / M-code
+      [/\b(G\d+|M\d+)\b/, 'gcode'],
+
+      // Axis with numeric values (X10, Y-5.5, etc.)
+      [/\b([XYZABC][+-]?[0-9.]+)\b/, 'axis'],
+      [/\b([FSTHRP][+-]?[0-9.]+)\b/, 'axis'],
+
+      // Variables in brackets like [x], [x+1]
+      [/\[[^\]]+\]/, 'variable'],
+
+      // Numbers
+      [/\b\d+(\.\d+)?\b/, 'number'],
+
+      // Line comments
+      [/\/\/.*$/, 'comment'],
+
+      // Parenthesis-style G-code comments ( )
+     // [/\([^)]*\)/, 'comment'],
+
+      // Multiline comments /% ... %/
+      [/%\/.*$/, 'comment', '@blockComment'],
+
+      // Brackets and symbols
+      [/[{}\[\]()]/, '@brackets'],
+
+
+
+
+
+[/[a-zA-Z_]\w*/, {
+  cases: {
+    '@keywords': 'keyword',
+    '@constants': 'constant',
+    '@builtins': 'predefined',
+    '@default': 'identifier'   // 🟡 highlight user-defined vars here
+  }
+}],
+
+
+
+
+
+
+
+    ],
+
+    blockComment: [
+      [/.*%\//, 'comment', '@pop'],
+      [/.*$/, 'comment']
+    ]
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: `<%- input.replace(/`/g, '\\`') %>`,
+        language: 'ggcode',
+        theme: 'ggcode-dark',
+        automaticLayout: true,
+        minimap: { enabled: true }
+      });
+
+      <% if (output) { %>
+        outputEditor = monaco.editor.create(document.getElementById('output'), {
+          value: `<%- output.replace(/`/g, '\\`') %>`,
+          language: 'ggcode',
+          theme: 'ggcode-dark',
+          automaticLayout: true,
+          minimap: { enabled: true }
+        });
+      <% } %>
+    });
+
+    function syncEditors() {
+      document.getElementById('ggcode').value = editor.getValue();
+    }
+
+    function copyOutput() {
+      if (outputEditor) {
+        navigator.clipboard.writeText(outputEditor.getValue())
+          .catch(err => alert("Failed to copy: " + err));
+      }
+    }
+
+    function saveOutput() {
+      if (outputEditor) {
+        const blob = new Blob([outputEditor.getValue()], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'output.gcode';
+        a.click();
+      }
+    }
+
+    function saveGGcode() {
+      const blob = new Blob([editor.getValue()], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'input.ggcode';
+      a.click();
+    }
+  </script>
+
+
+
+</body>
+</html>
