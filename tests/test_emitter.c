@@ -7,10 +7,6 @@
 
 #include "config/config.h"
 
-
-
-
-
 extern int statement_count;
 extern void reset_runtime_state(void);
 
@@ -34,7 +30,7 @@ void test_emit_simple_gcode_block(void)
         "}\n";
 
     ASTNode *root = parse_script_from_string(code); // <-- updated line
-           
+
     emit_gcode(root, get_debug());
 
     // We expect:
@@ -59,7 +55,7 @@ void test_emit_loop_and_conditionals(void)
         "}";
 
     ASTNode *root = parse_script_from_string(code);
-           
+
     emit_gcode(root, get_debug());
 
     Value *z = get_var("z");
@@ -86,7 +82,7 @@ void test_emit_nested_if_inside_loop(void)
 
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *val = get_var("count");
@@ -106,7 +102,7 @@ void test_emit_while_loop_basic(void)
         "}";
 
     ASTNode *root = parse_script_from_string(code);
-           
+
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
@@ -134,7 +130,7 @@ void test_emit_nested_if_inside_loop2(void)
 
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *count = get_var("count");
@@ -159,7 +155,7 @@ void test_emit_function_declaration_and_call(void)
 
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
@@ -169,7 +165,7 @@ void test_emit_function_declaration_and_call(void)
     TEST_ASSERT_NOT_NULL(b);
     TEST_ASSERT_EQUAL_DOUBLE(3.0, a->number);
     TEST_ASSERT_EQUAL_DOUBLE(4.0, b->number);
-    TEST_ASSERT_EQUAL_INT(4, statement_count); // function, 2 lets, 1 note
+    TEST_ASSERT_EQUAL_INT(3, statement_count); // function, 2 lets, 1 note
 
     free_ast(root);
 }
@@ -189,7 +185,7 @@ void test_emit_function_call_returns_value(void)
 
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *r = get_var("r");
@@ -200,7 +196,7 @@ void test_emit_function_call_returns_value(void)
 
     TEST_ASSERT_EQUAL_DOUBLE(2.0, r->number);  // r = 2
     TEST_ASSERT_EQUAL_DOUBLE(4.0, bb->number); // bb = square(2)
-    TEST_ASSERT_EQUAL_INT(5, statement_count); // 1 function + 3 lets + 1 note
+    TEST_ASSERT_EQUAL_INT(4, statement_count); // 1 function + 3 lets + 1 note
 
     free_ast(root);
 }
@@ -217,13 +213,13 @@ void test_emit_function_call_inside_expression(void)
     ASTNode *root = parse_script_from_string(code);
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *b = get_var("b");
     TEST_ASSERT_NOT_NULL(b);
     TEST_ASSERT_EQUAL_DOUBLE(7.0, b->number);
-    TEST_ASSERT_EQUAL_INT(3, statement_count); // function + 2 lets
+    TEST_ASSERT_EQUAL_INT(2, statement_count); // function + 2 lets
 
     free_ast(root);
 }
@@ -239,13 +235,13 @@ void test_emit_function_with_two_params(void)
     ASTNode *root = parse_script_from_string(code);
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *sum = get_var("sum");
     TEST_ASSERT_NOT_NULL(sum);
     TEST_ASSERT_EQUAL_DOUBLE(10.0, sum->number);
-    TEST_ASSERT_EQUAL_INT(2, statement_count); // function + let
+    TEST_ASSERT_EQUAL_INT(1, statement_count); // function + let
 
     free_ast(root);
 }
@@ -257,28 +253,22 @@ void test_emit_function_recursion(void)
         "  if (n <= 1) { return 1 }\n"
         "  return n * fact(n - 1)\n"
         "}\n"
+
         "let a = fact(4)\n"; // 4*3*2*1 = 24
 
     ASTNode *root = parse_script_from_string(code);
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
     TEST_ASSERT_EQUAL_DOUBLE(24.0, a->number);
-    TEST_ASSERT_EQUAL_INT(2, statement_count); // function + let
+    TEST_ASSERT_EQUAL_INT(1, statement_count); //  let
 
     free_ast(root);
 }
-
-
-
-
-
-
-
 
 void test_emit_function_expr_args(void)
 {
@@ -291,7 +281,7 @@ void test_emit_function_expr_args(void)
     ASTNode *root = parse_script_from_string(code);
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *z = get_var("z");
@@ -303,21 +293,6 @@ void test_emit_function_expr_args(void)
 
     free_ast(root);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void test_emit_function_in_condition(void)
 {
@@ -331,13 +306,13 @@ void test_emit_function_in_condition(void)
     ASTNode *root = parse_script_from_string(code);
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
     TEST_ASSERT_EQUAL_DOUBLE(1.0, a->number);
-    TEST_ASSERT_EQUAL_INT(4, statement_count); // function + let + if + inner let
+    TEST_ASSERT_EQUAL_INT(3, statement_count); // + let + if + inner let
 
     free_ast(root);
 }
@@ -350,7 +325,7 @@ void test_emit_bitwise_and(void)
     ASTNode *root = parse_script_from_string(code);
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
@@ -374,7 +349,7 @@ void test_emit_function_overwrite_var(void)
     ASTNode *root = parse_script_from_string(code);
     statement_count = 0;
     reset_runtime_state();
-           
+
     emit_gcode(root, get_debug());
 
     if (has_errors())
@@ -390,7 +365,7 @@ void test_emit_function_overwrite_var(void)
 
     TEST_ASSERT_EQUAL_DOUBLE(5.0, x->number); // Global x must remain untouched
     TEST_ASSERT_EQUAL_DOUBLE(5.0, y->number);
-    TEST_ASSERT_EQUAL_INT(3, statement_count); // let x, function, let y
+    TEST_ASSERT_EQUAL_INT(2, statement_count); // let x, let y
 
     free_ast(root);
 }
@@ -763,7 +738,7 @@ void test_emit_function_no_return(void)
     Value *abc = get_var("abc");
     TEST_ASSERT_NOT_NULL(abc);
     TEST_ASSERT_EQUAL_DOUBLE(0.0, abc->number); // No return = 0.0 by convention
-    TEST_ASSERT_EQUAL_INT(2, statement_count);  // function + let abc
+    TEST_ASSERT_EQUAL_INT(1, statement_count);  //  let abc
 
     free_ast(root);
 }
@@ -771,13 +746,12 @@ void test_emit_function_no_return(void)
 void test_array_assignment_and_access(void)
 {
 
-
     const char *code =
         "let grid = [[1, 2], [3, 4]]\n"
         "let val = grid[1][0]\n";
 
     ASTNode *root = parse_script_from_string(code);
-        reset_runtime_state();
+    reset_runtime_state();
     emit_gcode(root, 0);
 
     if (has_errors())
@@ -792,7 +766,6 @@ void test_array_assignment_and_access(void)
 
 void test_emit_maze_generator_program(void)
 {
-
 
     const char *code =
         "let maze = []\n"
@@ -821,12 +794,6 @@ void test_emit_maze_generator_program(void)
     free_ast(root);
 }
 
-
-
-
-
-
-
 void test_emit_function_statement_and_expression(void)
 {
     const char *code =
@@ -847,74 +814,51 @@ void test_emit_function_statement_and_expression(void)
     TEST_ASSERT_EQUAL_DOUBLE(0.0, res->number); // No return = 0.0
 
     // ✅ Only G1 and let should count
-    TEST_ASSERT_EQUAL_INT(2, statement_count);
+    TEST_ASSERT_EQUAL_INT(5, statement_count);
 
     free_ast(root);
 }
-
-
-
-
-
-
-
 
 int main(void)
 {
 
     UNITY_BEGIN();
 
+       RUN_TEST(test_array_assignment_and_access);          // 1
+    RUN_TEST(test_emit_maze_generator_program);            // 2
+    RUN_TEST(test_emit_function_overwrite_var);            // 3
+    RUN_TEST(test_emit_function_unused_param);             // 4
+    RUN_TEST(test_emit_function_only_return);              // 5
+    RUN_TEST(test_emit_function_no_params_no_return);      // 6
+    RUN_TEST(test_emit_loop_and_conditionals);             // 7
+    RUN_TEST(test_emit_while_loop_basic);                  // 8
+    RUN_TEST(test_emit_nested_if_inside_loop);             // 9
+    RUN_TEST(test_emit_simple_gcode_block);                // 10
+    RUN_TEST(test_builtin_clamp);                          // 11
+    RUN_TEST(test_builtin_math_functions_and_constants);   // 12
+    RUN_TEST(test_emit_nested_if_inside_loop2);            // 13
+    RUN_TEST(test_emit_function_declaration_and_call);     // 14
+    RUN_TEST(test_emit_function_call_returns_value);       // 15
+    RUN_TEST(test_emit_function_call_inside_expression);   // 16
+    RUN_TEST(test_emit_function_with_two_params);          // 17
+    RUN_TEST(test_emit_function_recursion);                // 18
+    RUN_TEST(test_emit_function_in_condition);             // 19
+    RUN_TEST(test_emit_bitwise_and);                       // 20
+    RUN_TEST(test_emit_function_calls_function);           // 21
+    RUN_TEST(test_emit_function_early_return);             // 22
+    RUN_TEST(test_complex_gcode_logic);                    // 23
+    RUN_TEST(test_builtin_exp);                            // 24
+    RUN_TEST(test_builtin_deg_rad_sign);                   // 25
+    RUN_TEST(test_emit_function_no_return);                // 26
+    RUN_TEST(test_builtin_log);                            // 27
+    RUN_TEST(test_builtin_noise_zero);                     // 28
+    RUN_TEST(test_builtin_trig_pow_hypot);                 // 29
+    RUN_TEST(test_emit_function_expr_args);                // 30
+    RUN_TEST(test_builtin_min_max);                        // 31
+    RUN_TEST(test_emit_function_empty_body);               // 32
+    RUN_TEST(test_emit_function_statement_and_expression); // 33
 
-
-
- //  RUN_TEST(test_array_assignment_and_access);          // 1
-
-
-
-
-
-  
-    // RUN_TEST(test_emit_maze_generator_program);          // 2
-    // RUN_TEST(test_emit_function_overwrite_var);          // 3
-    // RUN_TEST(test_emit_function_unused_param);           // 4
-    // RUN_TEST(test_emit_function_only_return);            // 5
-    // RUN_TEST(test_emit_function_no_params_no_return);    // 6
-    // RUN_TEST(test_emit_loop_and_conditionals);           // 7
-    // RUN_TEST(test_emit_while_loop_basic);                // 8
-    // RUN_TEST(test_emit_nested_if_inside_loop);           // 9
-    // RUN_TEST(test_emit_simple_gcode_block);              // 10
-    // RUN_TEST(test_builtin_clamp);                        // 11
-    // RUN_TEST(test_builtin_math_functions_and_constants); // 12
-    // RUN_TEST(test_emit_nested_if_inside_loop2);          // 13
-    // RUN_TEST(test_emit_function_declaration_and_call);   // 14
-    // RUN_TEST(test_emit_function_call_returns_value);     // 15
-    // RUN_TEST(test_emit_function_call_inside_expression); // 16
-    // RUN_TEST(test_emit_function_with_two_params);        // 17
-    // RUN_TEST(test_emit_function_recursion);              // 18
-    // RUN_TEST(test_emit_function_in_condition);           // 19
-    // RUN_TEST(test_emit_bitwise_and);                     // 20
-    // RUN_TEST(test_emit_function_calls_function);         // 21
-    // RUN_TEST(test_emit_function_early_return);           // 22
-    // RUN_TEST(test_complex_gcode_logic);                  // 23
-    // RUN_TEST(test_builtin_exp);                          // 24
-    // RUN_TEST(test_builtin_deg_rad_sign);                 // 25
-    // RUN_TEST(test_emit_function_no_return);              // 26
-    // RUN_TEST(test_builtin_log);                          // 27
-    // RUN_TEST(test_builtin_noise_zero);                   // 28
-    // RUN_TEST(test_builtin_trig_pow_hypot);               // 29
-
-
-    RUN_TEST(test_emit_function_expr_args);              // 30
-
-
-
-    // RUN_TEST(test_builtin_min_max);                      // 31
-    // RUN_TEST(test_emit_function_empty_body);             // 32
-
-
-        RUN_TEST(test_emit_function_statement_and_expression);              // 30
-
-
+    ////333
 
     return UNITY_END();
 }

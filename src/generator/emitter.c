@@ -405,7 +405,7 @@ static void emit_function_stmt(ASTNode *node, int debug)
 
     if (debug)
     {
-        printf("[Emit emit_function_stmt] FUNCTION declared: %s with %d params\n",
+        printf("[Emit] FUNCTION declared: %s with %d params\n",
                node->function_stmt.name,
                node->function_stmt.param_count);
         fflush(stdout);
@@ -620,11 +620,7 @@ case AST_EXPR_STMT:
 
 case AST_CALL:
 {
-    if (debug)
-    {
-        printf("[Emit AST_CALL] CALL statement (not expression)\n");
-        fflush(stdout);
-    }
+
 
     // Execute function and ignore the return value
     Value *result = eval_expr(node);

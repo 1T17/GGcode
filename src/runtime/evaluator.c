@@ -817,8 +817,16 @@ Value *eval_function_call(ASTNode *node)
     for (int i = 0; i < param_count; i++)
     {
         Value *arg_val = make_number_value(0.0);
-        if (i < argc)
-            arg_val = eval_expr(args[i]);
+if (i < argc)
+    arg_val = eval_expr(args[i]);
+
+if (!arg_val || arg_val->type != VAL_NUMBER) {
+    fprintf(stderr, "🚨 ERROR: Failed to evaluate argument %d for function '%s'\n", i, name);
+    exit(1);
+}
+
+if (strcmp(name, "fact") == 0 && i == 0)
+    printf("[debug] fact() called with n = %.2f\n", arg_val->number);
 
         declare_var(func->function_stmt.params[i], arg_val);
     }
@@ -829,15 +837,55 @@ ASTNode *body = func->function_stmt.body;
 for (int i = 0; i < body->block.count; i++) {
     ASTNode *stmt = body->block.statements[i];
 
-    // Evaluate expressions (e.g., return), emit G-code lines
-    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_EXPR_STMT || stmt->type == AST_IF || stmt->type == AST_FOR || stmt->type == AST_WHILE)
+    // ✅ Always evaluate control flow and expressions
+    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_WHILE) {
         emit_gcode(stmt, 0);
-    else
+    } else {
         eval_expr(stmt);
+    }
 
     if (runtime_has_returned)
         break;
 }
+
+
+
+
+
+
+
+
+
+
+
+// for (int i = 0; i < body->block.count; i++) {
+//     ASTNode *stmt = body->block.statements[i];
+
+//     // Evaluate expressions (e.g., return), emit G-code lines
+//     if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_EXPR_STMT || stmt->type == AST_IF || stmt->type == AST_FOR || stmt->type == AST_WHILE)
+//         emit_gcode(stmt, 0);
+//     else
+//         eval_expr(stmt);
+
+//     if (runtime_has_returned)
+//         break;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     exit_scope();
