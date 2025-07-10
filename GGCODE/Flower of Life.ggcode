@@ -31,6 +31,11 @@ let spacing_x   = radius
 let spacing_y   = radius * sqrt(3) / 2
 let outer_r     = radius * 2.5
 
+
+
+
+
+
 G0 Z[z_safe]
 
 // Grid of clipped circles

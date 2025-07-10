@@ -53,20 +53,20 @@ strcpy(preamble, "%\n");
 
         Value *id_val = get_var("id");
         if (id_val) {
-            printf("[DEBUG] id_val is not NULL, type = %d\n", id_val->type);
+           //printf("[DEBUG] id_val is not NULL, type = %d\n", id_val->type);
         } else {
             printf("[DEBUG] id_val is NULL\n");
         }
 
         if (id_val && id_val->type == VAL_NUMBER) {
-            printf("[DEBUG] id_val->number = %f\n", id_val->number);
+           //printf("[DEBUG] id_val->number = %f\n", id_val->number);
             snprintf(id_line, sizeof(id_line), "%.0f", id_val->number);
         } else {
             printf("[DEBUG] id_val is not a number, using default '000'\n");
             snprintf(id_line, sizeof(id_line), "000");
         }
     } else {
-        printf("[DEBUG] Variable 'id' does not exist, using default '000'\n");
+      //printf("[DEBUG] Variable 'id' does not exist, using default '000'\n");
         snprintf(id_line, sizeof(id_line), "000");
     }
 

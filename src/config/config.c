@@ -1,8 +1,12 @@
 #include "config.h"
 #include <stddef.h>
 
+#include "../parser/ast_nodes.h"  // Needed for ASTNode
+ASTNode *global_root_ast = NULL;
+char *global_source_buffer = NULL;
+
 char RUNTIME_TIME[64] = "";
-char RUNTIME_FILENAME[256] = "";
+ char RUNTIME_FILENAME[256] = "";
 
 static const char* input_file = NULL;
 

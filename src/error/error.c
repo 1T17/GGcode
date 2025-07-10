@@ -5,14 +5,19 @@
 #include <string.h>
 #include "../lexer/token_types.h"  // Needed for Token_Type enum
 #include "../parser/ast_nodes.h"   // Needed for ASTNodeType enum
+#include "../utils/output_buffer.h"  
+#include "../utils/output_buffer.h"  
 
-
+#include "config/config.h"
 
 #define MAX_ERRORS 100
 static char error_messages[MAX_ERRORS][256];
 static int error_count = 0;
 
 
+
+jmp_buf fatal_error_jump_buffer;
+int fatal_error_triggered = 0;
 
 
 
@@ -30,6 +35,7 @@ const char *get_ast_type_name(int type) {
         case AST_RETURN: return "AST_RETURN";
         case AST_NUMBER: return "AST_NUMBER";
         case AST_BINARY: return "AST_BINARY";
+        case AST_EXPR_STMT: return  "AST_EXPR_STMT";
         case AST_GCODE: return "AST_GCODE";
         case AST_WHILE: return "AST_WHILE";
         case AST_FOR: return "AST_FOR";
@@ -38,9 +44,127 @@ const char *get_ast_type_name(int type) {
         case AST_IF: return "AST_IF";
         case AST_UNARY: return "AST_UNARY";
         case AST_EMPTY: return "AST_EMPTY";
+
         default: return "UNKNOWN_AST_TYPE";
     }
 }
+
+
+
+#include "../generator/emitter.h"   // for free_output_buffer()
+#include "../runtime/evaluator.h"   // for reset_runtime_state()
+
+
+// These should be declared as extern in error.h or at the top of error.c if not already
+extern ASTNode *global_root_ast;
+extern char *global_source_buffer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void fatal_error(const char *source, int line, int column, const char *format, ...) {
+    // Show header with location
+    fprintf(stderr, "\n🛑 [Fatal Error] ");
+    fprintf(stderr, "\n[Debug] RUNTIME_FILENAME is: '%s'\n", RUNTIME_FILENAME);
+
+
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+
+    // Show file:line:column info (if source provided)
+    if (source && line > 0 && column > 0) {
+        fprintf(stderr, "  (at %s:%d:%d)\n", RUNTIME_FILENAME[0] ? RUNTIME_FILENAME : "<input>", line, column);
+
+        // Extract and print the relevant source line
+        const char *line_start = source;
+        const char *p = source;
+        int current_line = 1;
+
+        // Go to the line
+        while (*p && current_line < line) {
+            if (*p == '\n') current_line++;
+            if (current_line < line) line_start = ++p;
+            else break;
+        }
+
+        const char *line_end = line_start;
+        while (*line_end && *line_end != '\n') line_end++;
+
+        int line_len = (int)(line_end - line_start);
+        fprintf(stderr, "  %.*s\n  ", line_len, line_start);
+
+        for (int i = 1; i < column && i <= line_len; i++) {
+            fprintf(stderr, (line_start[i - 1] == '\t') ? "\t" : " ");
+        }
+        fprintf(stderr, "^\n");
+    } else {
+        fprintf(stderr, "\n");
+    }
+
+    // Cleanup
+    if (global_root_ast) {
+        free_ast(global_root_ast);
+        global_root_ast = NULL;
+    }
+
+    if (global_source_buffer) {
+        free(global_source_buffer);
+        global_source_buffer = NULL;
+    }
+
+    free_output_buffer();
+    clear_errors();
+
+
+    // if ilke not to kill prosess but stop the proses not exit just stop whatever is gowing on lexer phrazer ony layer that is active
+fatal_error_triggered = 1;
+longjmp(fatal_error_jump_buffer, 1);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

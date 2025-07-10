@@ -7,6 +7,8 @@ extern int statement_count;
 
 
 void emit_gcode(ASTNode* node, int debug);
+
+void emit_block_stmt(ASTNode* node, int debug);
 int get_statement_count();
 
 

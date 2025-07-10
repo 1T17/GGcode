@@ -9,6 +9,11 @@
 #include "../parser/parser.h"
 #include "error/error.h"
 #include "config/config.h"
+#include "generator/emitter.h"
+
+
+
+
 
 
 extern Parser parser;
@@ -232,12 +237,12 @@ void reset_runtime_state(void)
     runtime_has_returned = 0;
 
     if (runtime_return_value) {
-        printf("[Runtime]   ↳ Freeing runtime return value\n");
+        //printf("[Runtime]   ↳ Freeing runtime return value\n");
         free(runtime_return_value);
         runtime_return_value = NULL;
     }
 
-    printf("[Runtime] ✅ Reset complete. All variables and memory freed.\n");
+    //printf("[Runtime] ✅ Reset complete. All variables and memory freed.\n");
 }
 
 
@@ -248,7 +253,7 @@ void reset_runtime_state(void)
 void enter_scope()
 {
     current_scope_level++;
-    printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
+    //printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
 }
 
 
@@ -343,6 +348,38 @@ else if (val->type == VAL_ARRAY)
 
     return copy;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -580,6 +617,22 @@ case AST_BLOCK:
 
 
 
+
+case AST_WHILE: {
+    while (get_number(eval_expr(node->while_stmt.condition))) {
+        eval_expr(node->while_stmt.body);
+
+        if (runtime_has_returned) {
+            break;
+        }
+    }
+    return make_number_value(0.0);
+}
+
+
+
+
+
     default:
 
         report_error("[Runtime evaluator] Unsupported expression type: %d (%s)", node->type, get_ast_type_name(node->type));
@@ -749,6 +802,11 @@ Value *eval_function_call(ASTNode *node)
         return make_number_value(0.0);
     }
 
+
+    
+
+
+    
     // ✅ Clear return state before executing function
     runtime_has_returned = 0;
     runtime_return_value = NULL;
@@ -765,14 +823,22 @@ Value *eval_function_call(ASTNode *node)
         declare_var(func->function_stmt.params[i], arg_val);
     }
 
-    ASTNode *body = func->function_stmt.body;
-    for (int i = 0; i < body->block.count; i++)
-    {
-        eval_expr(body->block.statements[i]);
+ASTNode *body = func->function_stmt.body;
 
-        if (runtime_has_returned)
-            break;
-    }
+// ⚠️ Fix: Use emit_gcode instead of eval_expr for statements
+for (int i = 0; i < body->block.count; i++) {
+    ASTNode *stmt = body->block.statements[i];
+
+    // Evaluate expressions (e.g., return), emit G-code lines
+    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_EXPR_STMT || stmt->type == AST_IF || stmt->type == AST_FOR || stmt->type == AST_WHILE)
+        emit_gcode(stmt, 0);
+    else
+        eval_expr(stmt);
+
+    if (runtime_has_returned)
+        break;
+}
+
 
     exit_scope();
 
@@ -1143,13 +1209,13 @@ void free_value(Value *val) {
 
 void exit_scope()
 {
-    printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
+    //printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
 
     for (int i = var_count - 1; i >= 0; --i)
     {
         if (variables[i].scope_level == current_scope_level)
         {
-            printf("[Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
+            //printf("[Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
 
             free(variables[i].name);
 
@@ -1158,14 +1224,14 @@ void exit_scope()
             {
                 if (variables[i].val->type == VAL_ARRAY)
                 {
-                    printf("[Free] Array value with %zu items\n", variables[i].val->array.count);
+                    //printf("[Free] Array value with %zu items\n", variables[i].val->array.count);
                     for (size_t j = 0; j < variables[i].val->array.count; j++)
                     {
                         free(variables[i].val->array.items[j]);
                     }
                     free(variables[i].val->array.items);
                 }
-                printf("[Free] Value struct\n");
+                //printf("[Free] Value struct\n");
 
 
 
@@ -1198,7 +1264,7 @@ void exit_scope()
 
     
     current_scope_level--;
-    printf("[Scope] Scope level decreased to %d\n", current_scope_level);
+    //printf("[Scope] Scope level decreased to %d\n", current_scope_level);
 }
 
 

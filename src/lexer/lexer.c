@@ -22,21 +22,6 @@ Lexer *lexer_new(const char *source) {
         return NULL;
     }
 
-    // printf("[Lexer] Raw input bytes (first 100 chars):\n");
-    // for (int i = 0; i < 100 && source[i] != '\0'; i++) {
-    //     printf("%02X ", (unsigned char)source[i]);
-    // }
-    // printf("\n");
-
-    // const char *null_pos = strchr(source, '\0');
-    // if (null_pos) {
-    //     printf("[Lexer] NULL terminator found at offset: %ld\n", null_pos - source);
-    // } else {
-    //     printf("[Lexer] WARNING: No NULL terminator found!\n");
-    // }
-
-    //printf("[Lexer] Input length (strlen): %zu\n", strlen(source));
-
     // Safe defensive copy
     char *copy = strdup(source);
     if (!copy) {
@@ -172,8 +157,6 @@ static void skip_whitespace(Lexer *lexer)
 
  if (c == '\n') {
     advance(lexer);
-    lexer->line++;
-    lexer->column = 1;
 } else if (isspace(c)) {
     advance(lexer);
 }
