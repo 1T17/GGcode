@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "../utils/compat.h"
 #include "lexer.h"
-#include "token_utils.h" // or "token.h" if you later split it
+#include "token_utils.h"
 
 int LEXER_DEBUG = 0; // Toggle lexer debug output
 
