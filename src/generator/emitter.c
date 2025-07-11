@@ -22,20 +22,46 @@ Value *make_number_value(double num);
 
 double get_number(Value *val);
 
+#include <math.h>
+
+
+
+
+
+
+
 Value *make_number_value(double num)
 {
     Value *val = malloc(sizeof(Value));
     if (!val)
     {
-
         report_error("[make_number_value] Out of memory");
-
         exit(1);
     }
+
+    // Clamp extremely small values to 0
+    if (fabs(num) < 1e-10)
+        num = 0.0;
+
+
+
     val->type = VAL_NUMBER;
     val->number = num;
     return val;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int statement_count = 0;
 

@@ -824,19 +824,22 @@ int main(void)
 
     UNITY_BEGIN();
 
-       RUN_TEST(test_array_assignment_and_access);          // 1
-    RUN_TEST(test_emit_maze_generator_program);            // 2
-    RUN_TEST(test_emit_function_overwrite_var);            // 3
-    RUN_TEST(test_emit_function_unused_param);             // 4
-    RUN_TEST(test_emit_function_only_return);              // 5
-    RUN_TEST(test_emit_function_no_params_no_return);      // 6
-    RUN_TEST(test_emit_loop_and_conditionals);             // 7
-    RUN_TEST(test_emit_while_loop_basic);                  // 8
-    RUN_TEST(test_emit_nested_if_inside_loop);             // 9
-    RUN_TEST(test_emit_simple_gcode_block);                // 10
-    RUN_TEST(test_builtin_clamp);                          // 11
-    RUN_TEST(test_builtin_math_functions_and_constants);   // 12
-    RUN_TEST(test_emit_nested_if_inside_loop2);            // 13
+    RUN_TEST(test_array_assignment_and_access); // 1
+
+    RUN_TEST(test_emit_maze_generator_program);       // 2
+    RUN_TEST(test_emit_function_overwrite_var);       // 3
+    RUN_TEST(test_emit_function_unused_param);        // 4
+    RUN_TEST(test_emit_function_only_return);         // 5
+    RUN_TEST(test_emit_function_no_params_no_return); // 6
+    RUN_TEST(test_emit_loop_and_conditionals);        // 7
+
+    RUN_TEST(test_emit_while_loop_basic);                // 8
+    RUN_TEST(test_emit_nested_if_inside_loop);           // 9
+    RUN_TEST(test_emit_simple_gcode_block);              // 10
+    RUN_TEST(test_builtin_clamp);                        // 11
+    RUN_TEST(test_builtin_math_functions_and_constants); // 12
+    RUN_TEST(test_emit_nested_if_inside_loop2);          // 13
+
     RUN_TEST(test_emit_function_declaration_and_call);     // 14
     RUN_TEST(test_emit_function_call_returns_value);       // 15
     RUN_TEST(test_emit_function_call_inside_expression);   // 16

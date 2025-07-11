@@ -44,6 +44,10 @@ Token lexer_peek_token(Lexer *lexer);
 
 
 
+
+
+/// @brief step 2
+/// @return 
 ASTNode *parse_script() {
 
 
@@ -58,13 +62,17 @@ ASTNode *parse_script() {
     int count = 0;
     int capacity = 0;
 
-    //printf("[DEBUG parse_script] Entering parse_script()\n");
+    //printf("[DEBUG parse_script step] Entering parse_script()\n");
 
     while (parser.current.type != TOKEN_EOF) {
         if (parser.current.type == TOKEN_NEWLINE) {
             parser_advance();
             continue;
         }
+
+
+
+       /// step 3
 
         ASTNode *stmt = parse_statement();
 
@@ -98,7 +106,7 @@ if (!new_array) {
         statements[count++] = stmt;
     }
 
-  //  //printf("[DEBUG] Finished loop, count = %d\n", count);
+  printf("[DEBUG 666666666666666] Finished loop, count = %d\n", count);
 
     ASTNode *block = malloc(sizeof(ASTNode));
 if (!block) {
@@ -111,6 +119,12 @@ if (!block) {
     block->block.count = count;
     return block;
 }
+
+
+
+
+
+
 
 
 
@@ -611,6 +625,21 @@ static ASTNode *parse_return()
     return node;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 static ASTNode *parse_statement()
 {
     if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
@@ -656,6 +685,28 @@ static ASTNode *parse_statement()
 
     return NULL;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 static ASTNode *parse_identifier_statement()
 {
@@ -765,24 +816,6 @@ static ASTNode *parse_block()
     return node;
 }
 
-static ASTNode *parse_while()
-{
-
-    // printf("[DEBUG] Inside parse_while. Current token before parser_advance: type=%d, value='%s'\n",parser.current.type, parser.current.value);
-
-    parser_advance(); // skip 'while'
-
-    ASTNode *condition = parse_binary_expression(); // allow full expression
-
-    ASTNode *body = parse_block(); // parse block after condition
-
-    ASTNode *node = malloc(sizeof(ASTNode));
-    node->type = AST_WHILE;
-    node->while_stmt.condition = condition;
-    node->while_stmt.body = body;
-
-    return node;
-}
 
 static ASTNode *parse_let()
 {
@@ -809,6 +842,17 @@ static ASTNode *parse_let()
     node->let_stmt.expr = expr;
     return node;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 static ASTNode *parse_for()
 {
@@ -872,6 +916,26 @@ static ASTNode *parse_for()
     node->for_stmt.step = step; // can be NULL (default to 1 later)
     node->for_stmt.exclusive = exclusive;
     node->for_stmt.body = body;
+    return node;
+}
+
+
+static ASTNode *parse_while()
+{
+
+    // printf("[DEBUG] Inside parse_while. Current token before parser_advance: type=%d, value='%s'\n",parser.current.type, parser.current.value);
+
+    parser_advance(); // skip 'while'
+
+    ASTNode *condition = parse_binary_expression(); // allow full expression
+
+    ASTNode *body = parse_block(); // parse block after condition
+
+    ASTNode *node = malloc(sizeof(ASTNode));
+    node->type = AST_WHILE;
+    node->while_stmt.condition = condition;
+    node->while_stmt.body = body;
+
     return node;
 }
 

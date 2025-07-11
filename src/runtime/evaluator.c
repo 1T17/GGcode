@@ -838,7 +838,7 @@ for (int i = 0; i < body->block.count; i++) {
     ASTNode *stmt = body->block.statements[i];
 
     // ✅ Always evaluate control flow and expressions
-    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_WHILE) {
+    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_WHILE || stmt->type == AST_FOR ) {
         emit_gcode(stmt, 0);
     } else {
         eval_expr(stmt);
@@ -847,10 +847,6 @@ for (int i = 0; i < body->block.count; i++) {
     if (runtime_has_returned)
         break;
 }
-
-
-
-
 
 
 
