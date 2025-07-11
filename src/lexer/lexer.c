@@ -6,14 +6,7 @@
 #include "lexer.h"
 #include "token_utils.h" // or "token.h" if you later split it
 
-
-
-
 int LEXER_DEBUG = 0; // Toggle lexer debug output
-
-
-
-
 
 Lexer *lexer_new(const char *source) {
      //printf("[lexer_new]\n");
@@ -48,33 +41,12 @@ Lexer *lexer_new(const char *source) {
     return lexer;
 }
 
-
-
 /// @brief Frees the memory for a lexer
 /// @param lexer The lexer to free
 void lexer_free(Lexer *lexer)
 {
     free(lexer);
 }
-
-/// @brief Frees memory for a token value string
-/// @param token The token to clean up
-// void token_free(Token token)
-// {
-//     if (token.value)
-//         free(token.value);
-// }
-
-/// @brief Optionally prints token if debugging is enabled
-/// @param token The token to print
-// static void print_token(Token token)
-// {
-//     if (LEXER_DEBUG)
-//     {
-//         printf("[Lexer] Token: type=%d, value='%s' at line=%d, col=%d\n",
-//                token.type, token.value, token.line, token.column);
-//     }
-// }
 
 /// @brief Peeks at the current character
 static char peek(Lexer *lexer)
@@ -85,11 +57,7 @@ static char peek(Lexer *lexer)
     return lexer->source[lexer->pos];
 }
 
-
-
-
 /// @brief Peeks at the next character
-
 static char peek_next(Lexer *lexer)
 {
     if (!lexer || !lexer->source)
@@ -98,10 +66,7 @@ static char peek_next(Lexer *lexer)
     return lexer->source[lexer->pos + 1];
 }
 
-
-
 /// @brief Peeks ahead by a fixed offset
-
 static char peek_ahead(Lexer *lexer, int offset)
 {
     if (!lexer || !lexer->source)
@@ -111,15 +76,7 @@ static char peek_ahead(Lexer *lexer, int offset)
     return lexer->source[pos] != '\0' ? lexer->source[pos] : '\0';
 }
 
-
-
-
-
-
 /// @brief Advances the lexer by one character
-
-
-
 static char advance(Lexer *lexer)
 {
     char c = lexer->source[lexer->pos++];
@@ -142,13 +99,7 @@ static char advance(Lexer *lexer)
     return c;
 }
 
-
-
 /// @brief Skips whitespace and comments
-
-
-
-
 static void skip_whitespace(Lexer *lexer)
 {
     while (1)
@@ -192,40 +143,6 @@ static void skip_whitespace(Lexer *lexer)
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /// @brief Lookup keyword and return its token type
 static Token_Type keyword_lookup(const char *word)
 {
@@ -236,11 +153,7 @@ static Token_Type keyword_lookup(const char *word)
     return TOKEN_IDENTIFIER;
 }
 
-
 /// @brief Main lexer function to get the next token
-
-
-
 Token lexer_next_token(Lexer *lexer)
 {
 
