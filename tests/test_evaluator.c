@@ -445,30 +445,30 @@ void test_eval_negative_and_unary(void)
 int main(void)
 {
     UNITY_BEGIN();
-    //  RUN_TEST(test_eval_simple_addition);                  //1
-    //  RUN_TEST(test_eval_nested_expression);                //2
-    //  RUN_TEST(test_eval_variables_and_arithmetic);         //3
-    //  RUN_TEST(test_eval_comparison_operators);             //4
-    //  RUN_TEST(test_eval_unary_bang);                       //5
-    //  RUN_TEST(test_eval_not_equal_operator);               //6
-    //  RUN_TEST(test_eval_variable_dependencies);            //7
-    //  RUN_TEST(test_eval_unary_bang_nonzero);               //8
-    //  RUN_TEST(test_eval_chained_arithmetic);               //9
-    //  RUN_TEST(test_eval_operator_precedence);              //10
-    //  RUN_TEST(test_eval_parentheses_override_precedence);  //11
-    //  RUN_TEST(test_eval_all_operators_combo);              //12
-    //  RUN_TEST(test_eval_deep_variable_chain);              //13
-    //  RUN_TEST(test_eval_multiple_comparisons);             //14
-    //  RUN_TEST(test_eval_division);                         //15      
-    //  RUN_TEST(test_eval_arith_and_compare_mix);            //16
-    //  RUN_TEST(test_eval_logical_and_or);                   //17
-    //  RUN_TEST(test_eval_bitwise_and);                      //18
-    //  RUN_TEST(test_eval_basic_functions);                  //19
-    //  RUN_TEST(test_eval_geometry_helpers);                 //20
-    //  RUN_TEST(test_eval_advanced_functions);               //21
-    //  RUN_TEST(test_eval_constants);                        //22
-    //  RUN_TEST(test_eval_manual_while_loop);                //23
-    //  RUN_TEST(test_eval_trig_functions);                   //24 
-    // RUN_TEST(test_eval_negative_and_unary);               //25
+     RUN_TEST(test_eval_simple_addition);                  //1
+     RUN_TEST(test_eval_nested_expression);                //2
+     RUN_TEST(test_eval_variables_and_arithmetic);         //3
+     RUN_TEST(test_eval_comparison_operators);             //4
+     RUN_TEST(test_eval_unary_bang);                       //5
+     RUN_TEST(test_eval_not_equal_operator);               //6
+     RUN_TEST(test_eval_variable_dependencies);            //7
+     RUN_TEST(test_eval_unary_bang_nonzero);               //8
+     RUN_TEST(test_eval_chained_arithmetic);               //9
+     RUN_TEST(test_eval_operator_precedence);              //10
+     RUN_TEST(test_eval_parentheses_override_precedence);  //11
+     RUN_TEST(test_eval_all_operators_combo);              //12
+     RUN_TEST(test_eval_deep_variable_chain);              //13
+     RUN_TEST(test_eval_multiple_comparisons);             //14
+     RUN_TEST(test_eval_division);                         //15      
+     RUN_TEST(test_eval_arith_and_compare_mix);            //16
+     RUN_TEST(test_eval_logical_and_or);                   //17
+     RUN_TEST(test_eval_bitwise_and);                      //18
+     RUN_TEST(test_eval_basic_functions);                  //19
+     RUN_TEST(test_eval_geometry_helpers);                 //20
+     RUN_TEST(test_eval_advanced_functions);               //21
+     RUN_TEST(test_eval_constants);                        //22
+     RUN_TEST(test_eval_manual_while_loop);                //23
+     RUN_TEST(test_eval_trig_functions);                   //24 
+    RUN_TEST(test_eval_negative_and_unary);               //25
     return UNITY_END();
 }

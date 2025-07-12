@@ -7,9 +7,7 @@
 #include "error/error.h"
 #include <ctype.h>
 #include <setjmp.h>
-
 #define M_PI 3.14159265358979323846
-
 #define PARSE_ERROR(msg, ...) \
     fatal_error(parser.lexer->source, parser.current.line, parser.current.column, msg, ##__VA_ARGS__)
 
@@ -26,10 +24,6 @@ static ASTNode *parse_note();
 static ASTNode *parse_gcode();
 static ASTNode *parse_identifier_statement();
 static ASTNode *parse_statement();
-
-
-// static ASTNode *parse_gcode_coord_only();
-
 static ASTNode *parse_primary();
 static ASTNode *parse_function();
 static ASTNode *parse_return();
@@ -38,12 +32,6 @@ static ASTNode *parse_postfix_expression(); // <-- add this
 
 // Forward declaration
 Token lexer_peek_token(Lexer *lexer);
-
-
-
-
-
-
 
 
 /// @brief step 2
@@ -106,7 +94,7 @@ if (!new_array) {
         statements[count++] = stmt;
     }
 
-  printf("[DEBUG 666666666666666] Finished loop, count = %d\n", count);
+  printf("[DEBUG] Finished loop, count = %d\n", count);
 
     ASTNode *block = malloc(sizeof(ASTNode));
 if (!block) {
@@ -119,19 +107,6 @@ if (!block) {
     block->block.count = count;
     return block;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 int get_precedence(Token_Type op)
 {
@@ -195,9 +170,6 @@ static ASTNode *parse_unary()
 
     return parse_postfix_expression(); // fallback to normal expression
 }
-
-
-
 
 static ASTNode *parse_primary()
 {  
@@ -452,24 +424,6 @@ if (parser.current.type == TOKEN_LPAREN)
     return dummy;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 static ASTNode *parse_postfix_expression()
 {
     ASTNode *expr = parse_primary();
@@ -526,15 +480,6 @@ static ASTNode *parse_binary_expression()
 {
     return parse_binary_expression_prec(0);
 }
-
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_function()
 {
@@ -611,10 +556,6 @@ static ASTNode *parse_function()
     return node;
 }
 
-
-
-
-
 static ASTNode *parse_return()
 {
     parser_advance(); // skip 'return'
@@ -624,21 +565,6 @@ static ASTNode *parse_return()
     node->return_stmt.expr = expr;
     return node;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_statement()
 {
@@ -685,28 +611,6 @@ static ASTNode *parse_statement()
 
     return NULL;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_identifier_statement()
 {
@@ -787,7 +691,7 @@ static ASTNode *parse_block()
         {
             PARSE_ERROR("Unexpected EOF in block");
         }
-
+////step 6
         ASTNode *stmt = parse_statement();
         if (stmt != NULL)
         {
@@ -816,7 +720,6 @@ static ASTNode *parse_block()
     return node;
 }
 
-
 static ASTNode *parse_let()
 {
     parser_advance(); // skip 'let'
@@ -842,17 +745,6 @@ static ASTNode *parse_let()
     node->let_stmt.expr = expr;
     return node;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 static ASTNode *parse_for()
 {
@@ -906,6 +798,7 @@ static ASTNode *parse_for()
         step->number.value = 1.0;
     }
 
+    ///step5
     ASTNode *body = parse_block();
 
     ASTNode *node = malloc(sizeof(ASTNode));
@@ -918,7 +811,6 @@ static ASTNode *parse_for()
     node->for_stmt.body = body;
     return node;
 }
-
 
 static ASTNode *parse_while()
 {
@@ -989,14 +881,6 @@ static ASTNode *parse_note()
     return node;
 }
 
-
-
-
-
-
-
-
-
 static ASTNode *parse_gcode()
 {
     // Group GCODE words (like G1, G90, etc.)
@@ -1063,9 +947,6 @@ static ASTNode *parse_gcode()
 
     return node;
 }
-
-
-
 
 static ASTNode *parse_if()
 {
@@ -1239,11 +1120,6 @@ case AST_EXPR_STMT:
     free(node);
 }
 
-
-
-
-
-// Add this to lexer.c or a shared header
 Token lexer_peek_token(Lexer *lexer)
 {
     int saved_pos = lexer->pos;

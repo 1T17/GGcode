@@ -1,5 +1,3 @@
-
-
 #include "evaluator.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,15 +8,7 @@
 #include "error/error.h"
 #include "config/config.h"
 #include "generator/emitter.h"
-
-
-
-
-
-
 extern Parser parser;
-
-
 
 #define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
@@ -63,9 +53,6 @@ double get_scalar(ASTNode *node)
     return v->number;
 }
 
-
-
-
 Value *eval_let(ASTNode *node)
 {
     const char *name = node->let_stmt.name;
@@ -73,11 +60,6 @@ Value *eval_let(ASTNode *node)
     declare_var(name, value);
     return make_number_value(0.0); // Return a default value, since LET is not an expression
 }
-
-
-
-
-
 
 Value *eval(ASTNode *node)
 {
@@ -97,12 +79,6 @@ Value *get_var(const char *name)
     return NULL;
 }
 
-
-
-
-
-
-
 Value *get_array_item(Value *arr, int index)
 {
     if (!arr || arr->type != VAL_ARRAY)
@@ -118,24 +94,6 @@ Value *get_array_item(Value *arr, int index)
 
     return arr->array.items[index];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void set_parents_recursive(ASTNode *node, ASTNode *parent) {
     if (!node) return;
@@ -201,12 +159,6 @@ void set_parents_recursive(ASTNode *node, ASTNode *parent) {
     }
 }
 
-
-
-
-
-
-
 void reset_runtime_state(void)
 {
     //printf("\n[Runtime] 🔄 Resetting runtime state...\n");
@@ -245,31 +197,17 @@ void reset_runtime_state(void)
     //printf("[Runtime] ✅ Reset complete. All variables and memory freed.\n");
 }
 
-
-
-
-
-
 void enter_scope()
 {
     current_scope_level++;
     //printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
 }
 
-
-
-
-
-
-
-
 void reset_parser_state() {
     memset(&parser, 0, sizeof(Parser));  // full reset
 }
 
-
-
-
+//step 1
 ASTNode *parse_script_from_string(const char *source)
 {
 
@@ -291,8 +229,6 @@ ASTNode *parse_script_from_string(const char *source)
 
     return root;
 }
-
-
 
 Value *copy_value(Value *val)
 {
@@ -349,46 +285,7 @@ else if (val->type == VAL_ARRAY)
     return copy;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Evaluate expressions recursively
+// Evaluate expressions
 Value *eval_expr(ASTNode *node)
 {
     if (!node)
@@ -641,44 +538,6 @@ case AST_WHILE: {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Value *eval_function_call(ASTNode *node)
 {
     const char *name = node->call_expr.name;
@@ -895,16 +754,6 @@ for (int i = 0; i < body->block.count; i++) {
 #undef SCALAR
 }
 
-
-
-
-
-
-
-
-
-
-
 void declare_array(const char *name, Value **items, size_t count)
 {
     if (var_count >= MAX_VARIABLES)
@@ -935,9 +784,6 @@ int var_exists_in_current_scope(const char *name)
     }
     return 0;
 }
-
-
-
 
 
 
@@ -1025,6 +871,19 @@ void eval_block(ASTNode *block)
             printf("[Runtime evaluator] NOTE encountered, skipping\n");
             break;
 
+
+
+        case AST_GCODE:
+            printf("[Runtime evaluator] AST_GCODE , skipping\n");
+            break;
+
+
+
+        case AST_EXPR_STMT:
+            printf("[Runtime evaluator] AST_EXPR_STMT , skipping\n");
+            break;
+
+
         default:
             report_error("[Runtime evaluator] Unsupported stmt type: %d (%s) at block index %d",
                          stmt->type, get_ast_type_name(stmt->type), i);
@@ -1039,9 +898,6 @@ void eval_block(ASTNode *block)
 
     exit_scope();
 }
-
-
-
 
 void eval_if(ASTNode *stmt)
 {
@@ -1095,6 +951,42 @@ void eval_for(ASTNode *stmt)
     }
     exit_scope();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void eval_while(ASTNode *stmt)
 {

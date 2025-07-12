@@ -10,25 +10,16 @@
 #include "config/config.h"
 #include "error/error.h"
 
-// Forward declarations of utility functions
 extern char RUNTIME_TIME[64];
-// Forward declaration of the runtime filename
 extern char RUNTIME_FILENAME[256];
 
-#define MAX_WHILE_ITERATIONS 1000000 // adjust this as needed
+#define MAX_WHILE_ITERATIONS 1000000 
 
-// Value constructors
 Value *make_number_value(double num);
 
 double get_number(Value *val);
 
 #include <math.h>
-
-
-
-
-
-
 
 Value *make_number_value(double num)
 {
@@ -50,21 +41,7 @@ Value *make_number_value(double num)
     return val;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 int statement_count = 0;
-
 int debug = 0;
 
 int get_statement_count()
@@ -72,6 +49,9 @@ int get_statement_count()
     return statement_count;
 }
 
+
+
+//
 static void emit_note_stmt(ASTNode *node, int debug)
 {
     statement_count++;
@@ -164,7 +144,7 @@ static void emit_note_stmt(ASTNode *node, int debug)
 
     free(copy);
 }
-
+//
 static void emit_let_stmt(ASTNode *node, int debug)
 {
     statement_count++;
@@ -204,7 +184,7 @@ static void emit_let_stmt(ASTNode *node, int debug)
 
     set_var(node->let_stmt.name, val);
 }
-
+//
 static void emit_gcode_stmt(ASTNode *node, int debug)
 {
     statement_count++;
@@ -277,7 +257,7 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
 
     write_to_output(line);
 }
-
+//
 static void emit_while_stmt(ASTNode *node, int debug)
 {
     statement_count++;
@@ -323,9 +303,7 @@ static void emit_while_stmt(ASTNode *node, int debug)
         fflush(stdout);
     }
 }
-
-/// Emits a FOR loop from `from` to `to`, assigning the loop variable and emitting the body.
-/// @param node FOR AST node.
+//
 static void emit_for_stmt(ASTNode *node, int debug)
 {
     statement_count++;
@@ -393,9 +371,7 @@ static void emit_for_stmt(ASTNode *node, int debug)
         }
     }
 }
-
-/// Emits a block of sequential AST statements.
-/// @param node BLOCK AST node.
+//
 void emit_block_stmt(ASTNode *node, int debug)
 {
     if (debug)
@@ -417,12 +393,7 @@ void emit_block_stmt(ASTNode *node, int debug)
         emit_gcode(node->block.statements[i], debug);
     }
 }
-
-
-
-
-/// Emits a FUNCTION declaration (not executed, only registered/logged).
-/// @param node FUNCTION AST node.
+//
 static void emit_function_stmt(ASTNode *node, int debug)
 {
     //statement_count++;
@@ -437,38 +408,7 @@ static void emit_function_stmt(ASTNode *node, int debug)
         fflush(stdout);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/// Emits a function call expression by evaluating it.
-/// @param node CALL AST node.
-/// @param debug Enables debug output.
-// static void emit_call_stmt(ASTNode *node, int debug) {
-//     statement_count++;
-
-//     // Evaluate the function call for its return value or side effects
-//     eval_expr(node);
-
-//     if (debug) {
-//         printf("[Emit] Function call: %s()\n", node->call_expr.name);
-//         fflush(stdout);
-//     }
-// }
-
-/// Emits an IF/ELSE conditional branch depending on the evaluated condition.
-/// @param node IF AST node.
+//
 static void emit_if_stmt(ASTNode *node, int debug)
 {
     statement_count++;
@@ -525,18 +465,6 @@ static void emit_if_stmt(ASTNode *node, int debug)
         }
     }
 }
-
-
-
-
-
-
-
-
-
-/// Dispatches AST nodes to their respective emit_* handlers.
-/// Logs errors for unknown or unsupported types.
-/// @param node Any AST node.
 
 
 

@@ -9,7 +9,7 @@
 #include "../utils/output_buffer.h"
 #include "../generator/emitter.h"
 #include "../error/error.h"
-
+#include <time.h>
 
 
 extern int statement_count;
@@ -35,6 +35,7 @@ if (!source_code || source_code[0] == '\0') {
     init_output_buffer();
 
 
+    
     ASTNode* root = parse_script_from_string(source_code);
 
 
@@ -52,6 +53,7 @@ strcpy(preamble, "%\n");
         printf("[DEBUG] Variable 'id' exists\n");
 
         Value *id_val = get_var("id");
+
         if (id_val) {
            //printf("[DEBUG] id_val is not NULL, type = %d\n", id_val->type);
         } else {
@@ -65,20 +67,44 @@ strcpy(preamble, "%\n");
             printf("[DEBUG] id_val is not a number, using default '000'\n");
             snprintf(id_line, sizeof(id_line), "000");
         }
+
+
     } else {
       //printf("[DEBUG] Variable 'id' does not exist, using default '000'\n");
         snprintf(id_line, sizeof(id_line), "000");
     }
 
 
+// === Extract and format [time] ===
+char time_line[64];
+time_t now = time(NULL);
+struct tm *t = localtime(&now);
+strftime(time_line, sizeof(time_line), "%Y-%m-%d %H:%M:%S", t);
+printf("[DEBUG] Compilation time: %s\n", time_line);
+
+// Set global RUNTIME_TIME
+strncpy(RUNTIME_TIME, time_line, sizeof(RUNTIME_TIME) - 1);
+RUNTIME_TIME[sizeof(RUNTIME_TIME) - 1] = '\0';
+
+// === Extract and format [ggcode_file_name] ===
+char ggcode_file_name[64];
+snprintf(ggcode_file_name, sizeof(ggcode_file_name), "nodejs.ggcode");
+printf("[DEBUG] File name: %s\n", ggcode_file_name);
+
+// Set global RUNTIME_FILENAME
+strncpy(RUNTIME_FILENAME, ggcode_file_name, sizeof(RUNTIME_FILENAME) - 1);
+RUNTIME_FILENAME[sizeof(RUNTIME_FILENAME) - 1] = '\0';
 
 
 
 
-
+    
     strcat(preamble, id_line);
     strcat(preamble, "\n");
     prepend_to_output_buffer(preamble);
+
+
+
 
 
 // const char* buffer = get_output_buffer();

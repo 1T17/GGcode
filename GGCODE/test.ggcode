@@ -1,5 +1,5 @@
-
-// // GGcode test file
+      if
+ // GGcode test file
 let id = 2345
 
 note {
@@ -85,8 +85,6 @@ while (i < maxg) {
 // === End ===
 G0 Z[z_safe]
 G0 X0 Y0
-
-
 
 
 
