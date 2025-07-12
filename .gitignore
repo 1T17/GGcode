@@ -11,6 +11,7 @@ BK/
 ggcode
 node_modules/
 
+.gitignore
 
 function.html
 function.txt
@@ -21,7 +22,7 @@ test.nc
 r.sh
 g.sh
 *.gcode
-
+*.sh
 
 # Executable files
 *.exe
