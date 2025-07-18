@@ -31,6 +31,9 @@
       flex: 1;
       position: relative;
       border: 1px solid #444;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
     }
 
     #editor,
@@ -40,6 +43,9 @@
       bottom: 0;
       left: 0;
       right: 0;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
     }
 
     .bottom-bar {
@@ -80,14 +86,12 @@
 </head>
 <body>
 
-  <form id="ggform" action="/compile" method="POST" onsubmit="syncEditors()">
+  <form id="ggform" action="/compile" method="POST" onsubmit="return submitGGcode(event)">
     <!-- Editor and Output -->
     <div class="main-content">
       <div class="left-panel"><div id="editor"></div></div>
       <div class="right-panel">
-        <% if (output) { %>
-          <div id="output"></div>
-        <% } %>
+        <div id="output"></div>
       </div>
     </div>
 
@@ -95,31 +99,26 @@
 
     <!-- Bottom Control Bar -->
     <div class="bottom-bar">
+      <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+        <input type="checkbox" id="autoCompileCheckbox" style="width: 18px; height: 18px;" />
+        Auto-compile
+      </label>
 
 
+      <button type="submit" class="control-button" title="Compile GGcode">⚙️ <span>Compile</span></button>
 
-
-
-<button type="submit" class="control-button" title="Compile GGcode">
-  ⚙️ <span>Compile</span>
-</button>
-
-
-
-
-
-
+      <button type="button" class="control-button" id="openGGcodeBtn" title="Open GGcode file">📂 <span>Open GGcode</span></button>
+      
       <button type="button" class="control-button" onclick="copyOutput()" title="Copy output G-code">
-        📋 <span>Copy G-code</span>
+        📋 <span>Copy Gcode</span>
       </button>
-
       <button type="button" class="control-button" onclick="saveOutput()" title="Save output G-code to file">
-        💾 <span>Download G-code</span>
+        💾 <span>Save Gcode</span>
       </button>
-
       <button type="button" class="control-button" onclick="saveGGcode()" title="Save GGcode input to file">
-        💾 <span>Download GGcode</span>
+        💾 <span>Save GGcode</span>
       </button>
+      <input type="file" id="ggcodeFileInput" accept=".ggcode,.txt" style="display:none;" />
     </div>
   </form>
 
@@ -131,6 +130,10 @@
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
   <script>
     let editor, outputEditor;
+    let monacoReady = false;
+    let autoCompile = false;
+    let autoCompileTimeout = null;
+    let lastOpenedFilename = '';
 
     require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
 
@@ -319,26 +322,128 @@ monaco.languages.setMonarchTokensProvider('ggcode', {
 
 
       editor = monaco.editor.create(document.getElementById('editor'), {
-        value: `<%- input.replace(/`/g, '\\`') %>`,
+        value: `<%- input.replace(/`/g, '\`') %>`,
         language: 'ggcode',
         theme: 'ggcode-dark',
         automaticLayout: true,
         minimap: { enabled: true }
       });
 
-      <% if (output) { %>
-        outputEditor = monaco.editor.create(document.getElementById('output'), {
-          value: `<%- output.replace(/`/g, '\\`') %>`,
-          language: 'ggcode',
-          theme: 'ggcode-dark',
-          automaticLayout: true,
-          minimap: { enabled: true }
+      outputEditor = monaco.editor.create(document.getElementById('output'), {
+        value: `<%- typeof output !== 'undefined' && output ? output.replace(/`/g, '\`') : '' %>`,
+        language: 'ggcode',
+        theme: 'ggcode-dark',
+        automaticLayout: true,
+        minimap: { enabled: true }
+      });
+      monacoReady = true;
+
+      // Auto-compile logic
+      editor.onDidChangeModelContent(() => {
+        if (autoCompile) {
+          if (autoCompileTimeout) clearTimeout(autoCompileTimeout);
+          autoCompileTimeout = setTimeout(() => {
+            submitGGcode(new Event('submit'));
+          }, 1000);
+        }
+      });
+
+      // Drag-and-drop file support for editor
+      const editorDom = document.getElementById('editor');
+      if (editorDom) {
+        editorDom.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          editorDom.style.background = '#222a';
         });
-      <% } %>
+        editorDom.addEventListener('dragleave', function(e) {
+          e.preventDefault();
+          editorDom.style.background = '';
+        });
+        editorDom.addEventListener('drop', function(e) {
+          e.preventDefault();
+          editorDom.style.background = '';
+          if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+              if (editor) editor.setValue(evt.target.result);
+              // Remember filename
+              lastOpenedFilename = file.name || '';
+              // Auto-compile after file load
+              submitGGcode(new Event('submit'));
+            };
+            reader.readAsText(file);
+          }
+        });
+      }
+    });
+
+    // Auto-compile checkbox logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const autoCheckbox = document.getElementById('autoCompileCheckbox');
+      if (autoCheckbox) {
+        autoCheckbox.addEventListener('change', function() {
+          autoCompile = autoCheckbox.checked;
+        });
+      }
+    });
+
+    // Open GGcode file logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const openBtn = document.getElementById('openGGcodeBtn');
+      const fileInput = document.getElementById('ggcodeFileInput');
+      if (openBtn && fileInput) {
+        openBtn.addEventListener('click', function() {
+          fileInput.value = '';
+          fileInput.click();
+        });
+        fileInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            if (editor) editor.setValue(evt.target.result);
+            // Remember filename
+            lastOpenedFilename = file.name || '';
+            // Auto-compile after file load
+            submitGGcode(new Event('submit'));
+          };
+          reader.readAsText(file);
+        });
+      }
     });
 
     function syncEditors() {
       document.getElementById('ggcode').value = editor.getValue();
+    }
+
+    async function submitGGcode(event) {
+      event.preventDefault();
+      if (!monacoReady) {
+        alert("Editor is still loading. Please wait a moment and try again.");
+        return false;
+      }
+      syncEditors();
+      const code = editor.getValue();
+      if (outputEditor) {
+        outputEditor.setValue('Compiling...');
+      }
+      try {
+        const response = await fetch('/api/compile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ggcode: code })
+        });
+        const result = await response.json();
+        if (result.success) {
+          if (outputEditor) outputEditor.setValue(result.output);
+        } else {
+          if (outputEditor) outputEditor.setValue('Error: ' + result.error);
+        }
+      } catch (err) {
+        if (outputEditor) outputEditor.setValue('Network error: ' + err.message);
+      }
+      return false;
     }
 
     function copyOutput() {
@@ -353,7 +458,22 @@ monaco.languages.setMonarchTokensProvider('ggcode', {
         const blob = new Blob([outputEditor.getValue()], { type: 'text/plain' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'output.gcode';
+        // Improved filename logic for output
+        let filename = '';
+        if (lastOpenedFilename) {
+          let base = lastOpenedFilename;
+          if (base.endsWith('.gcode') || base.endsWith('.ggcode')) {
+            base = base.replace(/\.(gcode|ggcode)$/i, '');
+          } else if (base.lastIndexOf('.') > 0) {
+            base = base.slice(0, base.lastIndexOf('.'));
+          }
+          filename = base + '.g.gcode';
+        }
+        if (!filename) filename = 'output.g.gcode';
+        // Prompt user for filename
+        const userFilename = window.prompt('Save G-code as:', filename);
+        if (!userFilename) return; // Cancelled
+        a.download = userFilename;
         a.click();
       }
     }
@@ -362,7 +482,17 @@ monaco.languages.setMonarchTokensProvider('ggcode', {
       const blob = new Blob([editor.getValue()], { type: 'text/plain' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'input.ggcode';
+      let filename = lastOpenedFilename && lastOpenedFilename.endsWith('.ggcode') ? lastOpenedFilename : '';
+      if (!filename && lastOpenedFilename) {
+        // If opened file has another extension, use its base name with .ggcode
+        const dot = lastOpenedFilename.lastIndexOf('.');
+        filename = (dot > 0 ? lastOpenedFilename.slice(0, dot) : lastOpenedFilename) + '.ggcode';
+      }
+      if (!filename) filename = 'input.ggcode';
+      // Prompt user for filename
+      const userFilename = window.prompt('Save GGcode as:', filename);
+      if (!userFilename) return; // Cancelled
+      a.download = userFilename;
       a.click();
     }
   </script>

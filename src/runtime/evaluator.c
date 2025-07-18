@@ -861,19 +861,19 @@ void eval_block(ASTNode *block)
             break;
 
         case AST_NOTE:
-            printf("[Runtime evaluator] NOTE encountered, skipping\n");
+           // printf("[Runtime evaluator] NOTE encountered, skipping\n");
             break;
 
 
 
         case AST_GCODE:
-            printf("[Runtime evaluator] AST_GCODE , skipping\n");
+            //printf("[Runtime evaluator] AST_GCODE , skipping\n");
             break;
 
 
 
         case AST_EXPR_STMT:
-            printf("[Runtime evaluator] AST_EXPR_STMT , skipping\n");
+            //printf("[Runtime evaluator] AST_EXPR_STMT , skipping\n");
             break;
 
 

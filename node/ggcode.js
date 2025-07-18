@@ -59,6 +59,7 @@ function printCharCodes(label, str) {
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
@@ -79,6 +80,25 @@ const inputBuffer = Buffer.from(cleanInput + '\0', 'utf8');
   res.render('index', { output, input: rawInput });
 });
 
+// Add AJAX API endpoint for compilation
+app.post('/api/compile', (req, res) => {
+  let code = '';
+  if (req.is('application/json')) {
+    code = req.body.ggcode || '';
+  } else {
+    code = req.body.ggcode || '';
+  }
+  const decodedInput = decodeHTMLEntities(code);
+  const cleanInput = stripCarriageReturns(decodedInput);
+  const inputBuffer = Buffer.from(cleanInput + '\0', 'utf8');
+
+  try {
+    const output = ggcode.compile_ggcode_from_string(inputBuffer, 1);
+    res.json({ success: true, output });
+  } catch (err) {
+    res.json({ success: false, error: err.message || 'Compilation error' });
+  }
+});
 
 
 // Start server
