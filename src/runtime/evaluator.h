@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../parser/ast_nodes.h"
+#include "runtime_state.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -31,14 +32,6 @@ typedef enum {
 
 
 
-typedef struct
-{
-    char *name;
-    ASTNode *node; // AST_FUNCTION node
-} FunctionEntry;
-
-
-
 typedef struct Value {
     ValueType type;
     union {
@@ -49,13 +42,6 @@ typedef struct Value {
         } array;        // VAL_ARRAY
     };
 } Value;
-
-// --- Variable info ---
-typedef struct {
-    char *name;
-    int scope_level;
-    Value *val;
-} Variable;
 
 // --- Function declarations ---
 Value *make_number_value(double x);
@@ -89,7 +75,7 @@ void eval_block(ASTNode *block);
 // Function system
 void register_function(ASTNode *node);
 void reset_runtime_state(void); // test/reset
-
+void reset_parser_state(void);
 
 ASTNode *parse_script_from_string(const char *source);
 #endif // EVALUATOR_H

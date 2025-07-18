@@ -46,11 +46,20 @@ Value *make_number_value(double num)
 }
 
 int statement_count = 0;
-int debug = 0;
 
 int get_statement_count()
 {
     return statement_count;
+}
+
+// Global flag to reset emitter state
+static int emitter_reset_flag = 0;
+
+// Reset emitter state between compilations
+void reset_emitter_state()
+{
+    statement_count = 0;
+    emitter_reset_flag = 1;  // Set flag to reset last_code on next emit_gcode_stmt call
 }
 
 
@@ -204,6 +213,13 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
     }
 
     static char last_code[16] = "";
+    
+    // Reset last_code when emitter_reset_flag is set
+    if (emitter_reset_flag) {
+        memset(last_code, 0, sizeof(last_code));
+        emitter_reset_flag = 0;
+    }
+    
     char line[256] = {0};
 
     if (get_enable_n_lines())
@@ -250,6 +266,7 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
         }
 
         snprintf(segment, sizeof(segment), " %s%.6g", node->gcode_stmt.args[i].key, val);
+        
         size_t len = strlen(line);
         strncat(line, segment, sizeof(line) - len - 1);
     }
@@ -478,9 +495,15 @@ static void emit_if_stmt(ASTNode *node, int debug)
 
 void emit_gcode(ASTNode *node, int debug)
 {
-
     if (!node)
         return;
+    
+    // Get debug value from runtime state if not provided
+    if (debug == -1) {
+        Runtime* runtime = get_runtime();
+        debug = runtime ? runtime->debug : 0;
+    }
+    
     switch (node->type)
     {
 

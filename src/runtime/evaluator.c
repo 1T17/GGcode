@@ -183,6 +183,18 @@ void reset_runtime_state(void)
         runtime_return_value = NULL;
     }
 
+    // Reset global runtime state
+    extern Runtime g_runtime;
+    memset(&g_runtime, 0, sizeof(Runtime));
+    g_runtime.debug = get_debug();  // Restore debug setting from config
+
+    // Reset emitter state
+    extern void reset_emitter_state(void);
+    reset_emitter_state();
+
+    // Reset parser state
+    reset_parser_state();
+
     //printf("[Runtime] ✅ Reset complete. All variables and memory freed.\n");
 }
 

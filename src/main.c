@@ -86,16 +86,15 @@ int ends_with_ggcode(const char *filename) {
 
 
 void compile_file(const char* input_path, const char* output_path, int debug) {
+    // Initialize runtime state
+    init_runtime();
+    Runtime* runtime = get_runtime();
+    runtime->debug = debug;
+    
     GGCODE_INPUT_FILENAME = input_path;
     long input_size_bytes = 0;
-          statement_count = 0;
-          reset_runtime_state(); 
-
-
-  ///  print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb, );
-
-
-
+    statement_count = 0;
+    reset_runtime_state(); 
 
     // Store filename only (no path)
 #if defined(_WIN32)
@@ -104,12 +103,21 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
 #else
     const char* filename = basename((char*)input_path);
 #endif
+    
+    // Update runtime state
+    strncpy(runtime->RUNTIME_FILENAME, filename, sizeof(runtime->RUNTIME_FILENAME) - 1);
+    runtime->RUNTIME_FILENAME[sizeof(runtime->RUNTIME_FILENAME) - 1] = '\0';
+    
+    // Also update legacy globals for backward compatibility
     strncpy(RUNTIME_FILENAME, filename, sizeof(RUNTIME_FILENAME) - 1);
     RUNTIME_FILENAME[sizeof(RUNTIME_FILENAME) - 1] = '\0';
 
     // Get current time string
     time_t now = time(NULL);
     struct tm* tm_info = localtime(&now);
+    strftime(runtime->RUNTIME_TIME, sizeof(runtime->RUNTIME_TIME), "%Y-%m-%d %H:%M:%S", tm_info);
+    
+    // Also update legacy globals for backward compatibility
     strftime(RUNTIME_TIME, sizeof(RUNTIME_TIME), "%Y-%m-%d %H:%M:%S", tm_info);
 
     // Load source
@@ -137,7 +145,7 @@ ASTNode* root = parse_script_from_string(source);
 
     reset_line_number();
 
-    emit_gcode(root, debug);
+    emit_gcode(root, -1);  // Use runtime state for debug
     double emit_time = end_timer(&emit_timer);
 
     // ➤ Insert G-code header at the beginning AFTER emit

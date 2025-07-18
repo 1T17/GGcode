@@ -22,16 +22,18 @@ const char* compile_ggcode_from_string(const char* source_code) {
 
     int debug = get_debug();
 
+    // Initialize runtime state
+    init_runtime();
+    Runtime* runtime = get_runtime();
+    runtime->debug = debug;
 
 if (!source_code || source_code[0] == '\0') {
     return strdup("; EMPTY OR NULL INPUT\n");
 }
 
+    statement_count = 0;
 
-
-          statement_count = 0;
-
-   // reset_runtime_state();
+    // reset_runtime_state();
     init_output_buffer();
 
 
@@ -39,7 +41,7 @@ if (!source_code || source_code[0] == '\0') {
     ASTNode* root = parse_script_from_string(source_code);
 
 
-    emit_gcode(root, debug);
+    emit_gcode(root, -1);  // Use runtime state for debug
 
     // === Insert G-code header with % and ID ===
 
