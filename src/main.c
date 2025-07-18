@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <libgen.h>  
+#include <errno.h>
 
 #ifdef _WIN32
 #include <tchar.h>
@@ -34,33 +35,14 @@
 #include "utils/file_utils.h"
 #include "utils/report.h"
 #include "error/error.h"
+#include "utils/time_utils.h"
+
+
 #define FATAL_ERROR(msg, ...) fatal_error(NULL, 0, 0, msg, ##__VA_ARGS__)
 
-#include "utils/time_utils.h"
-#include <errno.h>
-
-
-
-
-
-
-
-
-
-
- // int statement_count = 0;
-
-
 // Declare the runtime variable lookup functions from evaluator.c
-
-
-
 const char* GGCODE_INPUT_FILENAME = NULL;
-
-
 void compile_file(const char* input_path, const char* output_path, int debug);
-
-
 
 
 void make_g_gcode_filename(const char *src, char *dst, size_t dst_size) {
@@ -72,17 +54,11 @@ void make_g_gcode_filename(const char *src, char *dst, size_t dst_size) {
     }
 }
 
-
-
 // Helper to check if a string ends with .ggcode
 int ends_with_ggcode(const char *filename) {
     size_t len = strlen(filename);
     return len > 7 && strcmp(filename + len - 7, ".ggcode") == 0;
 }
-
-
-
-
 
 
 void compile_file(const char* input_path, const char* output_path, int debug) {
@@ -133,24 +109,19 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     Timer parse_timer;
     start_timer(&parse_timer);
 
-
-ASTNode* root = parse_script_from_string(source);
-
-
+    ASTNode* root = parse_script_from_string(source); 
     double parse_time = end_timer(&parse_timer);
 
     // Emit timing
     Timer emit_timer;
     start_timer(&emit_timer);
 
-    reset_line_number();
-
+ //   reset_line_number();
     emit_gcode(root, -1);  // Use runtime state for debug
     double emit_time = end_timer(&emit_timer);
 
     // ➤ Insert G-code header at the beginning AFTER emit
     emit_gcode_preamble(debug, filename);
-
 
 // Measure memory usage (Linux/macOS/Windows)
 long memory_kb = 0;
@@ -166,7 +137,6 @@ long memory_kb = 0;
         memory_kb = pmc.PeakWorkingSetSize / 1024;
     }
 #endif
-
 
     // Output
     if (get_output_to_file()) {

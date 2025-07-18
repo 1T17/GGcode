@@ -9,6 +9,8 @@
 
 ---
 
+
+
 ## ✨ Features
 
 **🪶 Lightweight & Embeddable**  
@@ -120,6 +122,38 @@ To compile and run a `.ggcode` file:
 ### 📁 Batch Compilation
 
 If no file is specified, GGcode will automatically compile **all `.ggcode` files** in the current directory.
+
+---
+## 🚦 Quick Start
+
+```sh
+# Build the compiler and Node.js backend
+make all
+make node
+
+# Start the web UI (from the node directory)
+cd node
+node ggcode.js
+
+# Open in your browser:
+http://localhost:3000
+```
+
+---
+
+## 📁 Project Structure
+
+```
+GGcode/
+├── src/           # C source code for the compiler and runtime
+├── node/          # Node.js backend and web frontend
+├── tests/         # Unit and integration tests
+├── bin/           # Compiled binaries and test runners
+├── GGCODE/        # Example and test .ggcode files
+├── README.md      # This file
+├── Makefile       # Build automation
+└── ...
+```
 
 ---
 

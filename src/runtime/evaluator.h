@@ -14,15 +14,8 @@
 #define M_E 2.71828182845904523536
 #endif
 
-
-
-
 void enter_scope(void);
 void exit_scope(void);
-
-
-
-
 
 // --- Value types ---
 typedef enum {
@@ -30,8 +23,7 @@ typedef enum {
     VAL_ARRAY
 } ValueType;
 
-
-
+// --- Value ---
 typedef struct Value {
     ValueType type;
     union {

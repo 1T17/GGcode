@@ -10,17 +10,20 @@
 // Forward declarations
 struct Value;
 
+// --- Variable ---
 typedef struct {
     char *name;
     int scope_level;
     struct Value *val;
 } Variable;
 
+// --- Function ---
 typedef struct {
     char *name;
     ASTNode *node; // AST_FUNCTION node
 } FunctionEntry;
 
+// --- Runtime State ---
 typedef struct Runtime {
     int statement_count;
     char RUNTIME_TIME[64];
