@@ -9,7 +9,7 @@
 #include "../utils/output_buffer.h"
 #include "../generator/emitter.h"
 #include "../error/error.h"
-
+#include <time.h>
 
 
 extern int statement_count;
@@ -35,6 +35,7 @@ if (!source_code || source_code[0] == '\0') {
     init_output_buffer();
 
 
+    
     ASTNode* root = parse_script_from_string(source_code);
 
 
@@ -42,43 +43,13 @@ if (!source_code || source_code[0] == '\0') {
 
     // === Insert G-code header with % and ID ===
 
-char preamble[128] = {0};
-strcpy(preamble, "%\n");
+    char ggcode_file_name[64];
+    snprintf(ggcode_file_name, sizeof(ggcode_file_name), "nodejs.ggcode");
 
-    char id_line[64];
-
-
-    if (var_exists("id")) {
-        printf("[DEBUG] Variable 'id' exists\n");
-
-        Value *id_val = get_var("id");
-        if (id_val) {
-            printf("[DEBUG] id_val is not NULL, type = %d\n", id_val->type);
-        } else {
-            printf("[DEBUG] id_val is NULL\n");
-        }
-
-        if (id_val && id_val->type == VAL_NUMBER) {
-            printf("[DEBUG] id_val->number = %f\n", id_val->number);
-            snprintf(id_line, sizeof(id_line), "%.0f", id_val->number);
-        } else {
-            printf("[DEBUG] id_val is not a number, using default '000'\n");
-            snprintf(id_line, sizeof(id_line), "000");
-        }
-    } else {
-        printf("[DEBUG] Variable 'id' does not exist, using default '000'\n");
-        snprintf(id_line, sizeof(id_line), "000");
-    }
+    emit_gcode_preamble(debug, ggcode_file_name);
 
 
 
-
-
-
-
-    strcat(preamble, id_line);
-    strcat(preamble, "\n");
-    prepend_to_output_buffer(preamble);
 
 
 // const char* buffer = get_output_buffer();
@@ -93,15 +64,11 @@ strcpy(preamble, "%\n");
 
 
     if (!root || has_errors()) {
+        report_error("[NodeJS] Compilation failed or errors detected");
         print_errors();
         clear_errors();
         return strdup("; ERROR\n");
     }
-
-
-
-
-   // printf("\n=== Final Output Buffer ===\n%s\n===========================\n", output);
 
 
 

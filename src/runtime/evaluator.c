@@ -1,5 +1,3 @@
-
-
 #include "evaluator.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,12 +6,10 @@
 #include <math.h>
 #include "../parser/parser.h"
 #include "error/error.h"
+#define FATAL_ERROR(msg, ...) fatal_error(NULL, 0, 0, msg, ##__VA_ARGS__)
 #include "config/config.h"
-
-
+#include "generator/emitter.h"
 extern Parser parser;
-
-
 
 #define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
@@ -28,6 +24,7 @@ Value *eval_let(ASTNode *node);
 Value *eval_function_call(ASTNode *node);
 Value *runtime_return_value;
 
+void free_value(Value *val); // Forward declaration
 void register_function(ASTNode *node);
 void eval_if(ASTNode *stmt);
 void eval_for(ASTNode *stmt);
@@ -41,8 +38,8 @@ double get_number(Value *val)
 {
     if (!val || val->type != VAL_NUMBER)
     {
-        fprintf(stderr, "[Runtime evaluator] Expected number value\n");
-        exit(1);
+        report_error("[Runtime evaluator] Expected number value");
+        FATAL_ERROR("[Runtime evaluator] Expected number value");
     }
     return val->number;
 }
@@ -58,9 +55,6 @@ double get_scalar(ASTNode *node)
     return v->number;
 }
 
-
-
-
 Value *eval_let(ASTNode *node)
 {
     const char *name = node->let_stmt.name;
@@ -68,11 +62,6 @@ Value *eval_let(ASTNode *node)
     declare_var(name, value);
     return make_number_value(0.0); // Return a default value, since LET is not an expression
 }
-
-
-
-
-
 
 Value *eval(ASTNode *node)
 {
@@ -92,12 +81,6 @@ Value *get_var(const char *name)
     return NULL;
 }
 
-
-
-
-
-
-
 Value *get_array_item(Value *arr, int index)
 {
     if (!arr || arr->type != VAL_ARRAY)
@@ -113,24 +96,6 @@ Value *get_array_item(Value *arr, int index)
 
     return arr->array.items[index];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void set_parents_recursive(ASTNode *node, ASTNode *parent) {
     if (!node) return;
@@ -196,75 +161,42 @@ void set_parents_recursive(ASTNode *node, ASTNode *parent) {
     }
 }
 
-
-
-
-
-
-
 void reset_runtime_state(void)
 {
     //printf("\n[Runtime] 🔄 Resetting runtime state...\n");
-   // printf("[Runtime] Current variable count: %d\n", var_count);
+    // printf("[Runtime] Current variable count: %d\n", var_count);
 
-    for (int i = 0; i < var_count; i++) {
-        // printf("[Runtime] ➤ Cleaning variable[%d]: name='%s', scope=%d\n",
-        //        i,
-        //        variables[i].name ? variables[i].name : "(null)",
-        //        variables[i].scope_level);
-
-        // Free variable name
-        if (variables[i].name) {
-         //   printf("[Runtime--------------------]   ↳ Freeing name: %s\n", variables[i].name);
-            free(variables[i].name);
-        }
-
-        // Free variable value (recursive for arrays)
-        if (variables[i].val) {
-        //    printf("[Runtime-------------------]   ↳ Freeing value (type = %d)...\n", variables[i].val->type);
-            free(variables[i].val);  // This already logs inner array free if needed
-        }
+    // Clean up all scopes using exit_scope
+    while (current_scope_level > 0) {
+        exit_scope();
+    }
+    // If any variables remain (e.g., global scope), clean them up too
+    if (var_count > 0) {
+        exit_scope();
     }
 
-    var_count = 0;
     function_count = 0;
-    current_scope_level = 0;
     runtime_has_returned = 0;
 
     if (runtime_return_value) {
-        printf("[Runtime]   ↳ Freeing runtime return value\n");
-        free(runtime_return_value);
+        free_value(runtime_return_value);
         runtime_return_value = NULL;
     }
 
-    printf("[Runtime] ✅ Reset complete. All variables and memory freed.\n");
+    //printf("[Runtime] ✅ Reset complete. All variables and memory freed.\n");
 }
-
-
-
-
-
 
 void enter_scope()
 {
     current_scope_level++;
-    printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
+    //printf("[Scope] Entered new scope, level = %d\n", current_scope_level);
 }
-
-
-
-
-
-
-
 
 void reset_parser_state() {
     memset(&parser, 0, sizeof(Parser));  // full reset
 }
 
-
-
-
+//step 1
 ASTNode *parse_script_from_string(const char *source)
 {
 
@@ -287,8 +219,6 @@ ASTNode *parse_script_from_string(const char *source)
     return root;
 }
 
-
-
 Value *copy_value(Value *val)
 {
     if (!val) {
@@ -299,7 +229,7 @@ Value *copy_value(Value *val)
     Value *copy = malloc(sizeof(Value));
     if (!copy) {
         //printf("[copy_value] malloc failed for Value\n");
-        return NULL;
+        FATAL_ERROR("[copy_value] malloc failed for Value");
     }
 
     copy->type = val->type;
@@ -316,7 +246,7 @@ else if (val->type == VAL_ARRAY)
     copy->array.items = malloc(sizeof(Value *) * val->array.count);
     if (!copy->array.items) {
         free(copy);
-        return NULL;
+        FATAL_ERROR("[copy_value] malloc failed for array Value");
     }
 
     for (size_t i = 0; i < val->array.count; ++i)
@@ -324,14 +254,14 @@ else if (val->type == VAL_ARRAY)
         //printf("[copy_value] -> Copying array element %zu\n", i);
         copy->array.items[i] = copy_value(val->array.items[i]);
         if (!copy->array.items[i]) {
-            printf("[copy_value] ❌ Failed to copy element %zu — cleaning up\n", i);
+            report_error("[copy_value] Failed to copy element %zu — cleaning up", i);
             // Free previously allocated items
             for (size_t j = 0; j < i; ++j) {
                 if (copy->array.items[j]) free(copy->array.items[j]);
             }
             free(copy->array.items);
             free(copy);
-            return NULL;
+            FATAL_ERROR("[copy_value] Failed to copy element %zu — cleaning up", i);
         }
     }
 }
@@ -344,14 +274,7 @@ else if (val->type == VAL_ARRAY)
     return copy;
 }
 
-
-
-
-
-
-
-
-// Evaluate expressions recursively
+// Evaluate expressions
 Value *eval_expr(ASTNode *node)
 {
     if (!node)
@@ -465,7 +388,7 @@ case AST_VAR:
         {
 
             report_error("[Runtime evaluator] malloc failed for array literal");
-            return NULL;
+            FATAL_ERROR("[Runtime evaluator] malloc failed for array literal");
         }
 
         for (int i = 0; i < count; i++)
@@ -482,7 +405,7 @@ case AST_VAR:
         if (!arr_val)
         {
             report_error("[Runtime evaluator] malloc failed for array Value");
-            return NULL;
+            FATAL_ERROR("[Runtime evaluator] malloc failed for array Value");
         }
 
         arr_val->type = VAL_ARRAY;
@@ -580,6 +503,22 @@ case AST_BLOCK:
 
 
 
+
+case AST_WHILE: {
+    while (get_number(eval_expr(node->while_stmt.condition))) {
+        eval_expr(node->while_stmt.body);
+
+        if (runtime_has_returned) {
+            break;
+        }
+    }
+    return make_number_value(0.0);
+}
+
+
+
+
+
     default:
 
         report_error("[Runtime evaluator] Unsupported expression type: %d (%s)", node->type, get_ast_type_name(node->type));
@@ -587,44 +526,6 @@ case AST_BLOCK:
         return make_number_value(0.0);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Value *eval_function_call(ASTNode *node)
 {
@@ -749,6 +650,11 @@ Value *eval_function_call(ASTNode *node)
         return make_number_value(0.0);
     }
 
+
+    
+
+
+    
     // ✅ Clear return state before executing function
     runtime_has_returned = 0;
     runtime_return_value = NULL;
@@ -759,20 +665,72 @@ Value *eval_function_call(ASTNode *node)
     for (int i = 0; i < param_count; i++)
     {
         Value *arg_val = make_number_value(0.0);
-        if (i < argc)
-            arg_val = eval_expr(args[i]);
+if (i < argc)
+    arg_val = eval_expr(args[i]);
+
+if (!arg_val || arg_val->type != VAL_NUMBER) {
+    fprintf(stderr, "🚨 ERROR: Failed to evaluate argument %d for function '%s'\n", i, name);
+    FATAL_ERROR("🚨 ERROR: Failed to evaluate argument %d for function '%s'", i, name);
+}
+
+if (strcmp(name, "fact") == 0 && i == 0)
+    printf("[debug] fact() called with n = %.2f\n", arg_val->number);
 
         declare_var(func->function_stmt.params[i], arg_val);
     }
 
-    ASTNode *body = func->function_stmt.body;
-    for (int i = 0; i < body->block.count; i++)
-    {
-        eval_expr(body->block.statements[i]);
+ASTNode *body = func->function_stmt.body;
 
-        if (runtime_has_returned)
-            break;
+// ⚠️ Fix: Use emit_gcode instead of eval_expr for statements
+for (int i = 0; i < body->block.count; i++) {
+    ASTNode *stmt = body->block.statements[i];
+
+    // ✅ Always evaluate control flow and expressions
+    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_WHILE || stmt->type == AST_FOR ) {
+        emit_gcode(stmt, 0);
+    } else {
+        eval_expr(stmt);
     }
+
+    if (runtime_has_returned)
+        break;
+}
+
+
+
+
+
+
+
+// for (int i = 0; i < body->block.count; i++) {
+//     ASTNode *stmt = body->block.statements[i];
+
+//     // Evaluate expressions (e.g., return), emit G-code lines
+//     if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_EXPR_STMT || stmt->type == AST_IF || stmt->type == AST_FOR || stmt->type == AST_WHILE)
+//         emit_gcode(stmt, 0);
+//     else
+//         eval_expr(stmt);
+
+//     if (runtime_has_returned)
+//         break;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     exit_scope();
 
@@ -785,25 +743,19 @@ Value *eval_function_call(ASTNode *node)
 #undef SCALAR
 }
 
-
-
-
-
-
-
-
-
-
-
 void declare_array(const char *name, Value **items, size_t count)
 {
     if (var_count >= MAX_VARIABLES)
     {
         fprintf(stderr, "[declare_array evaluator] ERROR: variable limit reached.\n");
-        exit(1);
+        FATAL_ERROR("[declare_array evaluator] ERROR: variable limit reached.");
     }
 
     Value *arr_val = malloc(sizeof(Value));
+    if (!arr_val) {
+        report_error("[declare_array] malloc failed for arr_val");
+        return;
+    }
     arr_val->type = VAL_ARRAY;
     arr_val->array.items = items;
     arr_val->array.count = count;
@@ -825,9 +777,6 @@ int var_exists_in_current_scope(const char *name)
     }
     return 0;
 }
-
-
-
 
 
 
@@ -915,6 +864,19 @@ void eval_block(ASTNode *block)
             printf("[Runtime evaluator] NOTE encountered, skipping\n");
             break;
 
+
+
+        case AST_GCODE:
+            printf("[Runtime evaluator] AST_GCODE , skipping\n");
+            break;
+
+
+
+        case AST_EXPR_STMT:
+            printf("[Runtime evaluator] AST_EXPR_STMT , skipping\n");
+            break;
+
+
         default:
             report_error("[Runtime evaluator] Unsupported stmt type: %d (%s) at block index %d",
                          stmt->type, get_ast_type_name(stmt->type), i);
@@ -929,9 +891,6 @@ void eval_block(ASTNode *block)
 
     exit_scope();
 }
-
-
-
 
 void eval_if(ASTNode *stmt)
 {
@@ -986,6 +945,42 @@ void eval_for(ASTNode *stmt)
     exit_scope();
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void eval_while(ASTNode *stmt)
 {
     enter_scope();
@@ -1035,22 +1030,27 @@ void eval_while(ASTNode *stmt)
 
 void declare_var(const char *name, Value *val)
 {
+    // Prevent duplicate variable names in the same scope
+    for (int i = var_count - 1; i >= 0; --i) {
+        if (variables[i].scope_level != current_scope_level)
+            break;
+        if (variables[i].name && strcmp(variables[i].name, name) == 0) {
+            report_error("[declare_var] ERROR: variable '%s' already declared in current scope.", name);
+            FATAL_ERROR("[declare_var] ERROR: variable '%s' already declared in current scope.", name);
+        }
+    }
     if (var_count >= MAX_VARIABLES)
     {
-        fprintf(stderr, "[declare_var] ERROR: variable limit reached.\n");
-        exit(1);
+        report_error("[declare_var] ERROR: variable limit reached.");
+        FATAL_ERROR("[declare_var] ERROR: variable limit reached.");
     }
-
     variables[var_count].name = strdup(name);
-
-    // COPY VALUE so it’s unique to this variable
+    // Always copy the value for safety
     Value *copy = copy_value(val);
-    if (!copy)
-    {
-        fprintf(stderr, "[declare_var] ERROR: failed to copy value for '%s'\n", name);
-        exit(1);
+    if (!copy) {
+        report_error("[declare_var] ERROR: failed to copy value for '%s'", name);
+        FATAL_ERROR("[declare_var] ERROR: failed to copy value for '%s'", name);
     }
-
     variables[var_count].val = copy;
     variables[var_count].scope_level = current_scope_level;
     var_count++;
@@ -1076,8 +1076,8 @@ void register_function(ASTNode *node)
 {
     if (function_count >= MAX_FUNCTIONS)
     {
-        fprintf(stderr, "[Runtime] Too many functions\n");
-        exit(1);
+        report_error("[Runtime] Too many functions");
+        FATAL_ERROR("[Runtime] Too many functions");
     }
     function_table[function_count].name = node->function_stmt.name;
     function_table[function_count].node = node;
@@ -1110,12 +1110,15 @@ void free_value(Value *val) {
     if (val->type == VAL_ARRAY) {
         for (size_t j = 0; j < val->array.count; j++) {
             free_value(val->array.items[j]);
+            val->array.items[j] = NULL;
         }
         free(val->array.items);
+        val->array.items = NULL;
     }
 
     val->type = FREED_MAGIC;  // poison to catch reuse
     free(val);
+    val = NULL;
 }
 
 
@@ -1143,36 +1146,21 @@ void free_value(Value *val) {
 
 void exit_scope()
 {
-    printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
+    //printf("[Scope] Exiting scope, level = %d\n", current_scope_level);
 
     for (int i = var_count - 1; i >= 0; --i)
     {
         if (variables[i].scope_level == current_scope_level)
         {
-            printf("[Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
+            //printf("[Scope] Cleaning variable '%s' at index %d\n", variables[i].name, i);
 
             free(variables[i].name);
+            variables[i].name = NULL;
 
-            // Free the Value
+            // Use free_value for all value types
             if (variables[i].val)
             {
-                if (variables[i].val->type == VAL_ARRAY)
-                {
-                    printf("[Free] Array value with %zu items\n", variables[i].val->array.count);
-                    for (size_t j = 0; j < variables[i].val->array.count; j++)
-                    {
-                        free(variables[i].val->array.items[j]);
-                    }
-                    free(variables[i].val->array.items);
-                }
-                printf("[Free] Value struct\n");
-
-
-
-               free(variables[i].val);
-
-
-
+                free_value(variables[i].val);
             }
 
             // Shift remaining variables down
@@ -1185,20 +1173,8 @@ void exit_scope()
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    
     current_scope_level--;
-    printf("[Scope] Scope level decreased to %d\n", current_scope_level);
+    //printf("[Scope] Scope level decreased to %d\n", current_scope_level);
 }
 
 
@@ -1216,31 +1192,21 @@ void exit_scope()
 void set_var(const char *name, Value *val)
 {
     if (!val) {
-        printf("[set_var] Warning: null value for '%s'\n", name);
+        report_error("[set_var] Warning: null value for '%s'", name);
         return;
     }
-
     Value *copy = copy_value(val);
     if (!copy) {
-        printf("[set_var] Error: failed to copy value for '%s'\n", name);
+        report_error("[set_var] Error: failed to copy value for '%s'", name);
         return;
     }
-
     for (int i = var_count - 1; i >= 0; i--) {
-
-
         if (variables[i].name && strcmp(variables[i].name, name) == 0) {
-            //printf("[set_var] Updating existing variable '%s' with value: %f\n", name, copy->number);
-
             free_value(variables[i].val);     // Free old value
-
-            variables[i].val = copy;          // Assign new copy
+            variables[i].val = copy; // Assign new copy
             return;
-
-
         }
     }
-
-    //printf("[set_var] Declaring new variable '%s' with value: %f\n", name, copy->number);
-    declare_var(name, copy);  // Pass copy to declare_var (already safe)
+    // Not found, declare new variable (copy already made)
+    declare_var(name, copy);
 }

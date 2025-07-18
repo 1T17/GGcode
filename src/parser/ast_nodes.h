@@ -27,6 +27,7 @@ typedef enum
     AST_ASSIGN_INDEX,
     AST_FUNCTION,
     AST_CALL,
+    AST_EXPR_STMT, // <-- ADD THIS
     AST_RETURN,
     AST_NUMBER,
     AST_BINARY,
@@ -53,6 +54,9 @@ struct ASTNode
 
 
 
+struct {
+    ASTNode *expr;
+} expr_stmt;
 
 
 

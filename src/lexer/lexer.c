@@ -3,44 +3,23 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "../utils/compat.h"
+#include "error/error.h"
 #include "lexer.h"
-#include "token_utils.h" // or "token.h" if you later split it
-
-
-
+#include "token_utils.h"
 
 int LEXER_DEBUG = 0; // Toggle lexer debug output
-
-
-
-
 
 Lexer *lexer_new(const char *source) {
      //printf("[lexer_new]\n");
     if (!source) {
-        printf("[Lexer] ERROR: source is NULL!\n");
+        report_error("[Lexer] ERROR: source is NULL!");
         return NULL;
     }
-
-    // printf("[Lexer] Raw input bytes (first 100 chars):\n");
-    // for (int i = 0; i < 100 && source[i] != '\0'; i++) {
-    //     printf("%02X ", (unsigned char)source[i]);
-    // }
-    // printf("\n");
-
-    // const char *null_pos = strchr(source, '\0');
-    // if (null_pos) {
-    //     printf("[Lexer] NULL terminator found at offset: %ld\n", null_pos - source);
-    // } else {
-    //     printf("[Lexer] WARNING: No NULL terminator found!\n");
-    // }
-
-    //printf("[Lexer] Input length (strlen): %zu\n", strlen(source));
 
     // Safe defensive copy
     char *copy = strdup(source);
     if (!copy) {
-        printf("[Lexer] ERROR: strdup failed\n");
+        report_error("[Lexer] ERROR: strdup failed");
         return NULL;
     }
 
@@ -48,7 +27,7 @@ Lexer *lexer_new(const char *source) {
 
     Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
     if (!lexer) {
-        printf("[Lexer] ERROR: malloc failed for lexer struct\n");
+        report_error("[Lexer] ERROR: malloc failed for lexer struct");
         free(copy);
         return NULL;
     }
@@ -63,33 +42,12 @@ Lexer *lexer_new(const char *source) {
     return lexer;
 }
 
-
-
 /// @brief Frees the memory for a lexer
 /// @param lexer The lexer to free
 void lexer_free(Lexer *lexer)
 {
     free(lexer);
 }
-
-/// @brief Frees memory for a token value string
-/// @param token The token to clean up
-// void token_free(Token token)
-// {
-//     if (token.value)
-//         free(token.value);
-// }
-
-/// @brief Optionally prints token if debugging is enabled
-/// @param token The token to print
-// static void print_token(Token token)
-// {
-//     if (LEXER_DEBUG)
-//     {
-//         printf("[Lexer] Token: type=%d, value='%s' at line=%d, col=%d\n",
-//                token.type, token.value, token.line, token.column);
-//     }
-// }
 
 /// @brief Peeks at the current character
 static char peek(Lexer *lexer)
@@ -100,11 +58,7 @@ static char peek(Lexer *lexer)
     return lexer->source[lexer->pos];
 }
 
-
-
-
 /// @brief Peeks at the next character
-
 static char peek_next(Lexer *lexer)
 {
     if (!lexer || !lexer->source)
@@ -113,10 +67,7 @@ static char peek_next(Lexer *lexer)
     return lexer->source[lexer->pos + 1];
 }
 
-
-
 /// @brief Peeks ahead by a fixed offset
-
 static char peek_ahead(Lexer *lexer, int offset)
 {
     if (!lexer || !lexer->source)
@@ -126,15 +77,7 @@ static char peek_ahead(Lexer *lexer, int offset)
     return lexer->source[pos] != '\0' ? lexer->source[pos] : '\0';
 }
 
-
-
-
-
-
 /// @brief Advances the lexer by one character
-
-
-
 static char advance(Lexer *lexer)
 {
     char c = lexer->source[lexer->pos++];
@@ -157,13 +100,7 @@ static char advance(Lexer *lexer)
     return c;
 }
 
-
-
 /// @brief Skips whitespace and comments
-
-
-
-
 static void skip_whitespace(Lexer *lexer)
 {
     while (1)
@@ -172,8 +109,6 @@ static void skip_whitespace(Lexer *lexer)
 
  if (c == '\n') {
     advance(lexer);
-    lexer->line++;
-    lexer->column = 1;
 } else if (isspace(c)) {
     advance(lexer);
 }
@@ -209,40 +144,6 @@ static void skip_whitespace(Lexer *lexer)
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /// @brief Lookup keyword and return its token type
 static Token_Type keyword_lookup(const char *word)
 {
@@ -253,11 +154,7 @@ static Token_Type keyword_lookup(const char *word)
     return TOKEN_IDENTIFIER;
 }
 
-
 /// @brief Main lexer function to get the next token
-
-
-
 Token lexer_next_token(Lexer *lexer)
 {
 

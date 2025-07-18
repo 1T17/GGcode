@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include "output_buffer.h"
 
+#include <time.h>
+#include "config/config.h"
+#include "runtime/evaluator.h"
 
 
 // Internal buffer
@@ -66,6 +69,44 @@ void prepend_to_output_buffer(const char* prefix) {
     memmove(gcode_output + prefix_len, gcode_output, gcode_output_length + 1);
     memcpy(gcode_output, prefix, prefix_len);
     gcode_output_length += prefix_len;
+}
+
+
+void emit_gcode_preamble(int debug, const char* default_filename) {
+    char id_line[64];
+    if (var_exists("id")) {
+        Value *id_val = get_var("id");
+        if (id_val && id_val->type == VAL_NUMBER) {
+            snprintf(id_line, sizeof(id_line), "%.0f", id_val->number);
+        } else {
+            snprintf(id_line, sizeof(id_line), "000");
+        }
+    } else {
+        snprintf(id_line, sizeof(id_line), "000");
+    }
+
+    // Set RUNTIME_TIME
+    char time_line[64];
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    strftime(time_line, sizeof(time_line), "%Y-%m-%d %H:%M:%S", t);
+    strncpy(RUNTIME_TIME, time_line, sizeof(RUNTIME_TIME) - 1);
+    RUNTIME_TIME[sizeof(RUNTIME_TIME) - 1] = '\0';
+
+    // Set RUNTIME_FILENAME
+    if (default_filename) {
+        strncpy(RUNTIME_FILENAME, default_filename, sizeof(RUNTIME_FILENAME) - 1);
+        RUNTIME_FILENAME[sizeof(RUNTIME_FILENAME) - 1] = '\0';
+    }
+
+    char preamble[128] = "%\n";
+    strcat(preamble, id_line);
+    strcat(preamble, "\n");
+    prepend_to_output_buffer(preamble);
+    if (debug) {
+        printf("[Preamble] id_line: %s, time: %s, filename: %s\n", id_line, RUNTIME_TIME, RUNTIME_FILENAME);
+        fflush(stdout);
+    }
 }
 
 

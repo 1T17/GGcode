@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GGcode AJAX Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #ddd;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            height: 600px;
+        }
+        .panel {
+            flex: 1;
+            border: 1px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .panel-header {
+            background: #333;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: calc(100% - 50px);
+            background: #2d2d2d;
+            color: #ddd;
+            border: none;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0052a3;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .status.success {
+            background: #1a4d1a;
+            color: #90ee90;
+        }
+        .status.error {
+            background: #4d1a1a;
+            color: #ffcccb;
+        }
+        .status.compiling {
+            background: #4d4d1a;
+            color: #ffffcc;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .toggle-switch.active {
+            background-color: #0066cc;
+        }
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <h1>GGcode Real-time Compiler</h1>
+    
+    <div class="controls">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span>Auto-compile:</span>
+            <div class="toggle-switch" id="autoCompileToggle">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+        
+        <button id="compileBtn">Compile</button>
+        
+        <div id="status" class="status success">Ready</div>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <div class="panel-header">Input GGcode</div>
+            <textarea id="input" placeholder="Enter your GGcode here...">let x = 10
+G1 X[x] Y20
+G1 X0 Y0</textarea>
+        </div>
+        
+        <div class="panel">
+            <div class="panel-header">Output G-code</div>
+            <textarea id="output" readonly placeholder="Compiled G-code will appear here..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        let compileTimeout;
+        let autoCompileEnabled = false;
+
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const compileBtn = document.getElementById('compileBtn');
+        const status = document.getElementById('status');
+        const autoCompileToggle = document.getElementById('autoCompileToggle');
+
+        function updateStatus(message, type = 'success') {
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function setupAutoCompileToggle() {
+            autoCompileToggle.addEventListener('click', () => {
+                autoCompileEnabled = !autoCompileEnabled;
+                autoCompileToggle.classList.toggle('active', autoCompileEnabled);
+                
+                if (autoCompileEnabled) {
+                    compileCode();
+                }
+            });
+        }
+
+        async function compileCode() {
+            const code = input.value.trim();
+            
+            if (!code) {
+                output.value = '; Empty input';
+                updateStatus('Empty input', 'success');
+                return;
+            }
+
+            updateStatus('Compiling...', 'compiling');
+            compileBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/compile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ggcode: code })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    output.value = result.output;
+                    updateStatus('Compiled successfully', 'success');
+                } else {
+                    output.value = `; Error: ${result.error}`;
+                    updateStatus('Compilation failed', 'error');
+                }
+            } catch (error) {
+                output.value = `; Network error: ${error.message}`;
+                updateStatus('Network error', 'error');
+            } finally {
+                compileBtn.disabled = false;
+            }
+        }
+
+        // Set up event listeners
+        compileBtn.addEventListener('click', compileCode);
+        
+        input.addEventListener('input', () => {
+            if (autoCompileEnabled) {
+                clearTimeout(compileTimeout);
+                compileTimeout = setTimeout(() => {
+                    compileCode();
+                }, 1000); // 1 second delay
+            }
+        });
+
+        setupAutoCompileToggle();
+
+        // Initial compilation
+        compileCode();
+    </script>
+</body>
+</html> 

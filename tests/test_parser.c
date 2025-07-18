@@ -4,7 +4,7 @@
 #include "../src/lexer/lexer.h"
 #include "../src/parser/parser.h"
 #include "../src/lexer/token_utils.h"
-#include "../include/config.h"
+#include "../config/config.h"
 #include <string.h>
 
 int print_parser_logs = 1;

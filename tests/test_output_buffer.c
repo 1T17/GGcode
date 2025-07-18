@@ -147,6 +147,7 @@ int main(void)
 {
     UNITY_BEGIN();
     RUN_TEST(test_write_and_read_output_buffer);         // 1
+    
     RUN_TEST(test_output_buffer_length);                 // 2
     RUN_TEST(test_prepend_to_output_buffer);             // 3
     RUN_TEST(test_save_output_to_file);                  // 4

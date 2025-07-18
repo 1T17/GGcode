@@ -34,7 +34,10 @@
 #include "utils/file_utils.h"
 #include "utils/report.h"
 #include "error/error.h"
+#define FATAL_ERROR(msg, ...) fatal_error(NULL, 0, 0, msg, ##__VA_ARGS__)
+
 #include "utils/time_utils.h"
+#include <errno.h>
 
 
 
@@ -112,8 +115,8 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     // Load source
     char* source = read_file_to_buffer(input_path, &input_size_bytes);
     if (!source) {
-        perror("Failed to read input file");
-        exit(1);
+        report_error("Failed to read input file: %s", strerror(errno));
+        FATAL_ERROR("Failed to read input file: %s", strerror(errno));
     }
 
     init_output_buffer();
@@ -138,22 +141,7 @@ ASTNode* root = parse_script_from_string(source);
     double emit_time = end_timer(&emit_timer);
 
     // ➤ Insert G-code header at the beginning AFTER emit
-    char preamble[128] = "%\n";
-    char id_line[64];
-if (var_exists("id")) {
-    Value *id_val = get_var("id");
-    if (id_val && id_val->type == VAL_NUMBER) {
-        snprintf(id_line, sizeof(id_line), "%.0f", id_val->number);
-    } else {
-        snprintf(id_line, sizeof(id_line), "000");
-    }
-} else {
-    snprintf(id_line, sizeof(id_line), "000");
-}
-
-    strcat(preamble, id_line);
-    strcat(preamble, "\n");
-    prepend_to_output_buffer(preamble);
+    emit_gcode_preamble(debug, filename);
 
 
 // Measure memory usage (Linux/macOS/Windows)
@@ -176,7 +164,7 @@ long memory_kb = 0;
     if (get_output_to_file()) {
         FILE* out = fopen(output_path, "w");
         if (!out) {
-            perror("Failed to write output file");
+            report_error("Failed to write output file: %s", strerror(errno));
         } else {
             fwrite(get_output_buffer(), 1, get_output_length(), out);
             fclose(out);
@@ -196,7 +184,7 @@ long memory_kb = 0;
 
 
 if (has_errors()) {
-    fprintf(stderr, "\n⚠️ Compilation finished with errors:\n");
+    report_error("⚠️ Compilation finished with errors");
     print_errors();
     clear_errors();  // Reset for next file (if compiling multiple)
 }
@@ -250,7 +238,7 @@ void compile_all_gg_files(int debug) {
     WIN32_FIND_DATA findFileData;
     HANDLE hFind = FindFirstFile("*.ggcode", &findFileData);
     if (hFind == INVALID_HANDLE_VALUE) {
-        printf("No .ggcode files found.\n");
+        report_error("No .ggcode files found");
         return;
     }
     do {
@@ -267,7 +255,7 @@ compile_file(findFileData.cFileName, out_name, debug);
 #else
     DIR *dir = opendir(".");
     if (!dir) {
-        perror("opendir");
+        report_error("opendir failed: %s", strerror(errno));
         return;
     }
     struct dirent *entry;
@@ -291,7 +279,7 @@ if (pid == 0) {
     int status;
     waitpid(pid, &status, 0);
 } else {
-    perror("fork failed");
+    report_error("fork failed: %s", strerror(errno));
 }
 
 

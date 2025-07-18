@@ -120,7 +120,7 @@ for row = -5..5 {
 
 // Outer Ring
 G0 Z[z_safe]
-G0 X[outer_r] Y0
+G0 X[outer_r] Y[0]
 
 
 // Outer Rings
@@ -129,7 +129,7 @@ G0 Z[z_safe]
 for ring_scale = 1..6 {
     r = outer_r + (ring_scale/10) - 0.3
 
-    G0 X[r] Y0
+    G0 X[r] Y[0]
     G0 Z[z_cut] F[feed]
 
     let i = 0
@@ -145,7 +145,7 @@ for ring_scale = 1..6 {
         i = i + step_deg
     }
 
-    G0 X[r] Y0 F[feed]
+    G0 X[r] Y[0] F[feed]
     G0 Z[z_safe]
 }
 
