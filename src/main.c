@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
-#include <libgen.h>  
+#include <libgen.h>
 #include <errno.h>
 
 #ifdef _WIN32
@@ -66,11 +66,11 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     init_runtime();
     Runtime* runtime = get_runtime();
     runtime->debug = debug;
-    
+
     GGCODE_INPUT_FILENAME = input_path;
     long input_size_bytes = 0;
-    statement_count = 0;
-    reset_runtime_state(); 
+    runtime->statement_count = 0;
+    reset_runtime_state();
 
     // Store filename only (no path)
 #if defined(_WIN32)
@@ -79,11 +79,11 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
 #else
     const char* filename = basename((char*)input_path);
 #endif
-    
+
     // Update runtime state
     strncpy(runtime->RUNTIME_FILENAME, filename, sizeof(runtime->RUNTIME_FILENAME) - 1);
     runtime->RUNTIME_FILENAME[sizeof(runtime->RUNTIME_FILENAME) - 1] = '\0';
-    
+
     // Also update legacy globals for backward compatibility
     strncpy(RUNTIME_FILENAME, filename, sizeof(RUNTIME_FILENAME) - 1);
     RUNTIME_FILENAME[sizeof(RUNTIME_FILENAME) - 1] = '\0';
@@ -92,7 +92,7 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     time_t now = time(NULL);
     struct tm* tm_info = localtime(&now);
     strftime(runtime->RUNTIME_TIME, sizeof(runtime->RUNTIME_TIME), "%Y-%m-%d %H:%M:%S", tm_info);
-    
+
     // Also update legacy globals for backward compatibility
     strftime(RUNTIME_TIME, sizeof(RUNTIME_TIME), "%Y-%m-%d %H:%M:%S", tm_info);
 
@@ -109,7 +109,7 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     Timer parse_timer;
     start_timer(&parse_timer);
 
-    ASTNode* root = parse_script_from_string(source); 
+    ASTNode* root = parse_script_from_string(source);
     double parse_time = end_timer(&parse_timer);
 
     // Emit timing
@@ -154,7 +154,7 @@ long memory_kb = 0;
     long gcode_size_bytes = get_output_length();
 
 
-    print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb,statement_count);
+    print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb, runtime->statement_count);
 
     free_ast(root);
     free(source);
@@ -278,9 +278,7 @@ if (pid == 0) {
 
 
 int main() {
-//int x =0 ;
 
-//scanf("%d",&x);
 
     const char *input_file = get_input_file();
     int debug = get_debug();

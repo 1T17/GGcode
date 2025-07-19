@@ -24,7 +24,7 @@ static int enable_n_lines = DEFAULT_ENABLE_N_LINES;
 void init_runtime() {
     memset(&g_runtime, 0, sizeof(Runtime));
     g_runtime.debug = get_debug();  // Use current debug setting
-    g_runtime.statement_count = 0;
+    // statement_count is now managed in runtime state
     g_runtime.var_count = 0;
     g_runtime.function_count = 0;
     g_runtime.current_scope_level = 0;

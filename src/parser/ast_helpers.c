@@ -104,4 +104,4 @@ ASTNode* create_block_node(ASTNode** statements, int count) {
     ast_node->block.statements = statements;
     ast_node->block.count = count;
     return ast_node;
-} 
+}

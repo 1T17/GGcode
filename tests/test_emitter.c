@@ -7,12 +7,12 @@
 #include "../config/config.h"
 
 
-extern int statement_count;
+extern Runtime g_runtime;
 extern void reset_runtime_state(void);
 
 void setUp(void)
 {
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
 }
 
@@ -36,7 +36,7 @@ void test_emit_simple_gcode_block(void)
     // - let x
     // - note
     // - if condition evaluation and G1 inside the "then" branch
-    TEST_ASSERT_EQUAL_INT(4, statement_count);
+    TEST_ASSERT_EQUAL_INT(4, g_runtime.statement_count);
     Value *val = get_var("x");
     TEST_ASSERT_NOT_NULL(val);
     TEST_ASSERT_EQUAL_DOUBLE(10.0, val->number);
@@ -60,7 +60,7 @@ void test_emit_loop_and_conditionals(void)
     TEST_ASSERT_NOT_NULL(z);
     TEST_ASSERT_EQUAL_DOUBLE(6.0, z->number); // z = 1 + 2 + 3
 
-    TEST_ASSERT_EQUAL_INT(10, statement_count); // let + for + 3 lets + 2 G1s + 3 ifs = 10
+    TEST_ASSERT_EQUAL_INT(10, g_runtime.statement_count); // let + for + 3 lets + 2 G1s + 3 ifs = 10
 
     free_ast(root);
 }
@@ -78,7 +78,7 @@ void test_emit_nested_if_inside_loop(void)
 
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -106,7 +106,7 @@ void test_emit_while_loop_basic(void)
     TEST_ASSERT_EQUAL_DOUBLE(3.0, a->number); // should reach 3 after 3 iterations
 
     // 1 let + 1 while + (3x assign) + (3x G1) = 8 statements total
-    TEST_ASSERT_EQUAL_INT(8, statement_count);
+    TEST_ASSERT_EQUAL_INT(8, g_runtime.statement_count);
 
     free_ast(root);
 }
@@ -124,14 +124,14 @@ void test_emit_nested_if_inside_loop2(void)
 
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *count = get_var("count");
     TEST_ASSERT_NOT_NULL(count);
     TEST_ASSERT_EQUAL_DOUBLE(2.0, count->number); // should increment twice
-    TEST_ASSERT_EQUAL_INT(10, statement_count);
+    TEST_ASSERT_EQUAL_INT(10, g_runtime.statement_count);
 
     free_ast(root);
 }
@@ -148,7 +148,7 @@ void test_emit_function_declaration_and_call(void)
 
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -159,7 +159,7 @@ void test_emit_function_declaration_and_call(void)
     TEST_ASSERT_NOT_NULL(b);
     TEST_ASSERT_EQUAL_DOUBLE(3.0, a->number);
     TEST_ASSERT_EQUAL_DOUBLE(4.0, b->number);
-    TEST_ASSERT_EQUAL_INT(3, statement_count); //  2 lets, 1 note
+    TEST_ASSERT_EQUAL_INT(3, g_runtime.statement_count); //  2 lets, 1 note
 
     free_ast(root);
 }
@@ -177,7 +177,7 @@ void test_emit_function_call_returns_value(void)
 
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -189,7 +189,7 @@ void test_emit_function_call_returns_value(void)
 
     TEST_ASSERT_EQUAL_DOUBLE(2.0, r->number);  // r = 2
     TEST_ASSERT_EQUAL_DOUBLE(4.0, bb->number); // bb = square(2)
-    TEST_ASSERT_EQUAL_INT(4, statement_count); //  3 lets + 1 note
+    TEST_ASSERT_EQUAL_INT(4, g_runtime.statement_count); //  3 lets + 1 note
 
     free_ast(root);
 }
@@ -204,14 +204,14 @@ void test_emit_function_call_inside_expression(void)
         "let b = inc(a) + inc(3)\n"; // 3 + 4 = 7
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *b = get_var("b");
     TEST_ASSERT_NOT_NULL(b);
     TEST_ASSERT_EQUAL_DOUBLE(7.0, b->number);
-    TEST_ASSERT_EQUAL_INT(2, statement_count); //  + 2 lets
+    TEST_ASSERT_EQUAL_INT(2, g_runtime.statement_count); //  + 2 lets
 
     free_ast(root);
 }
@@ -225,14 +225,14 @@ void test_emit_function_with_two_params(void)
         "let sum = add(3, 7)\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *sum = get_var("sum");
     TEST_ASSERT_NOT_NULL(sum);
     TEST_ASSERT_EQUAL_DOUBLE(10.0, sum->number);
-    TEST_ASSERT_EQUAL_INT(1, statement_count); //  + let
+    TEST_ASSERT_EQUAL_INT(1, g_runtime.statement_count); //  + let
 
     free_ast(root);
 }
@@ -247,14 +247,14 @@ void test_emit_function_recursion(void)
         "let a = fact(4)\n"; // 4*3*2*1 = 24
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
     TEST_ASSERT_EQUAL_DOUBLE(24.0, a->number);
-    TEST_ASSERT_EQUAL_INT(1, statement_count); //  let
+    TEST_ASSERT_EQUAL_INT(1, g_runtime.statement_count); //  let
 
     free_ast(root);
 }
@@ -268,14 +268,14 @@ void test_emit_function_expr_args(void)
         "let z = mul(x + 1, y + 2)\n"; // 3 * 5 = 15
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *z = get_var("z");
     TEST_ASSERT_NOT_NULL(z);
     TEST_ASSERT_EQUAL_DOUBLE(15.0, z->number);
-    TEST_ASSERT_EQUAL_INT(3, statement_count); // 3 lets
+    TEST_ASSERT_EQUAL_INT(3, g_runtime.statement_count); // 3 lets
 
     free_ast(root);
 }
@@ -290,14 +290,14 @@ void test_emit_function_in_condition(void)
         "if (isEven(4)) { let a = 1 }\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
     TEST_ASSERT_EQUAL_DOUBLE(1.0, a->number);
-    TEST_ASSERT_EQUAL_INT(3, statement_count); //  let + if + inner let
+    TEST_ASSERT_EQUAL_INT(3, g_runtime.statement_count); //  let + if + inner let
 
     free_ast(root);
 }
@@ -308,14 +308,14 @@ void test_emit_bitwise_and(void)
         "let a = 6 & 3\n"; // 6 & 3 == 2
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
     TEST_ASSERT_EQUAL_DOUBLE(2.0, a->number);
-    TEST_ASSERT_EQUAL_INT(1, statement_count); // just one let
+    TEST_ASSERT_EQUAL_INT(1, g_runtime.statement_count); // just one let
 
     free_ast(root);
 }
@@ -331,7 +331,7 @@ void test_emit_function_overwrite_var(void)
         "let y = setx(5)\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -348,7 +348,7 @@ void test_emit_function_overwrite_var(void)
 
     TEST_ASSERT_EQUAL_DOUBLE(5.0, x->number); // Global x must remain untouched
     TEST_ASSERT_EQUAL_DOUBLE(5.0, y->number);
-    TEST_ASSERT_EQUAL_INT(2, statement_count); // let x, let y
+    TEST_ASSERT_EQUAL_INT(2, g_runtime.statement_count); // let x, let y
 
     free_ast(root);
 }
@@ -360,7 +360,7 @@ void test_emit_function_no_params_no_return(void)
         "let y = foo()\n";
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -378,7 +378,7 @@ void test_emit_function_only_return(void)
         "let x = ret42()\n";
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -396,7 +396,7 @@ void test_emit_function_unused_param(void)
         "let x = foo(5, 99)\n";
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -415,7 +415,7 @@ void test_emit_function_calls_function(void)
         "let y = add2(3)\n";
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -434,7 +434,7 @@ void test_emit_function_early_return(void)
         "let b = test(-1)\n";
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -457,7 +457,7 @@ void test_emit_function_empty_body(void)
         "let x = empty()\n";
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -484,7 +484,7 @@ void test_builtin_math_functions_and_constants(void)
 
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -532,7 +532,7 @@ void test_builtin_min_max(void)
 
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -557,7 +557,7 @@ void test_builtin_clamp(void)
 
     ASTNode *root = parse_script_from_string(code);
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -606,7 +606,7 @@ void test_complex_gcode_logic(void)
         "}\n"
         "note {Final X = [x], Flag = [flag]}\n";
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
     Value *x = get_var("x");
@@ -626,7 +626,7 @@ void test_builtin_trig_pow_hypot(void)
         "let hypot_d = hypot(3, 4)\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -647,7 +647,7 @@ void test_builtin_deg_rad_sign(void)
         "let sign_zero = sign(0)\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -665,7 +665,7 @@ void test_builtin_log(void)
     const char *code = "let val_log = round(log(EU))\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -679,7 +679,7 @@ void test_builtin_exp(void)
     const char *code = "let val_exp = round(exp(1))\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -693,7 +693,7 @@ void test_builtin_noise_zero(void)
     const char *code = "let noise_val = noise(0)\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
@@ -711,14 +711,14 @@ void test_emit_function_no_return(void)
         "let abc = doNothing(5)\n";
 
     ASTNode *root = parse_script_from_string(code);
-    statement_count = 0;
+    g_runtime.statement_count = 0;
     reset_runtime_state();
     emit_gcode(root, get_debug());
 
     Value *abc = get_var("abc");
     TEST_ASSERT_NOT_NULL(abc);
     TEST_ASSERT_EQUAL_DOUBLE(0.0, abc->number); // No return = 0.0 by convention
-    TEST_ASSERT_EQUAL_INT(1, statement_count);  // let abc
+    TEST_ASSERT_EQUAL_INT(1, g_runtime.statement_count);  // let abc
 
     free_ast(root);
 }

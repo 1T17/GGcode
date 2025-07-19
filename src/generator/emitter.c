@@ -14,10 +14,9 @@ Value *copy_value(Value *val); // Forward declaration
 #include "error/error.h"
 #define FATAL_ERROR(msg, ...) fatal_error(NULL, 0, 0, msg, ##__VA_ARGS__)
 
-extern char RUNTIME_TIME[64];
-extern char RUNTIME_FILENAME[256];
 
-#define MAX_WHILE_ITERATIONS 1000000 
+
+#define MAX_WHILE_ITERATIONS 1000000
 
 Value *make_number_value(double num);
 
@@ -34,22 +33,33 @@ Value *make_number_value(double num)
         return NULL;
     }
 
-    // Clamp extremely small values to 0
-    if (fabs(num) < 1e-10)
+    // Comprehensive floating-point precision handling
+    // 1. Handle NaN and Infinity
+    if (isnan(num) || isinf(num)) {
         num = 0.0;
-
-
+    }
+    // 2. Clamp extremely small values to 0 (prevents scientific notation)
+    else if (fabs(num) < 1e-5) {
+        num = 0.0;
+    }
+    // 3. Round very small values to prevent floating-point noise
+    else if (fabs(num) < 1e-4) {
+        num = round(num * 1e4) / 1e4;
+    }
+    // 4. Round medium values to prevent excessive precision
+    else if (fabs(num) < 1e-2) {
+        num = round(num * 1e6) / 1e6;
+    }
 
     val->type = VAL_NUMBER;
     val->number = num;
     return val;
 }
 
-int statement_count = 0;
-
 int get_statement_count()
 {
-    return statement_count;
+    Runtime *rt = get_runtime();
+    return rt->statement_count;
 }
 
 // Global flag to reset emitter state
@@ -58,7 +68,8 @@ static int emitter_reset_flag = 0;
 // Reset emitter state between compilations
 void reset_emitter_state()
 {
-    statement_count = 0;
+    Runtime *rt = get_runtime();
+    rt->statement_count = 0;
     emitter_reset_flag = 1;  // Set flag to reset last_code on next emit_gcode_stmt call
 }
 
@@ -67,7 +78,8 @@ void reset_emitter_state()
 //
 static void emit_note_stmt(ASTNode *node, int debug)
 {
-    statement_count++;
+    Runtime *rt = get_runtime();
+    rt->statement_count++;
     const char *content = node->note.content;
     if (!content)
     {
@@ -77,8 +89,7 @@ static void emit_note_stmt(ASTNode *node, int debug)
 
     if (debug)
     {
-        //  printf("[Emit] NOTE (raw content): %s\n", content);
-        // fflush(stdout);
+
     }
 
     char *copy = strdup(content);
@@ -115,11 +126,12 @@ static void emit_note_stmt(ASTNode *node, int debug)
                 if (*p == ']')
                     p++;
 
+                Runtime *rt = get_runtime();
                 const char *replacement = NULL;
                 if (strcmp(varname, "time") == 0)
-                    replacement = RUNTIME_TIME;
+                    replacement = rt->RUNTIME_TIME;
                 else if (strcmp(varname, "ggcode_file_name") == 0)
-                    replacement = RUNTIME_FILENAME;
+                    replacement = rt->RUNTIME_FILENAME;
 
                 if (replacement)
                 {
@@ -158,7 +170,8 @@ static void emit_note_stmt(ASTNode *node, int debug)
 //
 static void emit_let_stmt(ASTNode *node, int debug)
 {
-    statement_count++;
+    Runtime *rt = get_runtime();
+    rt->statement_count++;
 
     if (!node->let_stmt.name)
     {
@@ -198,7 +211,8 @@ static void emit_let_stmt(ASTNode *node, int debug)
 //
 static void emit_gcode_stmt(ASTNode *node, int debug)
 {
-    statement_count++;
+    Runtime *rt = get_runtime();
+    rt->statement_count++;
     if (!node->gcode_stmt.code)
     {
         report_error("[Emit] GCODE missing command code");
@@ -213,13 +227,13 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
     }
 
     static char last_code[16] = "";
-    
+
     // Reset last_code when emitter_reset_flag is set
     if (emitter_reset_flag) {
         memset(last_code, 0, sizeof(last_code));
         emitter_reset_flag = 0;
     }
-    
+
     char line[256] = {0};
 
     if (get_enable_n_lines())
@@ -266,7 +280,7 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
         }
 
         snprintf(segment, sizeof(segment), " %s%.6g", node->gcode_stmt.args[i].key, val);
-        
+
         size_t len = strlen(line);
         strncat(line, segment, sizeof(line) - len - 1);
     }
@@ -282,7 +296,8 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
 //
 static void emit_while_stmt(ASTNode *node, int debug)
 {
-    statement_count++;
+    Runtime *rt = get_runtime();
+    rt->statement_count++;
 
     if (debug)
     {
@@ -328,7 +343,8 @@ static void emit_while_stmt(ASTNode *node, int debug)
 //
 static void emit_for_stmt(ASTNode *node, int debug)
 {
-    statement_count++;
+    Runtime *rt = get_runtime();
+    rt->statement_count++;
 
     if (!node->for_stmt.var || !node->for_stmt.body)
     {
@@ -418,7 +434,7 @@ void emit_block_stmt(ASTNode *node, int debug)
 //
 static void emit_function_stmt(ASTNode *node, int debug)
 {
-    //statement_count++;
+
     extern void register_function(ASTNode * node);
     register_function(node);
 
@@ -433,7 +449,8 @@ static void emit_function_stmt(ASTNode *node, int debug)
 //
 static void emit_if_stmt(ASTNode *node, int debug)
 {
-    statement_count++;
+    Runtime *rt = get_runtime();
+    rt->statement_count++;
 
     if (debug)
     {
@@ -497,13 +514,13 @@ void emit_gcode(ASTNode *node, int debug)
 {
     if (!node)
         return;
-    
+
     // Get debug value from runtime state if not provided
     if (debug == -1) {
         Runtime* runtime = get_runtime();
         debug = runtime ? runtime->debug : 0;
     }
-    
+
     switch (node->type)
     {
 
@@ -533,7 +550,8 @@ case AST_EXPR_STMT:
     if (node->expr_stmt.expr)
     {
         emit_gcode(node->expr_stmt.expr, debug);
-        statement_count++;
+        Runtime *rt = get_runtime();
+        rt->statement_count++;
     }
     else
     {
@@ -556,7 +574,8 @@ case AST_EXPR_STMT:
 
     case AST_ASSIGN:
     {
-        statement_count++;
+        Runtime *rt = get_runtime();
+        rt->statement_count++;
         Value *val = eval_expr(node->assign_stmt.expr);
         if (!val || val->type != VAL_NUMBER)
         {
@@ -611,7 +630,8 @@ case AST_CALL:
         fflush(stdout);
     }
 
-    statement_count++;
+    Runtime *rt = get_runtime();
+    rt->statement_count++;
     break;
 }
 
@@ -621,7 +641,8 @@ case AST_CALL:
 
     case AST_ASSIGN_INDEX:
     {
-        statement_count++;
+        Runtime *rt = get_runtime();
+        rt->statement_count++;
 
         ASTNode *index_node = node->assign_index.target;
 
@@ -697,17 +718,20 @@ case AST_CALL:
     }
 
     case AST_ARRAY_LITERAL:
-        statement_count++;
+    {
+        Runtime *rt = get_runtime();
+        rt->statement_count++;
         if (debug)
         {
             printf("[Emit] ARRAY_LITERAL with %d elements\n", node->array_literal.count);
             for (int i = 0; i < node->array_literal.count; ++i)
             {
                 printf(" - Element [%d]:\n", i);
-                //emit_gcode(node->array_literal.elements[i], debug);
+
             }
         }
         break;
+    }
 
     default:
 

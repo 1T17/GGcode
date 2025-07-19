@@ -35,4 +35,3 @@ printf("\033[1;37mMemory \033[0m : \033[1;33m%ld KB\033[0m     \033[1;37mStateme
 
 
 }
- 

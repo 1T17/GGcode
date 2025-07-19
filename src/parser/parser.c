@@ -35,7 +35,7 @@ Token lexer_peek_token(Lexer *lexer);
 
 
 /// @brief step 2
-/// @return 
+/// @return
 ASTNode *parse_script() {
 
 
@@ -172,8 +172,8 @@ static ASTNode *parse_unary()
 }
 
 static ASTNode *parse_primary()
-{  
-    
+{
+
     //printf("[parse_primary]---------------------------------------\n");
 
 

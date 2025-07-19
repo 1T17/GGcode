@@ -1,0 +1,63 @@
+note { Rotating Star Spiral using GGcode arrays }
+
+let points = []
+let stepp = 6
+let num_rings = 10
+let centerX = 0
+let centerY = 0
+
+let count = 0
+let ring = 1
+while ring <= num_rings {
+    let s = ring * stepp
+    let angle_offset = ring * 15  // degrees
+    let angle_rad = angle_offset * 0.0174533  // to radians
+
+    // Compute rotated points for top, right, bottom, left
+    let dx = 0
+    let dy = s
+    let rx = dx * cos(angle_rad) - dy * sin(angle_rad)
+    let ry = dx * sin(angle_rad) + dy * cos(angle_rad)
+    points[count] = [centerX + rx, centerY + ry]
+    count = count + 1
+
+    let dx = s
+    let dy = 0
+    let rx = dx * cos(angle_rad) - dy * sin(angle_rad)
+    let ry = dx * sin(angle_rad) + dy * cos(angle_rad)
+    points[count] = [centerX + rx, centerY + ry]
+    count = count + 1
+
+    let dx = 0
+    let dy = -s
+    let rx = dx * cos(angle_rad) - dy * sin(angle_rad)
+    let ry = dx * sin(angle_rad) + dy * cos(angle_rad)
+    points[count] = [centerX + rx, centerY + ry]
+    count = count + 1
+
+    let dx = -s
+    let dy = 0
+    let rx = dx * cos(angle_rad) - dy * sin(angle_rad)
+    let ry = dx * sin(angle_rad) + dy * cos(angle_rad)
+    points[count] = [centerX + rx, centerY + ry]
+    count = count + 1
+
+    ring = ring + 1
+}
+
+G90 G21
+G0 Z5
+G0 X0 Y0
+G1 Z[-1] F300
+
+let i = 0
+while i < count {
+    let pt = points[i]
+    let x = pt[0]
+    let y = pt[1]
+    G1 X[x] Y[y] F10
+    i = i + 1
+}
+
+G0 Z5
+G0 X0 Y0 

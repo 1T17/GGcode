@@ -5,8 +5,7 @@
 #include <string.h>
 #include "../lexer/token_types.h"  // Needed for Token_Type enum
 #include "../parser/ast_nodes.h"   // Needed for ASTNodeType enum
-#include "../utils/output_buffer.h"  
-#include "../utils/output_buffer.h"  
+#include "../utils/output_buffer.h"
 
 #include "config/config.h"
 
@@ -116,7 +115,7 @@ void fatal_error(const char *source, int line, int column, const char *format, .
     clear_errors();
 
 
-    // if ilke not to kill prosess but stop the proses not exit just stop whatever is gowing on lexer phrazer ony layer that is active
+    // Set fatal error flag and jump to error handler
 fatal_error_triggered = 1;
 longjmp(fatal_error_jump_buffer, 1);
 

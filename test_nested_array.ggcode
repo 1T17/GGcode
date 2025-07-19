@@ -1,0 +1,9 @@
+let maze = []
+let row = []
+row[0] = 1
+row[1] = 1
+row[2] = 1
+maze[0] = row
+let px = 1
+let py = 0
+maze[py][px] = 0 

@@ -12,7 +12,7 @@
 #include <time.h>
 
 
-extern int statement_count;
+extern Runtime g_runtime;
 
 
 // In your function later:
@@ -29,7 +29,7 @@ if (!source_code || source_code[0] == '\0') {
     return strdup("; EMPTY OR NULL INPUT\n");
 }
 
-    statement_count = 0;
+    g_runtime.statement_count = 0;
 
     // reset_runtime_state();
     init_output_buffer();
@@ -43,7 +43,7 @@ if (!source_code || source_code[0] == '\0') {
     emit_gcode_preamble(debug, ggcode_file_name);
 
 // const char* buffer = get_output_buffer();
-// printf("DEBUG RAW OUTPUT: '%s'\n", buffer);  // See what's really there
+
 
     const char* output = strdup(get_output_buffer());
 
@@ -54,7 +54,7 @@ if (!source_code || source_code[0] == '\0') {
         return strdup("; ERROR\n");
     }
 
-   reset_runtime_state(); 
+   reset_runtime_state();
     free_ast(root);
     free_output_buffer();
     return output;
