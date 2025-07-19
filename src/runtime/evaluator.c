@@ -9,7 +9,7 @@
 #define FATAL_ERROR(msg, ...) fatal_error(NULL, 0, 0, msg, ##__VA_ARGS__)
 #include "config/config.h"
 #include "generator/emitter.h"
-extern Parser parser;
+// Parser moved to runtime state - no more global parser
 
 #define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
@@ -200,7 +200,8 @@ void enter_scope()
 }
 
 void reset_parser_state() {
-    memset(&parser, 0, sizeof(Parser));  // full reset
+    Runtime *rt = get_runtime();
+    memset(&rt->parser, 0, sizeof(Parser));  // full reset
 }
 
 //step 1
@@ -212,7 +213,7 @@ ASTNode *parse_script_from_string(const char *source)
     runtime_has_returned = 0;
     rt->current_scope_level = 0;
 
-    parser.lexer = lexer_new(source);
+    rt->parser.lexer = lexer_new(source);
 
     parser_advance();
     ASTNode *root = parse_script();

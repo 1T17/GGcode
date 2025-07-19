@@ -20,11 +20,15 @@ ASTResult parse_source(const char *source)
 {
     ASTResult result;
 
+    // Initialize runtime and set up parser
+    init_runtime();
+    Runtime *rt = get_runtime();
+    
     Lexer *lexer = lexer_new(source); // Use your existing function
-    parser.lexer = lexer;             // Set it globally
+    rt->parser.lexer = lexer;         // Set it in runtime
     parser_advance();                 // Safely sets parser.current
 
-    result.root = parse_script(); // No argument, uses global parser
+    result.root = parse_script(); // No argument, uses runtime parser
     lexer_free(lexer);            // Clean up
     return result;
 }

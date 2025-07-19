@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "../config/config.h"
 #include "../parser/parser.h"
 #include "../runtime/evaluator.h"
@@ -11,52 +10,71 @@
 #include "../error/error.h"
 #include <time.h>
 
+// Maximum input size to prevent buffer overflows
+#define MAX_INPUT_SIZE (1024 * 1024) // 1MB limit
 
-extern Runtime g_runtime;
+// Fixed function signature to match Node.js FFI binding
+const char* compile_ggcode_from_string(const char* source_code, int debug_flag) {
 
+    // Input validation
+    if (!source_code) {
+        return strdup("; ERROR: NULL input\n");
+    }
+    
+    // Check input length to prevent buffer overflows
+    size_t input_len = strlen(source_code);
+    if (input_len == 0) {
+        return strdup("; EMPTY INPUT\n");
+    }
+    
+    if (input_len > MAX_INPUT_SIZE) {
+        return strdup("; ERROR: Input too large (max 1MB)\n");
+    }
 
-// In your function later:
-
-const char* compile_ggcode_from_string(const char* source_code) {
-
-    int debug = get_debug();
-    // Initialize runtime state
+    // Initialize runtime state properly (no global contamination)
     init_runtime();
     Runtime* runtime = get_runtime();
-    runtime->debug = debug;
+    runtime->debug = debug_flag;
+    runtime->statement_count = 0;  // Use runtime state instead of global
 
-if (!source_code || source_code[0] == '\0') {
-    return strdup("; EMPTY OR NULL INPUT\n");
-}
-
-    g_runtime.statement_count = 0;
-
-    // reset_runtime_state();
+    // Initialize output buffer
     init_output_buffer();
+    
+    // Parse and compile
     ASTNode* root = parse_script_from_string(source_code);
-    emit_gcode(root, -1);  // Use runtime state for debug
+    
+    if (!root) {
+        reset_runtime_state();
+        free_output_buffer();
+        return strdup("; ERROR: Parsing failed\n");
+    }
+    
+    emit_gcode(root, debug_flag);
 
-    // === Insert G-code header with % and ID ===
-
+    // Generate G-code header
     char ggcode_file_name[64];
     snprintf(ggcode_file_name, sizeof(ggcode_file_name), "nodejs.ggcode");
-    emit_gcode_preamble(debug, ggcode_file_name);
+    emit_gcode_preamble(debug_flag, ggcode_file_name);
 
-// const char* buffer = get_output_buffer();
-
-
+    // Get output and check for errors
     const char* output = strdup(get_output_buffer());
-
-    if (!root || has_errors()) {
+    
+    if (has_errors()) {
         report_error("[NodeJS] Compilation failed or errors detected");
         print_errors();
         clear_errors();
-        return strdup("; ERROR\n");
+        free((void*)output);  // Free the output we just allocated
+        reset_runtime_state();
+        free_ast(root);
+        free_output_buffer();
+        return strdup("; ERROR: Compilation failed\n");
     }
 
-   reset_runtime_state();
+    // Cleanup
+    reset_runtime_state();
     free_ast(root);
     free_output_buffer();
+    
     return output;
 }
 

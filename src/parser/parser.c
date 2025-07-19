@@ -4,15 +4,17 @@
 #include "parser.h"
 #include "../utils/compat.h"
 #include "../runtime/evaluator.h"
+#include "../runtime/runtime_state.h"
+#include "../config/config.h"
 #include "error/error.h"
 #include <ctype.h>
 #include <setjmp.h>
 #define M_PI 3.14159265358979323846
 #define PARSE_ERROR(msg, ...) \
-    fatal_error(parser.lexer->source, parser.current.line, parser.current.column, msg, ##__VA_ARGS__)
+    fatal_error(get_runtime()->parser.lexer->source, get_runtime()->parser.current.line, get_runtime()->parser.current.column, msg, ##__VA_ARGS__)
 
 static int gcode_mode_active = 0;
-Parser parser;
+// Parser moved to runtime state - no more global parser
 
 static ASTNode *parse_binary_expression();
 static ASTNode *parse_block();
@@ -52,8 +54,9 @@ ASTNode *parse_script() {
 
     //printf("[DEBUG parse_script step] Entering parse_script()\n");
 
-    while (parser.current.type != TOKEN_EOF) {
-        if (parser.current.type == TOKEN_NEWLINE) {
+    Runtime *rt = get_runtime();
+    while (rt->parser.current.type != TOKEN_EOF) {
+        if (rt->parser.current.type == TOKEN_NEWLINE) {
             parser_advance();
             continue;
         }
@@ -136,15 +139,17 @@ int get_precedence(Token_Type op)
 
 void parser_advance()
 {
+    Runtime *rt = get_runtime();
     // printf("[Parser parser_advance()] calling lexer_next_token...\n");
-    parser.previous = parser.current;
-    parser.current = lexer_next_token(parser.lexer);
-    // printf("[Parser parser_advance()] got token: type=%d, value=%s\n", parser.current.type, parser.current.value);
+    rt->parser.previous = rt->parser.current;
+    rt->parser.current = lexer_next_token(rt->parser.lexer);
+    // printf("[Parser parser_advance()] got token: type=%d, value=%s\n", rt->parser.current.type, rt->parser.current.value);
 }
 
 static int match(Token_Type type)
 {
-    if (parser.current.type == type)
+    Runtime *rt = get_runtime();
+    if (rt->parser.current.type == type)
     {
         parser_advance();
         return 1;
@@ -154,9 +159,10 @@ static int match(Token_Type type)
 
 static ASTNode *parse_unary()
 {
-    if (parser.current.type == TOKEN_BANG || parser.current.type == TOKEN_MINUS)
+    Runtime *rt = get_runtime();
+    if (rt->parser.current.type == TOKEN_BANG || rt->parser.current.type == TOKEN_MINUS)
     {
-        Token op = parser.current;
+        Token op = rt->parser.current;
         parser_advance();
 
         ASTNode *operand = parse_unary(); // recursive for !! or -- etc.
@@ -177,15 +183,16 @@ static ASTNode *parse_primary()
     //printf("[parse_primary]---------------------------------------\n");
 
 
+    Runtime *rt = get_runtime();
     // Handle parentheses
-if (parser.current.type == TOKEN_LPAREN)
+if (rt->parser.current.type == TOKEN_LPAREN)
 {
     //printf("[parse_primary] 🌀 Detected '('\n");
     parser_advance(); // consume '('
     //printf("[parse_primary] ⏬ Parsing inner expression...\n");
 
     // Handle empty parentheses like: ()
-    if (parser.current.type == TOKEN_RPAREN) {
+    if (rt->parser.current.type == TOKEN_RPAREN) {
         //printf("[parse_primary] ⚠️ Empty parentheses detected — unexpected in primary expression.\n");
         report_error("[parse_primary] Unexpected empty '()' expression.");
         return NULL;
@@ -202,7 +209,7 @@ if (parser.current.type == TOKEN_LPAREN)
 
     if (!match(TOKEN_RPAREN))
     {
-        report_error("[parse_primary] Expected ')' after expression, but got '%s'", parser.current.value);
+        report_error("[parse_primary] Expected ')' after expression, but got '%s'", rt->parser.current.value);
         return NULL;
     }
 
@@ -218,7 +225,7 @@ if (parser.current.type == TOKEN_LPAREN)
 
 
     // Handle unary minus
-    if (parser.current.type == TOKEN_MINUS)
+    if (rt->parser.current.type == TOKEN_MINUS)
     {
         parser_advance(); // consume '-'
         ASTNode *right = parse_primary();
@@ -237,14 +244,14 @@ if (parser.current.type == TOKEN_LPAREN)
 
     // Handle built-in math constants
     if (
-        parser.current.type == TOKEN_FUNC_PI ||
-        parser.current.type == TOKEN_FUNC_TAU ||
-        parser.current.type == TOKEN_FUNC_EU ||
-        parser.current.type == TOKEN_FUNC_DEG_TO_RAD ||
-        parser.current.type == TOKEN_FUNC_RAD_TO_DEG)
+        rt->parser.current.type == TOKEN_FUNC_PI ||
+        rt->parser.current.type == TOKEN_FUNC_TAU ||
+        rt->parser.current.type == TOKEN_FUNC_EU ||
+        rt->parser.current.type == TOKEN_FUNC_DEG_TO_RAD ||
+        rt->parser.current.type == TOKEN_FUNC_RAD_TO_DEG)
     {
         double val = 0.0;
-        switch (parser.current.type)
+        switch (rt->parser.current.type)
         {
         case TOKEN_FUNC_PI:
             val = M_PI;
@@ -273,17 +280,17 @@ if (parser.current.type == TOKEN_LPAREN)
     }
 
     // Handle function calls and variables
-    if (parser.current.type == TOKEN_IDENTIFIER ||
-        (parser.current.type >= TOKEN_FUNC_ABS && parser.current.type <= TOKEN_FUNC_EXP))
+    if (rt->parser.current.type == TOKEN_IDENTIFIER ||
+        (rt->parser.current.type >= TOKEN_FUNC_ABS && rt->parser.current.type <= TOKEN_FUNC_EXP))
     {
 
-        char *name = strdup(parser.current.value);
+        char *name = strdup(rt->parser.current.value);
         //fprintf(stderr, "[Parser] Detected identifier or function name: '%s'\n", name);
 
         parser_advance(); // consume function or variable name
 
         // Check for function call
-        if (parser.current.type == TOKEN_LPAREN)
+        if (rt->parser.current.type == TOKEN_LPAREN)
         {
            // fprintf(stderr, "[Parser] Detected function call: '%s(...)'\n", name);
             parser_advance(); // consume '('
@@ -291,7 +298,7 @@ if (parser.current.type == TOKEN_LPAREN)
             ASTNode **args = NULL;
             int arg_count = 0, arg_capacity = 0;
 
-            while (parser.current.type != TOKEN_RPAREN)
+            while (rt->parser.current.type != TOKEN_RPAREN)
             {
                 if (arg_count >= arg_capacity)
                 {
@@ -302,7 +309,7 @@ if (parser.current.type == TOKEN_LPAREN)
                 //fprintf(stderr, "[Parser] Parsing argument %d for '%s'\n", arg_count + 1, name);
                 args[arg_count++] = parse_binary_expression();
 
-                if (parser.current.type == TOKEN_COMMA)
+                if (rt->parser.current.type == TOKEN_COMMA)
                 {
                     //fprintf(stderr, "[Parser] Found ',' – continuing to next argument\n");
                     parser_advance(); // consume comma
@@ -339,17 +346,17 @@ if (parser.current.type == TOKEN_LPAREN)
     }
 
     // Handle numeric constants
-    if (parser.current.type == TOKEN_NUMBER)
+    if (rt->parser.current.type == TOKEN_NUMBER)
     {
         ASTNode *node = malloc(sizeof(ASTNode));
         node->type = AST_NUMBER;
-        node->number.value = atof(parser.current.value);
+        node->number.value = atof(rt->parser.current.value);
         parser_advance(); // consume number
         return node;
     }
 
     // Handle array literal: [1, 2, 3] or [[1, 2], [3, 4]]
-    if (parser.current.type == TOKEN_LBRACKET)
+    if (rt->parser.current.type == TOKEN_LBRACKET)
     {
         parser_advance(); // consume '['
 
@@ -357,7 +364,7 @@ if (parser.current.type == TOKEN_LPAREN)
         int count = 0, capacity = 0;
 
         // Handle non-empty array
-        if (parser.current.type != TOKEN_RBRACKET)
+        if (rt->parser.current.type != TOKEN_RBRACKET)
         {
             while (1)
             {
@@ -369,17 +376,17 @@ if (parser.current.type == TOKEN_LPAREN)
 
                 elements[count++] = parse_binary_expression();
 
-                if (parser.current.type == TOKEN_COMMA)
+                if (rt->parser.current.type == TOKEN_COMMA)
                 {
                     parser_advance(); // consume comma and continue
                 }
-                else if (parser.current.type == TOKEN_RBRACKET)
+                else if (rt->parser.current.type == TOKEN_RBRACKET)
                 {
                     break; // closing bracket
                 }
                 else
                 {
-                    report_error("[Parser] Expected ',' or ']' in array literal, found '%s'", parser.current.value);
+                    report_error("[Parser] Expected ',' or ']' in array literal, found '%s'", rt->parser.current.value);
                     return NULL;
                 }
             }
@@ -393,7 +400,7 @@ if (parser.current.type == TOKEN_LPAREN)
         node->array_literal.count = count;
 
         // Now parse chained index access like: a[1][2]
-        while (parser.current.type == TOKEN_LBRACKET)
+        while (rt->parser.current.type == TOKEN_LBRACKET)
         {
             parser_advance(); // consume '['
             ASTNode *index = parse_binary_expression();
@@ -413,7 +420,7 @@ if (parser.current.type == TOKEN_LPAREN)
         return node;
     }
 
-            PARSE_ERROR("[parse_primary end] Unexpected token in expression: '%s'", parser.current.value);
+            PARSE_ERROR("[parse_primary end] Unexpected token in expression: '%s'", rt->parser.current.value);
 
 
 
@@ -426,9 +433,10 @@ if (parser.current.type == TOKEN_LPAREN)
 
 static ASTNode *parse_postfix_expression()
 {
+    Runtime *rt = get_runtime();
     ASTNode *expr = parse_primary();
 
-    while (parser.current.type == TOKEN_LBRACKET)
+    while (rt->parser.current.type == TOKEN_LBRACKET)
     {
         parser_advance(); // consume '['
         ASTNode *index = parse_binary_expression();
@@ -449,12 +457,12 @@ static ASTNode *parse_postfix_expression()
 
 static ASTNode *parse_binary_expression_prec(int min_prec)
 {
-
+    Runtime *rt = get_runtime();
     ASTNode *left = parse_unary();
 
     while (1)
     {
-        Token_Type op = parser.current.type;
+        Token_Type op = rt->parser.current.type;
         int prec = get_precedence(op);
 
         if (prec < min_prec)
@@ -483,14 +491,15 @@ static ASTNode *parse_binary_expression()
 
 static ASTNode *parse_function()
 {
+    Runtime *rt = get_runtime();
     parser_advance(); // Skip 'function' keyword
 
-    if (parser.current.type != TOKEN_IDENTIFIER)
+    if (rt->parser.current.type != TOKEN_IDENTIFIER)
     {
         PARSE_ERROR("Expected function name after 'function'");
     }
 
-    char *name = strdup(parser.current.value); // Save function name
+    char *name = strdup(rt->parser.current.value); // Save function name
     parser_advance();                          // Consume name
 
     if (!match(TOKEN_LPAREN))
@@ -502,11 +511,11 @@ static ASTNode *parse_function()
     char **params = NULL;
     int param_count = 0, param_capacity = 0;
 
-    while (parser.current.type != TOKEN_RPAREN)
+    while (rt->parser.current.type != TOKEN_RPAREN)
     {
-        if (parser.current.type != TOKEN_IDENTIFIER)
+        if (rt->parser.current.type != TOKEN_IDENTIFIER)
         {
-            PARSE_ERROR("Expected parameter name, got '%s'", parser.current.value);
+            PARSE_ERROR("Expected parameter name, got '%s'", rt->parser.current.value);
         }
 
         // Grow parameter list if needed
@@ -520,14 +529,14 @@ static ASTNode *parse_function()
             }
         }
 
-        params[param_count++] = strdup(parser.current.value);
+        params[param_count++] = strdup(rt->parser.current.value);
         parser_advance(); // Consume parameter name
 
-        if (parser.current.type == TOKEN_COMMA)
+        if (rt->parser.current.type == TOKEN_COMMA)
         {
             parser_advance(); // Consume comma
         }
-        else if (parser.current.type != TOKEN_RPAREN)
+        else if (rt->parser.current.type != TOKEN_RPAREN)
         {
             PARSE_ERROR("Expected ',' or ')' in parameter list");
         }
@@ -568,33 +577,34 @@ static ASTNode *parse_return()
 
 static ASTNode *parse_statement()
 {
-    if (parser.current.type == TOKEN_NEWLINE || parser.current.type == TOKEN_EOF)
+    Runtime *rt = get_runtime();
+    if (rt->parser.current.type == TOKEN_NEWLINE || rt->parser.current.type == TOKEN_EOF)
         return NULL;
 
     // Keyword-based statements
-    if (parser.current.type == TOKEN_FUNCTION)
+    if (rt->parser.current.type == TOKEN_FUNCTION)
         return parse_function();
-    if (parser.current.type == TOKEN_RETURN)
+    if (rt->parser.current.type == TOKEN_RETURN)
         return parse_return();
-    if (parser.current.type == TOKEN_WHILE)
+    if (rt->parser.current.type == TOKEN_WHILE)
         return parse_while();
-    if (parser.current.type == TOKEN_FOR)
+    if (rt->parser.current.type == TOKEN_FOR)
         return parse_for();
-    if (parser.current.type == TOKEN_IF)
+    if (rt->parser.current.type == TOKEN_IF)
         return parse_if();
-    if (parser.current.type == TOKEN_LET)
+    if (rt->parser.current.type == TOKEN_LET)
         return parse_let();
-    if (parser.current.type == TOKEN_NOTE)
+    if (rt->parser.current.type == TOKEN_NOTE)
         return parse_note();
 
     // Identifier-based logic (e.g., x = 1, maze[i][j] = 0, or foo(1))
-    if (parser.current.type == TOKEN_IDENTIFIER)
+    if (rt->parser.current.type == TOKEN_IDENTIFIER)
     {
         return parse_identifier_statement();
     }
 
     // G-code commands like G1, G0, M3, etc.
-    if (parser.current.type == TOKEN_GCODE_WORD)
+    if (rt->parser.current.type == TOKEN_GCODE_WORD)
     {
         return parse_gcode();
     }
@@ -614,6 +624,7 @@ static ASTNode *parse_statement()
 
 static ASTNode *parse_identifier_statement()
 {
+    Runtime *rt = get_runtime();
     ASTNode *node = parse_postfix_expression();
     if (!node)
         return NULL;
@@ -628,7 +639,7 @@ static ASTNode *parse_identifier_statement()
     }
 
     // Case 2: Assignment like foo = 123 or maze[i][j] = 7
-    if (parser.current.type == TOKEN_EQUAL)
+    if (rt->parser.current.type == TOKEN_EQUAL)
     {
         ASTNode *assign = malloc(sizeof(ASTNode));
         ASTNode *rhs = NULL;
@@ -684,10 +695,11 @@ static ASTNode *parse_block()
     ASTNode **statements = NULL;
     int capacity = 0, count = 0;
 
+    Runtime *rt = get_runtime();
     while (!match(TOKEN_RBRACE))
     {
 
-        if (parser.current.type == TOKEN_EOF)
+        if (rt->parser.current.type == TOKEN_EOF)
         {
             PARSE_ERROR("Unexpected EOF in block");
         }
@@ -709,7 +721,7 @@ static ASTNode *parse_block()
         }
 
         // Skip any newlines between statements in a block
-        while (parser.current.type == TOKEN_NEWLINE)
+        while (rt->parser.current.type == TOKEN_NEWLINE)
             parser_advance();
     }
 
@@ -722,14 +734,15 @@ static ASTNode *parse_block()
 
 static ASTNode *parse_let()
 {
+    Runtime *rt = get_runtime();
     parser_advance(); // skip 'let'
 
-    if (parser.current.type != TOKEN_IDENTIFIER)
+    if (rt->parser.current.type != TOKEN_IDENTIFIER)
     {
         PARSE_ERROR("[parse_let] Expected identifier after 'let'");
     }
 
-    char *name = strdup(parser.current.value);
+    char *name = strdup(rt->parser.current.value);
     parser_advance();
 
     if (!match(TOKEN_EQUAL))
@@ -748,37 +761,38 @@ static ASTNode *parse_let()
 
 static ASTNode *parse_for()
 {
+    Runtime *rt = get_runtime();
     parser_advance(); // skip 'for'
 
-    if (parser.current.type != TOKEN_IDENTIFIER)
+    if (rt->parser.current.type != TOKEN_IDENTIFIER)
     {
-        PARSE_ERROR("[parse_for] Expected identifier after 'for', but got '%s'", parser.current.value);
+        PARSE_ERROR("[parse_for] Expected identifier after 'for', but got '%s'", rt->parser.current.value);
     }
 
-    char *var = strdup(parser.current.value);
+    char *var = strdup(rt->parser.current.value);
     parser_advance();
 
     if (!match(TOKEN_EQUAL))
     {
-        PARSE_ERROR("[parse_for] Expected '=' after variable name in for loop, but got '%s'", parser.current.value);
+        PARSE_ERROR("[parse_for] Expected '=' after variable name in for loop, but got '%s'", rt->parser.current.value);
     }
 
     // Parse 'from' expression
     ASTNode *from = parse_binary_expression();
 
     int exclusive = 0;
-    if (parser.current.type == TOKEN_DOTDOT_LT)
+    if (rt->parser.current.type == TOKEN_DOTDOT_LT)
     {
         exclusive = 1;
         parser_advance();
     }
-    else if (parser.current.type == TOKEN_DOTDOT)
+    else if (rt->parser.current.type == TOKEN_DOTDOT)
     {
         parser_advance();
     }
     else
     {
-        PARSE_ERROR("[parse_for] Expected '..' or '..<' in for loop range, but got '%s'", parser.current.value);
+        PARSE_ERROR("[parse_for] Expected '..' or '..<' in for loop range, but got '%s'", rt->parser.current.value);
     }
 
     // Parse 'to' expression
@@ -786,7 +800,7 @@ static ASTNode *parse_for()
 
     // Optional: support 'step' keyword
     ASTNode *step = NULL;
-    if (parser.current.type == TOKEN_STEP)
+    if (rt->parser.current.type == TOKEN_STEP)
     {
         parser_advance();
         step = parse_binary_expression();
@@ -833,38 +847,39 @@ static ASTNode *parse_while()
 
 static ASTNode *parse_note()
 {
+    Runtime *rt = get_runtime();
     parser_advance(); // skip 'note'
 
     // printf("[Parser] Saw 'note'\n");
 
-    if (parser.current.type != TOKEN_LBRACE)
+    if (rt->parser.current.type != TOKEN_LBRACE)
     {
         PARSE_ERROR("[parse_note] Expected '{' after 'note'");
     }
 
     // Manually store brace start before advancing
 
-    const char *start = parser.lexer->source + parser.lexer->pos;
+    const char *start = rt->parser.lexer->source + rt->parser.lexer->pos;
 
-    int start_pos = parser.lexer->pos;
+    int start_pos = rt->parser.lexer->pos;
 
-    // printf("[Parser] Found '{' at position %d\n", parser.lexer->pos);
+    // printf("[Parser] Found '{' at position %d\n", rt->parser.lexer->pos);
 
     parser_advance(); // consume '{'
     int brace_depth = 1;
 
-    while (parser.current.type != TOKEN_EOF && brace_depth > 0)
+    while (rt->parser.current.type != TOKEN_EOF && brace_depth > 0)
     {
-        char c = parser.lexer->source[parser.lexer->pos];
+        char c = rt->parser.lexer->source[rt->parser.lexer->pos];
         if (c == '{')
             brace_depth++;
         else if (c == '}')
             brace_depth--;
-        parser.lexer->pos++;
-        parser.lexer->column++;
+        rt->parser.lexer->pos++;
+        rt->parser.lexer->column++;
     }
 
-    int len = parser.lexer->pos - start_pos - 1; // exclude final '}'
+    int len = rt->parser.lexer->pos - start_pos - 1; // exclude final '}'
     char *content = strndup_portable(start, len);
 
     // //printf("[Parser] Raw captured string (%d bytes): \"", len);
@@ -883,15 +898,16 @@ static ASTNode *parse_note()
 
 static ASTNode *parse_gcode()
 {
+    Runtime *rt = get_runtime();
     // Group GCODE words (like G1, G90, etc.)
     char line[256] = {0};
     int line_pos = 0;
 
-    while (parser.current.type == TOKEN_GCODE_WORD)
+    while (rt->parser.current.type == TOKEN_GCODE_WORD)
     {
         if (line_pos > 0)
             line[line_pos++] = ' '; // space between codes
-        int len = snprintf(line + line_pos, sizeof(line) - line_pos, "%s", parser.current.value);
+        int len = snprintf(line + line_pos, sizeof(line) - line_pos, "%s", rt->parser.current.value);
         line_pos += len;
         parser_advance();
     }
@@ -900,10 +916,10 @@ static ASTNode *parse_gcode()
     GArg *args = NULL;
     int count = 0, capacity = 0;
 
-    while (parser.current.type == TOKEN_IDENTIFIER)
+    while (rt->parser.current.type == TOKEN_IDENTIFIER)
     {
         // Allow only classic G-code letters (1-letter, uppercase: X, Y, Z, F, S, etc.)
-        const char *key = parser.current.value;
+        const char *key = rt->parser.current.value;
 
         if (strlen(key) != 1 || !isupper(key[0]))
         {
@@ -916,7 +932,7 @@ static ASTNode *parse_gcode()
         parser_advance();
 
         ASTNode *index = NULL;
-        if (parser.current.type == TOKEN_LBRACKET)
+        if (rt->parser.current.type == TOKEN_LBRACKET)
         {
             parser_advance();
             index = parse_binary_expression();
@@ -950,6 +966,7 @@ static ASTNode *parse_gcode()
 
 static ASTNode *parse_if()
 {
+    Runtime *rt = get_runtime();
     ASTNode *node = malloc(sizeof(ASTNode));
     node->type = AST_IF;
 
@@ -961,7 +978,7 @@ static ASTNode *parse_if()
     node->if_stmt.condition = parse_binary_expression();
 
     // Expect '{'
-    if (parser.current.type != TOKEN_LBRACE)
+    if (rt->parser.current.type != TOKEN_LBRACE)
     {
         PARSE_ERROR("[parse_if] Expected '{' after if condition");
     }
@@ -969,14 +986,14 @@ static ASTNode *parse_if()
     node->if_stmt.then_branch = parse_block(); // handles { ... }
 
     // Optional else
-    if (parser.current.type == TOKEN_ELSE)
+    if (rt->parser.current.type == TOKEN_ELSE)
     {
         parser_advance(); // consume 'else'
-        if (parser.current.type == TOKEN_IF)
+        if (rt->parser.current.type == TOKEN_IF)
         {
             node->if_stmt.else_branch = parse_if(); // recursively parse chained if
         }
-        else if (parser.current.type == TOKEN_LBRACE)
+        else if (rt->parser.current.type == TOKEN_LBRACE)
         {
             node->if_stmt.else_branch = parse_block();
         }

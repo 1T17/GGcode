@@ -2,6 +2,7 @@
 #define RUNTIME_STATE_H
 
 #include "../parser/ast_nodes.h"
+#include "../parser/parser.h"
 #include <stddef.h>
 
 #define MAX_VARIABLES 1024
@@ -34,6 +35,7 @@ typedef struct Runtime {
     int function_count;
     int current_scope_level;
     int debug;  // Add debug field to runtime state
+    Parser parser;  // Parser state moved from global to runtime
     // Add more fields as needed (error state, output buffer, etc.)
 } Runtime;
 
