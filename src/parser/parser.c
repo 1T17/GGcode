@@ -1023,6 +1023,10 @@ void free_ast(ASTNode *node)
         // Nothing to free
         break;
 
+    case AST_EMPTY:
+        // Nothing to free
+        break;
+
 
 case AST_EXPR_STMT:
     free_ast(node->expr_stmt.expr);
@@ -1041,8 +1045,24 @@ case AST_EXPR_STMT:
         break;
 
     case AST_FUNCTION:
-        //fprintf(stderr, "[free_ast] Skipping function: %s\n", node->function_stmt.name);
-        return;
+        // Free function name
+        if (node->function_stmt.name) {
+            free(node->function_stmt.name);
+        }
+        // Free parameter names
+        if (node->function_stmt.params) {
+            for (int i = 0; i < node->function_stmt.param_count; i++) {
+                if (node->function_stmt.params[i]) {
+                    free(node->function_stmt.params[i]);
+                }
+            }
+            free(node->function_stmt.params);
+        }
+        // Free function body
+        if (node->function_stmt.body) {
+            free_ast(node->function_stmt.body);
+        }
+        break;
 
     case AST_RETURN:
         free_ast(node->return_stmt.expr);
@@ -1096,11 +1116,7 @@ case AST_EXPR_STMT:
         for (int i = 0; i < node->block.count; i++)
         {
             ASTNode *stmt = node->block.statements[i];
-            if (stmt->type != AST_FUNCTION)
-            {
-                free_ast(stmt); // only free non-function nodes
-            }
-            // else: skip function — it's owned by the registry and already freed
+            free_ast(stmt); // Free all statements including functions
         }
         free(node->block.statements);
         break;

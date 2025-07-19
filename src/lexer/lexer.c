@@ -187,7 +187,9 @@ Token_Type type = keyword_lookup(word);
 if (type == TOKEN_IDENTIFIER && (word[0] == 'G' || word[0] == 'M' || word[0] == 'T'))
     type = TOKEN_GCODE_WORD;
 
-return make_token(type, word, lexer->line, start_col);
+Token token = make_token(type, word, lexer->line, start_col);
+free(word);  // Free the temporary word buffer
+return token;
 
 }
 
@@ -244,7 +246,9 @@ return make_token(type, word, lexer->line, start_col);
                 }
             }
             num[j] = '\0';
-            return make_token(TOKEN_NUMBER, num, lexer->line, start_col);
+            Token token = make_token(TOKEN_NUMBER, num, lexer->line, start_col);
+            free(num);  // Free the temporary num buffer
+            return token;
         }
     }
 

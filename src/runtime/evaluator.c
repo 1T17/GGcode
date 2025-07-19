@@ -201,6 +201,12 @@ void enter_scope()
 
 void reset_parser_state() {
     Runtime *rt = get_runtime();
+    // Free the lexer if it exists
+    if (rt->parser.lexer) {
+        lexer_free(rt->parser.lexer);
+        rt->parser.lexer = NULL;
+    }
+    // Reset the rest of the parser state
     memset(&rt->parser, 0, sizeof(Parser));  // full reset
 }
 
