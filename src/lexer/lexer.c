@@ -7,7 +7,7 @@
 #include "lexer.h"
 #include "token_utils.h"
 
-int LEXER_DEBUG = 0; // Toggle lexer debug output
+
 
 Lexer *lexer_new(const char *source) {
      //printf("[lexer_new]\n");
@@ -46,7 +46,13 @@ Lexer *lexer_new(const char *source) {
 /// @param lexer The lexer to free
 void lexer_free(Lexer *lexer)
 {
-    free(lexer);
+    if (lexer) {
+        if (lexer->source) {
+            free((char*)lexer->source);
+            lexer->source = NULL;
+        }
+        free(lexer);
+    }
 }
 
 /// @brief Peeks at the current character

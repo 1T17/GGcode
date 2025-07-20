@@ -37,6 +37,8 @@ typedef struct Value {
 
 // --- Function declarations ---
 Value *make_number_value(double x);
+Value *copy_value(Value *val);
+void free_value(Value *val);
 
 // Core API
 void set_var(const char *name, Value *val);

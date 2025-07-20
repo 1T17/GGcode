@@ -16,6 +16,11 @@
 static int gcode_mode_active = 0;
 // Parser moved to runtime state - no more global parser
 
+// Function to reset parser static variables
+void reset_parser_static_vars(void) {
+    gcode_mode_active = 0;
+}
+
 static ASTNode *parse_binary_expression();
 static ASTNode *parse_block();
 static ASTNode *parse_while();
@@ -52,7 +57,7 @@ ASTNode *parse_script() {
     int count = 0;
     int capacity = 0;
 
-    //printf("[DEBUG parse_script step] Entering parse_script()\n");
+    
 
     Runtime *rt = get_runtime();
     while (rt->parser.current.type != TOKEN_EOF) {
@@ -72,15 +77,14 @@ ASTNode *parse_script() {
             continue;
         }
 
-        //printf("[DEBUG] Parsed stmt type: %d\n", stmt->type);
+       
 
 if (stmt->type == AST_EMPTY || stmt->type == AST_NOP)
     continue;
 
 
-        if (count >= capacity) {
+                if (count >= capacity) {
             int new_capacity = (capacity == 0) ? 4 : capacity * 2;
-         //   //printf("[DEBUG] Growing statement array: %d → %d\n", capacity, new_capacity);
             ASTNode **new_array = malloc(new_capacity * sizeof(ASTNode *));
 if (!new_array) {
     PARSE_ERROR("[parse_script] Memory allocation failed for statement array");
@@ -95,9 +99,7 @@ if (!new_array) {
         }
 
         statements[count++] = stmt;
-    }
-
-  //printf("[DEBUG] Finished loop, count = %d\n", count);
+        }
 
     ASTNode *block = malloc(sizeof(ASTNode));
 if (!block) {
@@ -558,9 +560,7 @@ static ASTNode *parse_function()
     if (body)
         body->parent = node;
 
-#ifdef PARSER_DEBUG
-    printf("[Parser] Parsed function: %s with %d params\n", name, param_count);
-#endif
+
 
     return node;
 }
@@ -717,7 +717,7 @@ static ASTNode *parse_block()
         }
         else
         {
-            report_error("[DEBUG] Skipping NULL stmt");
+            report_error("Skipping NULL stmt");
         }
 
         // Skip any newlines between statements in a block
@@ -828,9 +828,6 @@ static ASTNode *parse_for()
 
 static ASTNode *parse_while()
 {
-
-    // printf("[DEBUG] Inside parse_while. Current token before parser_advance: type=%d, value='%s'\n",parser.current.type, parser.current.value);
-
     parser_advance(); // skip 'while'
 
     ASTNode *condition = parse_binary_expression(); // allow full expression

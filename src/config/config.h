@@ -19,7 +19,7 @@ extern char RUNTIME_TIME[64];
 extern char RUNTIME_FILENAME[256];
 
 // Default values
-#define DEFAULT_DEBUG 0
+
 #define DEFAULT_OUTPUT_TO_FILE 1
 #define DEFAULT_LINE_NUMBER 10
 #define DEFAULT_ENABLE_N_LINES 1
@@ -27,7 +27,7 @@ extern char RUNTIME_FILENAME[256];
 // Function declarations
 void set_input_file(const char* filename);
 const char* get_input_file(void);
-int get_debug(void);
+
 int get_output_to_file(void);
 int get_line_number(void);
 void increment_line_number(void);

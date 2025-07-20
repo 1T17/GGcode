@@ -14,6 +14,7 @@ void parser_advance(void);
 ASTNode* parse_inline_expression(const char* expr);
 ASTNode* parse_script(void);
 void free_ast(ASTNode* node);
+void reset_parser_static_vars(void);
 
 
 #endif

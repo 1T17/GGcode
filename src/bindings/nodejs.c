@@ -14,7 +14,7 @@
 #define MAX_INPUT_SIZE (1024 * 1024) // 1MB limit
 
 // Fixed function signature to match Node.js FFI binding
-const char* compile_ggcode_from_string(const char* source_code, int debug_flag) {
+const char* compile_ggcode_from_string(const char* source_code) {
 
     // Input validation
     if (!source_code) {
@@ -34,7 +34,7 @@ const char* compile_ggcode_from_string(const char* source_code, int debug_flag) 
     // Initialize runtime state properly (no global contamination)
     init_runtime();
     Runtime* runtime = get_runtime();
-    runtime->debug = debug_flag;
+
     runtime->statement_count = 0;  // Use runtime state instead of global
 
     // Initialize output buffer
@@ -49,12 +49,12 @@ const char* compile_ggcode_from_string(const char* source_code, int debug_flag) 
         return strdup("; ERROR: Parsing failed\n");
     }
     
-    emit_gcode(root, debug_flag);
+    emit_gcode(root);
 
     // Generate G-code header
     char ggcode_file_name[64];
     snprintf(ggcode_file_name, sizeof(ggcode_file_name), "nodejs.ggcode");
-    emit_gcode_preamble(debug_flag, ggcode_file_name);
+    emit_gcode_preamble(ggcode_file_name);
 
     // Get output and check for errors
     const char* output = strdup(get_output_buffer());

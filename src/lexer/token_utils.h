@@ -24,11 +24,7 @@ Token make_token(Token_Type type, const char *value, int line, int column);
  */
 void token_free(Token token);
 
-/**
- * @brief Print token details if debugging is enabled.
- * @param token The token to display.
- */
-void print_token(Token token);
+
 
 #ifdef __cplusplus
 }

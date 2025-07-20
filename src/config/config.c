@@ -23,7 +23,7 @@ static int enable_n_lines = DEFAULT_ENABLE_N_LINES;
 // Initialize runtime state
 void init_runtime() {
     memset(&g_runtime, 0, sizeof(Runtime));
-    g_runtime.debug = get_debug();  // Use current debug setting
+
     // statement_count is now managed in runtime state
     g_runtime.var_count = 0;
     g_runtime.function_count = 0;
@@ -44,9 +44,7 @@ const char* get_input_file() {
 }
 
 
-int get_debug() {
-    return DEFAULT_DEBUG;
-}
+
 
 int get_output_to_file() {
     return DEFAULT_OUTPUT_TO_FILE;

@@ -180,7 +180,7 @@ void reset_runtime_state(void)
 
     // Reset runtime state
     memset(rt, 0, sizeof(Runtime));
-    rt->debug = get_debug();  // Restore debug setting from config
+
 
     // Reset emitter state
     extern void reset_emitter_state(void);
@@ -423,15 +423,8 @@ case AST_VAR:
         arr_val->array.items = items;
         arr_val->array.count = count;
 
-        // Assign to variable if used in a LET
-if (node->parent && node->parent->type == AST_LET)
-{
-    const char *name = node->parent->let_stmt.name;
-    declare_var(name, arr_val);   // ✅ save as a proper variable (type = VAL_ARRAY)
-}
-
-// ✅ Always return the real array value
-return arr_val;
+        // Return the array value (no parent access to prevent crashes)
+        return arr_val;
 
     }
 
@@ -684,8 +677,7 @@ if (!arg_val || arg_val->type != VAL_NUMBER) {
     FATAL_ERROR("🚨 ERROR: Failed to evaluate argument %d for function '%s'", i, name);
 }
 
-if (strcmp(name, "fact") == 0 && i == 0)
-    printf("[debug] fact() called with n = %.2f\n", arg_val->number);
+
 
         declare_var(func->function_stmt.params[i], arg_val);
     }
@@ -698,7 +690,7 @@ for (int i = 0; i < body->block.count; i++) {
 
     // ✅ Always evaluate control flow and expressions
     if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_WHILE || stmt->type == AST_FOR ) {
-        emit_gcode(stmt, 0);
+        emit_gcode(stmt);
     } else {
         eval_expr(stmt);
     }

@@ -34,7 +34,7 @@ typedef struct Runtime {
     FunctionEntry function_table[MAX_FUNCTIONS];
     int function_count;
     int current_scope_level;
-    int debug;  // Add debug field to runtime state
+
     Parser parser;  // Parser state moved from global to runtime
     // Add more fields as needed (error state, output buffer, etc.)
 } Runtime;

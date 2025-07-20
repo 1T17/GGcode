@@ -62,7 +62,7 @@ extern char *global_source_buffer;
 void fatal_error(const char *source, int line, int column, const char *format, ...) {
     // Show header with location
     fprintf(stderr, "\n🛑 [Fatal Error] ");
-    fprintf(stderr, "\n[Debug] RUNTIME_FILENAME is: '%s'\n", RUNTIME_FILENAME);
+
 
 
     va_list args;

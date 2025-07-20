@@ -72,7 +72,7 @@ void prepend_to_output_buffer(const char* prefix) {
 }
 
 
-void emit_gcode_preamble(int debug, const char* default_filename) {
+void emit_gcode_preamble(const char* default_filename) {
     char id_line[64];
     if (var_exists("id")) {
         Value *id_val = get_var("id");
@@ -103,10 +103,8 @@ void emit_gcode_preamble(int debug, const char* default_filename) {
     strcat(preamble, id_line);
     strcat(preamble, "\n");
     prepend_to_output_buffer(preamble);
-    if (debug) {
-        printf("[Preamble] id_line: %s, time: %s, filename: %s\n", id_line, RUNTIME_TIME, RUNTIME_FILENAME);
-        fflush(stdout);
-    }
+
+
 }
 
 

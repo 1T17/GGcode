@@ -76,7 +76,7 @@ void reset_emitter_state()
 
 
 //
-static void emit_note_stmt(ASTNode *node, int debug)
+static void emit_note_stmt(ASTNode *node)
 {
     Runtime *rt = get_runtime();
     rt->statement_count++;
@@ -87,10 +87,7 @@ static void emit_note_stmt(ASTNode *node, int debug)
         return;
     }
 
-    if (debug)
-    {
 
-    }
 
     char *copy = strdup(content);
     if (!copy)
@@ -168,7 +165,7 @@ static void emit_note_stmt(ASTNode *node, int debug)
     copy = NULL;
 }
 //
-static void emit_let_stmt(ASTNode *node, int debug)
+static void emit_let_stmt(ASTNode *node)
 {
     Runtime *rt = get_runtime();
     rt->statement_count++;
@@ -180,25 +177,7 @@ static void emit_let_stmt(ASTNode *node, int debug)
     }
 
     Value *val = eval(node->let_stmt.expr);
-    if (debug)
-    {
-        if (val)
-        {
-            if (val->type == VAL_NUMBER)
-            {
-                printf("[Emit] LET %s = %.5f\n", node->let_stmt.name, val->number);
-            }
-            else if (val->type == VAL_ARRAY)
-            {
-                printf("[Emit] LET %s = [array with %zu items]\n", node->let_stmt.name, val->array.count);
-            }
-        }
-        else
-        {
-            printf("[Emit] LET %s = NULL\n", node->let_stmt.name);
-        }
-        fflush(stdout);
-    }
+
 
     if (!val)
     {
@@ -209,7 +188,7 @@ static void emit_let_stmt(ASTNode *node, int debug)
     set_var(node->let_stmt.name, val);
 }
 //
-static void emit_gcode_stmt(ASTNode *node, int debug)
+static void emit_gcode_stmt(ASTNode *node)
 {
     Runtime *rt = get_runtime();
     rt->statement_count++;
@@ -220,11 +199,7 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
         return;
     }
 
-    if (debug)
-    {
-        printf("[Emit] GCODE %s\n", node->gcode_stmt.code);
-        fflush(stdout);
-    }
+
 
     static char last_code[16] = "";
 
@@ -285,25 +260,17 @@ static void emit_gcode_stmt(ASTNode *node, int debug)
         strncat(line, segment, sizeof(line) - len - 1);
     }
 
-    if (debug)
-    {
-        printf("[Line] Final G-code: %s\n", line);
-        fflush(stdout);
-    }
+
 
     write_to_output(line);
 }
 //
-static void emit_while_stmt(ASTNode *node, int debug)
+static void emit_while_stmt(ASTNode *node)
 {
     Runtime *rt = get_runtime();
     rt->statement_count++;
 
-    if (debug)
-    {
-        printf("[Emit] WHILE loop starting\n");
-        fflush(stdout);
-    }
+
 
     int iteration = 0;
     while (1)
@@ -324,24 +291,15 @@ static void emit_while_stmt(ASTNode *node, int debug)
             break;
         }
 
-        if (debug)
-        {
-            printf("[Emit] WHILE iteration %d\n", iteration);
-            fflush(stdout);
-        }
+   
 
-        emit_gcode(node->while_stmt.body, debug);
+        emit_gcode(node->while_stmt.body);
         iteration++;
     }
 
-    if (debug)
-    {
-        printf("[Emit] WHILE loop completed after %d iteration(s)\n", iteration);
-        fflush(stdout);
-    }
 }
 //
-static void emit_for_stmt(ASTNode *node, int debug)
+static void emit_for_stmt(ASTNode *node)
 {
     Runtime *rt = get_runtime();
     rt->statement_count++;
@@ -372,15 +330,7 @@ static void emit_for_stmt(ASTNode *node, int debug)
     double step = v_step->number;
     int exclusive = node->for_stmt.exclusive;
 
-    if (debug)
-    {
-        printf("[Emit] FOR %s = %.2f %s %.2f step %.2f\n",
-               node->for_stmt.var,
-               from,
-               exclusive ? "..<" : "..",
-               to,
-               step);
-    }
+
 
     if (step == 0)
     {
@@ -396,7 +346,7 @@ static void emit_for_stmt(ASTNode *node, int debug)
         for (double i = from; i < end; i += step)
         {
             set_var(node->for_stmt.var, make_number_value(i));
-            emit_gcode(node->for_stmt.body, debug);
+            emit_gcode(node->for_stmt.body);
         }
     }
     else
@@ -405,18 +355,14 @@ static void emit_for_stmt(ASTNode *node, int debug)
         for (double i = from; i > end; i += step)
         {
             set_var(node->for_stmt.var, make_number_value(i));
-            emit_gcode(node->for_stmt.body, debug);
+            emit_gcode(node->for_stmt.body);
         }
     }
 }
 //
-void emit_block_stmt(ASTNode *node, int debug)
+void emit_block_stmt(ASTNode *node)
 {
-    if (debug)
-    {
-        printf("[Emit] BLOCK with %d statements\n", node->block.count);
-        fflush(stdout);
-    }
+
 
     for (int i = 0; i < node->block.count; i++)
     {
@@ -428,35 +374,23 @@ void emit_block_stmt(ASTNode *node, int debug)
             continue;
         }
 
-        emit_gcode(node->block.statements[i], debug);
+        emit_gcode(node->block.statements[i]);
     }
 }
 //
-static void emit_function_stmt(ASTNode *node, int debug)
+static void emit_function_stmt(ASTNode *node)
 {
 
     extern void register_function(ASTNode * node);
     register_function(node);
-
-    if (debug)
-    {
-        printf("[Emit] FUNCTION declared: %s with %d params\n",
-               node->function_stmt.name,
-               node->function_stmt.param_count);
-        fflush(stdout);
-    }
 }
 //
-static void emit_if_stmt(ASTNode *node, int debug)
+static void emit_if_stmt(ASTNode *node)
 {
     Runtime *rt = get_runtime();
     rt->statement_count++;
 
-    if (debug)
-    {
-        printf("[Emit] IF condition...\n");
-        fflush(stdout);
-    }
+
 
     Value *cond_val = eval_expr(node->if_stmt.condition);
     if (!cond_val)
@@ -479,29 +413,17 @@ static void emit_if_stmt(ASTNode *node, int debug)
 
     if (cond)
     {
-        if (debug)
-        {
-            printf("[Emit] IF condition TRUE, executing THEN branch\n");
-            fflush(stdout);
-        }
-        emit_gcode(node->if_stmt.then_branch, debug);
+
+        emit_gcode(node->if_stmt.then_branch);
     }
     else if (node->if_stmt.else_branch)
     {
-        if (debug)
-        {
-            printf("[Emit] IF condition FALSE, executing ELSE branch\n");
-            fflush(stdout);
-        }
-        emit_gcode(node->if_stmt.else_branch, debug);
+
+        emit_gcode(node->if_stmt.else_branch);
     }
     else
     {
-        if (debug)
-        {
-            printf("[Emit] IF condition FALSE, no ELSE branch\n");
-            fflush(stdout);
-        }
+
     }
 }
 
@@ -510,16 +432,12 @@ static void emit_if_stmt(ASTNode *node, int debug)
 
 
 
-void emit_gcode(ASTNode *node, int debug)
+void emit_gcode(ASTNode *node)
 {
     if (!node)
         return;
 
-    // Get debug value from runtime state if not provided
-    if (debug == -1) {
-        Runtime* runtime = get_runtime();
-        debug = runtime ? runtime->debug : 0;
-    }
+
 
     switch (node->type)
     {
@@ -533,23 +451,11 @@ case AST_RETURN:
 
 case AST_EXPR_STMT:
 {
-    if (debug)
-    {
-        printf("[Emit AST_EXPR_STMT] EXPR_STMT → ");
-        if (node->expr_stmt.expr)
-        {
-            printf("Node type = %d\n", node->expr_stmt.expr->type);
-        }
-        else
-        {
-            printf("NULL expression node\n");
-        }
-        fflush(stdout);
-    }
+
 
     if (node->expr_stmt.expr)
     {
-        emit_gcode(node->expr_stmt.expr, debug);
+        emit_gcode(node->expr_stmt.expr);
         Runtime *rt = get_runtime();
         rt->statement_count++;
     }
@@ -566,10 +472,10 @@ case AST_EXPR_STMT:
         break;
 
     case AST_NOTE:
-        emit_note_stmt(node, debug);
+        emit_note_stmt(node);
         break;
     case AST_LET:
-        emit_let_stmt(node, debug);
+        emit_let_stmt(node);
         break;
 
     case AST_ASSIGN:
@@ -585,33 +491,29 @@ case AST_EXPR_STMT:
 
         set_var(node->assign_stmt.name, val);
 
-        if (debug)
-        {
-            printf("[Emit] ASSIGN %s = %.6f\n", node->assign_stmt.name, val->number);
-            fflush(stdout);
-        }
+
         break;
     }
 
     case AST_GCODE:
-        emit_gcode_stmt(node, debug);
+        emit_gcode_stmt(node);
         break;
 
 
     case AST_FOR:
-        emit_for_stmt(node, debug);
+        emit_for_stmt(node);
         break;
     case AST_WHILE:
-        emit_while_stmt(node, debug);
+        emit_while_stmt(node);
         break;
     case AST_BLOCK:
-        emit_block_stmt(node, debug);
+        emit_block_stmt(node);
         break;
     case AST_FUNCTION:
-        emit_function_stmt(node, debug);
+        emit_function_stmt(node);
         break;
     case AST_IF:
-        emit_if_stmt(node, debug);
+        emit_if_stmt(node);
         break;
 
 
@@ -622,13 +524,9 @@ case AST_CALL:
 
 
     // Execute function and ignore the return value
-    Value *result = eval_expr(node);
+    eval_expr(node);
 
-    if (debug && result && result->type == VAL_NUMBER)
-    {
-        printf("[Emit AST_CALL] CALL returned: %f\n", result->number);
-        fflush(stdout);
-    }
+
 
     Runtime *rt = get_runtime();
     rt->statement_count++;
@@ -708,11 +606,7 @@ case AST_CALL:
         }
         array->array.items[i] = copy_value(value);
 
-        if (debug)
-        {
-            printf("[Emit] ASSIGN_INDEX [%d] = %.6f\n", i, value->type == VAL_NUMBER ? value->number : 0);
-            fflush(stdout);
-        }
+
 
         break;
     }
@@ -721,15 +615,7 @@ case AST_CALL:
     {
         Runtime *rt = get_runtime();
         rt->statement_count++;
-        if (debug)
-        {
-            printf("[Emit] ARRAY_LITERAL with %d elements\n", node->array_literal.count);
-            for (int i = 0; i < node->array_literal.count; ++i)
-            {
-                printf(" - Element [%d]:\n", i);
 
-            }
-        }
         break;
     }
 

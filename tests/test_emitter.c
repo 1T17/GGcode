@@ -30,7 +30,7 @@ void test_emit_simple_gcode_block(void)
         "}\n";
 
     ASTNode *root = parse_script_from_string(code); // <-- updated line
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     // We expect:
     // - let x
@@ -54,7 +54,7 @@ void test_emit_loop_and_conditionals(void)
         "}";
 
     ASTNode *root = parse_script_from_string(code);
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *z = get_var("z");
     TEST_ASSERT_NOT_NULL(z);
@@ -80,7 +80,7 @@ void test_emit_nested_if_inside_loop(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *val = get_var("count");
     TEST_ASSERT_NOT_NULL(val);
@@ -99,7 +99,7 @@ void test_emit_while_loop_basic(void)
         "}";
 
     ASTNode *root = parse_script_from_string(code);
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
@@ -126,7 +126,7 @@ void test_emit_nested_if_inside_loop2(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *count = get_var("count");
     TEST_ASSERT_NOT_NULL(count);
@@ -150,7 +150,7 @@ void test_emit_function_declaration_and_call(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     Value *b = get_var("b");
@@ -179,7 +179,7 @@ void test_emit_function_call_returns_value(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *r = get_var("r");
     Value *bb = get_var("bb");
@@ -206,7 +206,7 @@ void test_emit_function_call_inside_expression(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *b = get_var("b");
     TEST_ASSERT_NOT_NULL(b);
@@ -227,7 +227,7 @@ void test_emit_function_with_two_params(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *sum = get_var("sum");
     TEST_ASSERT_NOT_NULL(sum);
@@ -249,7 +249,7 @@ void test_emit_function_recursion(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
@@ -270,7 +270,7 @@ void test_emit_function_expr_args(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *z = get_var("z");
     TEST_ASSERT_NOT_NULL(z);
@@ -292,7 +292,7 @@ void test_emit_function_in_condition(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
@@ -310,7 +310,7 @@ void test_emit_bitwise_and(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     TEST_ASSERT_NOT_NULL(a);
@@ -333,7 +333,7 @@ void test_emit_function_overwrite_var(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     if (has_errors())
     {
@@ -362,7 +362,7 @@ void test_emit_function_no_params_no_return(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *y = get_var("y");
     TEST_ASSERT_NOT_NULL(y);
@@ -380,7 +380,7 @@ void test_emit_function_only_return(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *x = get_var("x");
     TEST_ASSERT_NOT_NULL(x);
@@ -398,7 +398,7 @@ void test_emit_function_unused_param(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *x = get_var("x");
     TEST_ASSERT_NOT_NULL(x);
@@ -417,7 +417,7 @@ void test_emit_function_calls_function(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *y = get_var("y");
     TEST_ASSERT_NOT_NULL(y);
@@ -436,7 +436,7 @@ void test_emit_function_early_return(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     Value *b = get_var("b");
@@ -459,7 +459,7 @@ void test_emit_function_empty_body(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *x = get_var("x");
     TEST_ASSERT_NOT_NULL(x);
@@ -486,7 +486,7 @@ void test_builtin_math_functions_and_constants(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     Value *b = get_var("b");
@@ -534,7 +534,7 @@ void test_builtin_min_max(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *a = get_var("a");
     Value *b = get_var("b");
@@ -559,7 +559,7 @@ void test_builtin_clamp(void)
 
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *low = get_var("clamp_low");
     Value *high = get_var("clamp_high");
@@ -608,7 +608,7 @@ void test_complex_gcode_logic(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
     Value *x = get_var("x");
     Value *flag = get_var("flag");
     TEST_ASSERT_NOT_NULL(x);
@@ -628,7 +628,7 @@ void test_builtin_trig_pow_hypot(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     TEST_ASSERT_FLOAT_WITHIN(0.001, 0.7853, get_var("atan2_d")->number);
     TEST_ASSERT_FLOAT_WITHIN(0.001, 8.0, get_var("pow_d")->number);
@@ -649,7 +649,7 @@ void test_builtin_deg_rad_sign(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     TEST_ASSERT_FLOAT_WITHIN(0.001, 180.0, get_var("deg_d")->number);
     TEST_ASSERT_FLOAT_WITHIN(0.001, 3.1415, get_var("rad_d")->number);
@@ -667,7 +667,7 @@ void test_builtin_log(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     TEST_ASSERT_FLOAT_WITHIN(0.001, 1.0, get_var("val_log")->number); // log(E) ≈ 1
 
@@ -681,7 +681,7 @@ void test_builtin_exp(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     TEST_ASSERT_FLOAT_WITHIN(0.001, 3.0, get_var("val_exp")->number); // round(2.718)
 
@@ -695,7 +695,7 @@ void test_builtin_noise_zero(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     TEST_ASSERT_FLOAT_WITHIN(0.001, 0.0, get_var("noise_val")->number); // Expect 0 at seed 0
 
@@ -713,7 +713,7 @@ void test_emit_function_no_return(void)
     ASTNode *root = parse_script_from_string(code);
     g_runtime.statement_count = 0;
     reset_runtime_state();
-    emit_gcode(root, get_debug());
+    emit_gcode(root);
 
     Value *abc = get_var("abc");
     TEST_ASSERT_NOT_NULL(abc);
@@ -733,7 +733,7 @@ void test_array_assignment_and_access(void)
 
     ASTNode *root = parse_script_from_string(code);
         reset_runtime_state();
-    emit_gcode(root, 0);
+    emit_gcode(root);
 
     if (has_errors())
         print_errors();
@@ -761,7 +761,7 @@ void test_emit_maze_generator_program(void)
         "maze[py][px] = 0\n";
 
     ASTNode *root = parse_script_from_string(code);
-    emit_gcode(root, 0);
+    emit_gcode(root);
 
     Value *maze = get_var("maze");
     TEST_ASSERT_NOT_NULL(maze);

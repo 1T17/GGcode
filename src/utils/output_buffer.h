@@ -14,6 +14,6 @@ const char* get_output_buffer();
 size_t get_output_length();
 void prepend_to_output_buffer(const char* prefix);  // <-- your prepend function
 void save_output_to_file(const char* filename); 
-void emit_gcode_preamble(int debug, const char* default_filename); 
+void emit_gcode_preamble(const char* default_filename); 
 
 #endif // OUTPUT_BUFFER_H

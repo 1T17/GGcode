@@ -42,7 +42,7 @@
 
 // Declare the runtime variable lookup functions from evaluator.c
 const char* GGCODE_INPUT_FILENAME = NULL;
-void compile_file(const char* input_path, const char* output_path, int debug);
+void compile_file(const char* input_path, const char* output_path);
 
 
 void make_g_gcode_filename(const char *src, char *dst, size_t dst_size) {
@@ -61,11 +61,11 @@ int ends_with_ggcode(const char *filename) {
 }
 
 
-void compile_file(const char* input_path, const char* output_path, int debug) {
+void compile_file(const char* input_path, const char* output_path) {
     // Initialize runtime state
     init_runtime();
     Runtime* runtime = get_runtime();
-    runtime->debug = debug;
+
 
     GGCODE_INPUT_FILENAME = input_path;
     long input_size_bytes = 0;
@@ -117,11 +117,11 @@ void compile_file(const char* input_path, const char* output_path, int debug) {
     start_timer(&emit_timer);
 
  //   reset_line_number();
-    emit_gcode(root, -1);  // Use runtime state for debug
+    emit_gcode(root);
     double emit_time = end_timer(&emit_timer);
 
     // ➤ Insert G-code header at the beginning AFTER emit
-    emit_gcode_preamble(debug, filename);
+    emit_gcode_preamble(filename);
 
 // Measure memory usage (Linux/macOS/Windows)
 long memory_kb = 0;
@@ -211,7 +211,7 @@ if (has_errors()) {
 
 
 
-void compile_all_gg_files(int debug) {
+void compile_all_gg_files() {
 #ifdef _WIN32
     WIN32_FIND_DATA findFileData;
     HANDLE hFind = FindFirstFile("*.ggcode", &findFileData);
@@ -225,7 +225,7 @@ char out_name[MAX_PATH];
 make_g_gcode_filename(findFileData.cFileName, out_name, sizeof(out_name));
 printf("\nCompiling %s -> %s\n", findFileData.cFileName, out_name);
 
-compile_file(findFileData.cFileName, out_name, debug);
+        compile_file(findFileData.cFileName, out_name);
 
         }
     } while (FindNextFile(hFind, &findFileData) != 0);
@@ -250,7 +250,7 @@ printf("\033[38;5;208m\nGGCODE Compiling\033[0m \033[1m%s\033[0m → \033[1;32m%
 pid_t pid = fork();
 if (pid == 0) {
     // 👶 Child process
-    compile_file(entry->d_name, out_name, debug);
+            compile_file(entry->d_name, out_name);
     exit(0);  // Exit cleanly so parent doesn't run more compiles
 } else if (pid > 0) {
     // 👴 Parent process — wait for the child
@@ -281,13 +281,13 @@ int main() {
 
 
     const char *input_file = get_input_file();
-    int debug = get_debug();
+
 if (input_file && strlen(input_file) > 0) {
     char out_name[272];
     make_g_gcode_filename(input_file, out_name, sizeof(out_name));
-    compile_file(input_file, out_name, debug);
+            compile_file(input_file, out_name);
 } else {
-    compile_all_gg_files(debug);
+            compile_all_gg_files();
 }
 
 
