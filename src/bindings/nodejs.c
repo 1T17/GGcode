@@ -50,11 +50,25 @@ const char* compile_ggcode_from_string(const char* source_code) {
         return strdup("; ERROR: Parsing failed\n");
     }
     
+    // Set runtime state variables for note block parsing BEFORE emit_gcode
+    char ggcode_file_name[64];
+    snprintf(ggcode_file_name, sizeof(ggcode_file_name), "nodejs.ggcode");
+    
+    Runtime *rt = get_runtime();
+    strncpy(rt->RUNTIME_FILENAME, ggcode_file_name, sizeof(rt->RUNTIME_FILENAME) - 1);
+    rt->RUNTIME_FILENAME[sizeof(rt->RUNTIME_FILENAME) - 1] = '\0';
+    
+    // Set current time
+    char time_line[64];
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    strftime(time_line, sizeof(time_line), "%Y-%m-%d %H:%M:%S", t);
+    strncpy(rt->RUNTIME_TIME, time_line, sizeof(rt->RUNTIME_TIME) - 1);
+    rt->RUNTIME_TIME[sizeof(rt->RUNTIME_TIME) - 1] = '\0';
+    
     emit_gcode(root);
 
     // Generate G-code header
-    char ggcode_file_name[64];
-    snprintf(ggcode_file_name, sizeof(ggcode_file_name), "nodejs.ggcode");
     emit_gcode_preamble(ggcode_file_name);
 
     // Get output and check for errors

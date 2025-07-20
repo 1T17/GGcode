@@ -99,6 +99,16 @@ void emit_gcode_preamble(const char* default_filename) {
         RUNTIME_FILENAME[sizeof(RUNTIME_FILENAME) - 1] = '\0';
     }
 
+    // Also update runtime state variables for note block parsing
+    Runtime *rt = get_runtime();
+    strncpy(rt->RUNTIME_TIME, time_line, sizeof(rt->RUNTIME_TIME) - 1);
+    rt->RUNTIME_TIME[sizeof(rt->RUNTIME_TIME) - 1] = '\0';
+    
+    if (default_filename) {
+        strncpy(rt->RUNTIME_FILENAME, default_filename, sizeof(rt->RUNTIME_FILENAME) - 1);
+        rt->RUNTIME_FILENAME[sizeof(rt->RUNTIME_FILENAME) - 1] = '\0';
+    }
+
     char preamble[128] = "%\n";
     strcat(preamble, id_line);
     strcat(preamble, "\n");
