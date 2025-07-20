@@ -15,6 +15,7 @@
 
 // Fixed function signature to match Node.js FFI binding
 const char* compile_ggcode_from_string(const char* source_code) {
+    clock_t start_time = clock();
 
     // Input validation
     if (!source_code) {
@@ -58,6 +59,7 @@ const char* compile_ggcode_from_string(const char* source_code) {
 
     // Get output and check for errors
     const char* output = strdup(get_output_buffer());
+    long output_size = get_output_length();
     
     if (has_errors()) {
         report_error("[NodeJS] Compilation failed or errors detected");
@@ -69,6 +71,12 @@ const char* compile_ggcode_from_string(const char* source_code) {
         free_output_buffer();
         return strdup("; ERROR: Compilation failed\n");
     }
+
+    // Print basic compilation report for successful compilation
+    clock_t end_time = clock();
+    double elapsed = ((double)(end_time - start_time)) / CLOCKS_PER_SEC * 1000.0;
+    fprintf(stderr, "GGcode: Compiled %zu bytes → %ld bytes in %.2fms\n", 
+           input_len, output_size, elapsed);
 
     // Cleanup
     reset_runtime_state();
