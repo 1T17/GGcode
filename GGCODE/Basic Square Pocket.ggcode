@@ -1,7 +1,5 @@
-
-// // GGcode test file
-let id = 2345
-
+// GGcode test file
+let id = 254345
 note {
   ╔═╗╔═╗┌─┐┌─┐┌┬┐┌─┐     File compiled : [ggcode_file_name]  
   ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
@@ -14,7 +12,7 @@ G90 G94 G17
 G20
 G53 G0 Z0
 T1 M6
-S6000 M3
+S[6000] M3
 G54
 M8
 
@@ -26,14 +24,6 @@ let z_cut          = -1
 let feed           = 300
 let round_eps      = 0.0001
 
-// === Rounding helpers ===
-function r3(n) {
-    return floor(n * 1000 + 0.5) / 1000
-}
-function rz(n) {
-    if (abs(n) < round_eps) { return 0 }
-    return r3(n)
-}
 
 // === Pocket Bounds (centered) ===
 let min_x = -pocket_width  / 2
@@ -43,16 +33,16 @@ let max_y =  pocket_height / 2
 
 // === Move to start ===
 G0 Z[z_safe]
-G0 X[rz(min_x)] Y[rz(min_y)]
+G0 X[(min_x)] Y[(min_y)]
 G1 Z[z_cut] F[feed]
 
 // === Continuous Spiral Path ===
 while ((max_x - min_x > step_over * 2) && (max_y - min_y > step_over * 2)) {
 
-    G1 X[rz(max_x)] Y[rz(min_y)] F[feed]
-    G1 X[rz(max_x)] Y[rz(max_y)] F[feed]
-    G1 X[rz(min_x)] Y[rz(max_y)] F[feed]
-    G1 X[rz(min_x)] Y[rz(min_y)] F[feed]
+    G1 X[(max_x)] Y[(min_y)] F[feed]
+    G1 X[(max_x)] Y[(max_y)] F[feed]
+    G1 X[(min_x)] Y[(max_y)] F[feed]
+    G1 X[(min_x)] Y[(min_y)] F[feed]
 
     min_x = min_x + step_over
     max_x = max_x - step_over

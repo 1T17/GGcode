@@ -1,0 +1,72 @@
+// Advanced Control Structures Example
+// This example demonstrates step, return, note blocks, and complex control flow
+
+let center_x = 0
+let center_y = 0
+
+// Note block for documentation
+note {
+  Advanced Control Structures Example
+  Demonstrates: step, return, note blocks
+  Author: GGcode Examples
+  Version: 1.0
+}
+
+// Function with return statement
+function calculate_area(radius) {
+    let area = PI * radius * radius
+    return area
+}
+
+// Function with conditional return
+function get_feed_rate(speed) {
+    if (speed > 100) {
+        return 300
+    } else if (speed > 50) {
+        return 200
+    } else {
+        return 100
+    }
+}
+
+// Move to starting position
+G0 X[center_x] Y[center_y]
+
+// Test for loop with step
+for i = 0..10 step 2 {
+    let area = calculate_area(i)
+    let feed = get_feed_rate(i)
+    G1 X[center_x + i] Y[center_y + area/10] F[feed]
+}
+
+// Test for loop with step and exclusive range
+for j = 0..<10 step 3 {
+    G1 X[center_x - j] Y[center_y - j] F150
+}
+
+// Test while loop with complex condition
+let k = 0
+while (k < 8 && k >= 0) {
+    if (mod(k, 2) == 0) {
+        G1 X[center_x + k] Y[center_y + 5] F100
+    } else {
+        G1 X[center_x + k] Y[center_y - 5] F100
+    }
+    k = k + 1
+}
+
+// Test nested control structures
+for x = 0..5 {
+    for y = 0..5 {
+        if (x == y) {
+            G1 X[center_x + x * 2] Y[center_y + y * 2] F200
+        } else if (x > y) {
+            G1 X[center_x + x * 2] Y[center_y - y * 2] F150
+        } else {
+            G1 X[center_x - x * 2] Y[center_y + y * 2] F100
+        }
+    }
+}
+
+// Return to center
+G0 X[center_x] Y[center_y] 

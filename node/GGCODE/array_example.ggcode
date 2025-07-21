@@ -1,0 +1,42 @@
+// Array Example
+// This example shows how to use arrays in GGcode
+
+let center_x = 0
+let center_y = 0
+
+// Define array of points for a polygon
+let points = []
+let count = 0
+
+// Add points to the array
+points[count] = [10, 0]
+count = count + 1
+points[count] = [5, 8]
+count = count + 1
+points[count] = [-5, 8]
+count = count + 1
+points[count] = [-10, 0]
+count = count + 1
+points[count] = [-5, -8]
+count = count + 1
+points[count] = [5, -8]
+count = count + 1
+
+// Move to first point
+let first_point = points[0]
+G0 X[center_x + first_point[0]] Y[center_y + first_point[1]]
+
+// Draw polygon by connecting all points
+let i = 1
+while i < count {
+    let pt = points[i]
+    G1 X[center_x + pt[0]] Y[center_y + pt[1]] F100
+    i = i + 1
+}
+
+// Close the polygon
+let first_pt = points[0]
+G1 X[center_x + first_pt[0]] Y[center_y + first_pt[1]] F100
+
+// Return to center
+G0 X[center_x] Y[center_y] 

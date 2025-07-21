@@ -1,0 +1,23 @@
+// Simple Spiral Example
+// This example creates a basic spiral pattern
+
+let center_x = 0
+let center_y = 0
+let max_radius = 15
+let revolutions = 3
+let steps_per_rev = 36
+
+// Move to center
+G0 X[center_x] Y[center_y]
+
+// Draw spiral
+for i = 0..(revolutions * steps_per_rev) {
+    let angle = (i * 360 / steps_per_rev) * DEG_TO_RAD
+    let radius = (i / steps_per_rev) * (max_radius / revolutions)
+    let x = center_x + radius * cos(angle)
+    let y = center_y + radius * sin(angle)
+    G1 X[x] Y[y] F150
+}
+
+// Return to center
+G0 X[center_x] Y[center_y] 

@@ -1,0 +1,57 @@
+// Advanced Patterns Example
+// This example combines functions and math functions for complex patterns
+
+let center_x = 0
+let center_y = 0
+
+// Function to draw a flower petal
+function draw_petal(radius, angle, feed_rate) {
+    let steps = 18
+    for i = 0..steps {
+        let t = i / steps
+        let petal_angle = angle + (t * PI / 2)
+        let petal_radius = radius * sin(t * PI)
+        let x = center_x + petal_radius * cos(petal_angle)
+        let y = center_y + petal_radius * sin(petal_angle)
+        G1 X[x] Y[y] F[feed_rate]
+    }
+}
+
+// Function to draw a flower with multiple petals
+function draw_flower(petal_count, radius, feed_rate) {
+    for i = 0..petal_count {
+        let angle = (i * 2 * PI / petal_count)
+        draw_petal(radius, angle, feed_rate)
+    }
+}
+
+// Function to draw a spiral
+function draw_spiral(max_radius, feed_rate) {
+    let steps = 50
+    for i = 0..steps {
+        let angle = i * 0.2
+        let radius = i * 0.4
+        if (radius <= max_radius) {
+            let x = center_x + radius * cos(angle)
+            let y = center_y + radius * sin(angle)
+            G1 X[x] Y[y] F[feed_rate]
+        }
+    }
+}
+
+// Move to center
+G0 X[center_x] Y[center_y]
+
+// Draw a flower
+draw_flower(5, 8, 150)
+
+// Move to new position and draw another flower
+G0 X[center_x + 25] Y[center_y]
+draw_flower(6, 6, 200)
+
+// Move to another position and draw a spiral
+G0 X[center_x - 25] Y[center_y]
+draw_spiral(10, 100)
+
+// Return to center
+G0 X[center_x] Y[center_y] 

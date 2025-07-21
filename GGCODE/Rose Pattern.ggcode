@@ -1,7 +1,5 @@
-
-// // GGcode test file
-let id = 2345
-
+// GGcode test file
+let id = 283453
 note {
   ╔═╗╔═╗┌─┐┌─┐┌┬┐┌─┐     File compiled : [ggcode_file_name]  
   ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
@@ -14,7 +12,7 @@ G90 G94 G17
 G20
 G53 G0 Z0
 T1 M6
-S6000 M3
+S[6000] M3
 G54
 M8
 note {Rose Pattern - No Function Calls, Manual Rounding}
@@ -26,7 +24,6 @@ let angle_step   = 10           // Degrees per step
 let z_safe       = 5
 let z_cut        = -1
 let feed         = 300
-let deg_to_rad   = DEG_TO_RAD
 let round_eps    = 0.0001
 
 let angle_rad = 0
@@ -45,7 +42,7 @@ G1 Z[z_cut] F[feed]
 
 // === Rose Path ===
 for angle_deg = 0..full_angle {
-    angle_rad = angle_deg * deg_to_rad
+    angle_rad = angle_deg * DEG_TO_RAD
     radius = radius_base * cos(k * angle_rad)
 
     raw_x = radius * cos(angle_rad)

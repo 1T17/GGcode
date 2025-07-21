@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const ffi = require('ffi-napi');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
@@ -18,44 +19,9 @@ function decodeHTMLEntities(str) {
             .replace(/&amp;/g, '&');
 }
 
-
 function stripCarriageReturns(str) {
   return str.replace(/\r/g, '');
 }
-
-
-
-
-
-
-
-
-function printCharCodes(label, str) {
-  console.log(`\n[${label}] Character codes:`);
-  for (let i = 0; i < str.length; i++) {
-    const c = str[i];
-    const code = c.charCodeAt(0);
-    let display = c;
-    if (c === '\n') display = '\\n';
-    else if (c === '\r') display = '\\r';
-    else if (c === '\t') display = '\\t';
-    else if (c === ' ') display = '␣'; // visible space
-
-    console.log(`  [${i}] '${display}' → ${code}`);
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -100,8 +66,60 @@ app.post('/api/compile', (req, res) => {
   }
 });
 
+// Examples API endpoints
+app.get('/api/examples', (req, res) => {
+  const examplesDir = path.join(__dirname, 'GGCODE');
+  
+  try {
+    if (!fs.existsSync(examplesDir)) {
+      return res.json({ success: false, error: 'Examples directory not found' });
+    }
+    
+    const files = fs.readdirSync(examplesDir)
+      .filter(file => file.endsWith('.ggcode'))
+      .map(file => {
+        const filePath = path.join(examplesDir, file);
+        const content = fs.readFileSync(filePath, 'utf8');
+        const lines = content.split('\n');
+        const firstComment = lines.find(line => line.trim().startsWith('//'));
+        const description = firstComment ? firstComment.replace('//', '').trim() : '';
+        const preview = lines.slice(0, 3).join('\n').substring(0, 100) + '...';
+        
+        return {
+          name: file,
+          description: description,
+          preview: preview
+        };
+      });
+    
+    res.json({ success: true, files });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/examples/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'GGCODE', filename);
+  
+  try {
+    if (!fs.existsSync(filePath)) {
+      return res.json({ success: false, error: 'File not found' });
+    }
+    
+    const content = fs.readFileSync(filePath, 'utf8');
+    res.json({ success: true, content });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+console.log(`
+ _____ _____           _                  _        __ _____ 
+|   __|   __|___ ___ _| |___    ___ ___ _| |___ __|  |   __|
+|  |  |  |  |  _| . | . | -_|  |   | . | . | -_|  |  |__   |
+|_____|_____|___|___|___|___|  |_|_|___|___|___|_____|_____|                                                                                                  
+Server running at:${PORT} \n`);
 });

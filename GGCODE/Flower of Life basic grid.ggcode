@@ -1,7 +1,5 @@
-
-// // GGcode test file
-let id = 2345
-
+// GGcode test file
+let id = 243465
 note {
   ╔═╗╔═╗┌─┐┌─┐┌┬┐┌─┐     File compiled : [ggcode_file_name]  
   ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
@@ -14,7 +12,7 @@ G90 G94 G17
 G20
 G53 G0 Z0
 T1 M6
-S6000 M3
+S[6000] M3
 G54
 M8
 
@@ -27,7 +25,6 @@ let z_safe      = 5
 let z_cut       = -1
 let feed        = 300
 let step_deg    = 10
-let deg_to_rad  = DEG_TO_RAD
 let round_eps   = 0.0001
 
 let step_angle  = step_deg
@@ -50,8 +47,8 @@ for row = 0..4 {
 
         // Draw circle at (cx, cy)
         angle = 0
-        raw_x = cx + radius * cos(angle * deg_to_rad)
-        raw_y = cy + radius * sin(angle * deg_to_rad)
+        raw_x = cx + radius * cos(angle * DEG_TO_RAD)
+        raw_y = cy + radius * sin(angle * DEG_TO_RAD)
         x = floor(raw_x * 1000 + 0.5) / 1000
         y = floor(raw_y * 1000 + 0.5) / 1000
         G0 X[x] Y[y]
@@ -59,8 +56,8 @@ for row = 0..4 {
 
         for i = 1..360 {
             angle = i * step_angle
-            raw_x = cx + radius * cos(angle * deg_to_rad)
-            raw_y = cy + radius * sin(angle * deg_to_rad)
+            raw_x = cx + radius * cos(angle * DEG_TO_RAD)
+            raw_y = cy + radius * sin(angle * DEG_TO_RAD)
             x = floor(raw_x * 1000 + 0.5) / 1000
             y = floor(raw_y * 1000 + 0.5) / 1000
             if (abs(x) < round_eps) { x = 0 }

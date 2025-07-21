@@ -1,5 +1,12 @@
-note { Rotating Star Spiral using GGcode arrays }
+// GGcode test file
+let id = 323678
+note {
+  ╔═╗╔═╗┌─┐┌─┐┌┬┐┌─┐     File compiled : [ggcode_file_name]  
+  ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
+  ╚═╝╚═╝└─┘└─┘─┴┘└─┘     Program ID: [id]  
 
+Rotating Star Spiral using GGcode arrays 
+}
 let points = []
 let stepp = 6
 let num_rings = 10

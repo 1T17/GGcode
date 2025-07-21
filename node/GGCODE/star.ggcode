@@ -1,0 +1,30 @@
+// Star Pattern Example
+// This example shows how to create a star pattern
+
+let center_x = 0
+let center_y = 0
+let outer_radius = 15
+let inner_radius = 5
+let points = 5
+
+// Move to starting position
+G0 X[center_x + outer_radius] Y[center_y]
+
+// Draw star - outer points
+for i = 0..points {
+    let angle = (i * 2 * PI / points)
+    let x = center_x + outer_radius * cos(angle)
+    let y = center_y + outer_radius * sin(angle)
+    G1 X[x] Y[y] F150
+}
+
+// Draw star - inner points
+for i = 0..points {
+    let angle = (i * 2 * PI / points) + (PI / points)
+    let x = center_x + inner_radius * cos(angle)
+    let y = center_y + inner_radius * sin(angle)
+    G1 X[x] Y[y] F150
+}
+
+// Return to center
+G0 X[center_x] Y[center_y] 

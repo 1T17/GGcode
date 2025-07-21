@@ -1,0 +1,43 @@
+// Function Example
+// This example shows how to define and use functions in GGcode
+
+let center_x = 0
+let center_y = 0
+
+// Define a function to draw a circle
+function draw_circle(radius, feed_rate) {
+    let steps = 36
+    for i = 0..steps {
+        let angle = (i * 360 / steps) * DEG_TO_RAD
+        let x = center_x + radius * cos(angle)
+        let y = center_y + radius * sin(angle)
+        G1 X[x] Y[y] F[feed_rate]
+    }
+}
+
+// Define a function to draw a square
+function draw_square(size, feed_rate) {
+    let half_size = size / 2
+    G1 X[center_x + half_size] Y[center_y - half_size] F[feed_rate]
+    G1 X[center_x + half_size] Y[center_y + half_size] F[feed_rate]
+    G1 X[center_x - half_size] Y[center_y + half_size] F[feed_rate]
+    G1 X[center_x - half_size] Y[center_y - half_size] F[feed_rate]
+    G1 X[center_x + half_size] Y[center_y - half_size] F[feed_rate]
+}
+
+// Move to center
+G0 X[center_x] Y[center_y]
+
+// Draw a circle using the function
+draw_circle(8, 150)
+
+// Move to new position and draw a square
+G0 X[center_x + 20] Y[center_y]
+draw_square(10, 100)
+
+// Move to another position and draw another circle
+G0 X[center_x - 20] Y[center_y]
+draw_circle(6, 200)
+
+// Return to center
+G0 X[center_x] Y[center_y] 

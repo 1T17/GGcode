@@ -1,9 +1,0 @@
-let id = 456
-
-note {
-  File: [ggcode_file_name]
-  Time: [time]
-  ID: [id]
-}
-
-G0 X0 Y0 

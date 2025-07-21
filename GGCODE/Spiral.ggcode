@@ -1,7 +1,5 @@
-
-// // GGcode test file
-let id = 5343
-
+// GGcode test file
+let id = 548243
 note {
   ╔═╗╔═╗┌─┐┌─┐┌┬┐┌─┐     File compiled : [ggcode_file_name]  
   ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
@@ -14,30 +12,18 @@ G90 G94 G17
 G20
 G53 G0 Z0
 T1 M6
-S6000 M3
+S[6000] M3
 G54
 M8
 
-let angle_step   = 1
+let angle_step   = 4
 let radius_step  = 0.001
 let z_safe       = 5
 let z_cut        = -1
 let feed         = 300
-let deg_to_rad   = DEG_TO_RAD
-let round_eps    = 0.0002
-let max_steps    = 500000
+let max_steps    = 5000
 let x =0
 let y = 0
-// Basic round-to-3-decimals
-function round3(n) {
-    return floor(n * 1000 + 0.5) / 1000
-}
-
-// Clamp small values to 0
-function round_zero(n) {
-    if (abs(n) < round_eps) { return 0 }
-    return round3(n)
-}
 
 // Safe Start
 G0 Z[z_safe]
@@ -48,20 +34,16 @@ G1 Z[z_cut] F[feed]
 let i = 1
 while (i <= max_steps) {
      angle_deg = i * angle_step
-     angle_rad = angle_deg * deg_to_rad
+     angle_rad = angle_deg * DEG_TO_RAD
      radius    = i * radius_step
 
-     raw_x = radius * cos(angle_rad)
-     raw_y = radius * sin(angle_rad)
-
-     x = round_zero(raw_x)
-     y = round_zero(raw_y)
+     x = radius * cos(angle_rad)
+     y = radius * sin(angle_rad)
 
     G1 X[x] Y[y] F[feed]
 
     i = i + 1
 }
-
 // End
 G0 Z[z_safe]
 

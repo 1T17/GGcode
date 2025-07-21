@@ -1,7 +1,5 @@
-
-// // GGcode test file
-let id = 2345
-
+// GGcode test file
+let id = 23545
 note {
   ╔═╗╔═╗┌─┐┌─┐┌┬┐┌─┐     File compiled : [ggcode_file_name]  
   ║ ╦║ ╦│  │ │ ││├┤      Timestamp : [time]  
@@ -14,7 +12,7 @@ G90 G94 G17
 G20
 G53 G0 Z0
 T1 M6
-S6000 M3
+S[6000] M3
 G54
 M8
 
@@ -24,7 +22,6 @@ let z_safe      = 1
 let z_cut       = -1
 let feed        = 300
 let step_deg    = 3
-let deg_to_rad  = DEG_TO_RAD
 let round_eps   = 0.0001
 
 let spacing_x   = radius
@@ -55,7 +52,7 @@ for row = -5..5 {
 
         let i = 0
         while (i <= 360) {
-            angle = i * deg_to_rad
+            angle = i * DEG_TO_RAD
             raw_x = ox + radius * cos(angle)
             raw_y = oy + radius * sin(angle)
             d2 = raw_x * raw_x + raw_y * raw_y
@@ -134,7 +131,7 @@ for ring_scale = 1..6 {
 
     let i = 0
     while (i <= 360) {
-        angle = i * deg_to_rad
+        angle = i * DEG_TO_RAD
         x = r * cos(angle)
         y = r * sin(angle)
         x = floor(x * 1000 + 0.5) / 1000

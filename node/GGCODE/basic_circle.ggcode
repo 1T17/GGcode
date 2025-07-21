@@ -1,0 +1,21 @@
+// Basic Circle Example
+// This example shows how to create a simple circle
+
+let radius = 10
+let center_x = 0
+let center_y = 0
+let steps = 36
+
+// Move to starting position
+G0 X[center_x + radius] Y[center_y]
+
+// Draw circle
+for i = 0..steps {
+    let angle = (i * 360 / steps) * DEG_TO_RAD
+    let x = center_x + radius * cos(angle)
+    let y = center_y + radius * sin(angle)
+    G1 X[x] Y[y] F100
+}
+
+// Return to center
+G0 X[center_x] Y[center_y] 

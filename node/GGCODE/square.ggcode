@@ -1,0 +1,25 @@
+// Square Example
+// This example shows how to create a square
+
+let size = 15
+let center_x = 0
+let center_y = 0
+
+// Calculate corner positions
+let half_size = size / 2
+let x1 = center_x - half_size
+let y1 = center_y - half_size
+let x2 = center_x + half_size
+let y2 = center_y + half_size
+
+// Move to starting position
+G0 X[x1] Y[y1]
+
+// Draw square
+G1 X[x2] Y[y1] F100  // Top edge
+G1 X[x2] Y[y2] F100  // Right edge
+G1 X[x1] Y[y2] F100  // Bottom edge
+G1 X[x1] Y[y1] F100  // Left edge
+
+// Return to center
+G0 X[center_x] Y[center_y] 

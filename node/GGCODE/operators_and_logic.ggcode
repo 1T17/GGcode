@@ -1,0 +1,69 @@
+// Operators and Logic Example
+// This example demonstrates all available operators and logical expressions
+
+let center_x = 0
+let center_y = 0
+
+// Move to starting position
+G0 X[center_x] Y[center_y]
+
+// Test comparison operators
+let a = 10
+let b = 5
+let c = 10
+
+let eq_test = a == c
+let ne_test = a != b
+let lt_test = b < a
+let le_test = b <= a
+let gt_test = a > b
+let ge_test = a >= b
+
+// Test logical operators
+let true_val = 1
+let false_val = 0
+
+let and_test = true_val && true_val
+let or_test = true_val || false_val
+let not_test = !false_val
+
+// Test bitwise operators
+let bit_test = 5 & 3
+
+// Use operators in conditional logic
+if (a > b && c == a) {
+    G1 X[center_x + 10] Y[center_y] F100
+} else {
+    G1 X[center_x - 10] Y[center_y] F100
+}
+
+if (b < a || c != b) {
+    G1 X[center_x] Y[center_y + 10] F100
+}
+
+if (!(a < b)) {
+    G1 X[center_x] Y[center_y - 10] F100
+}
+
+// Use operators in loops
+let i = 0
+while (i < 5 && i >= 0) {
+    G1 X[center_x + i] Y[center_y + i] F100
+    i = i + 1
+}
+
+// Use operators in for loops with step
+for j = 0..10 step 2 {
+    if (j > 5 || j == 0) {
+        G1 X[center_x + j] Y[center_y - j] F100
+    }
+}
+
+// Test complex logical expressions
+let complex_test = (a > b) && (c == a) || (b < 5)
+if (complex_test) {
+    G1 X[center_x + 15] Y[center_y + 15] F100
+}
+
+// Return to center
+G0 X[center_x] Y[center_y] 

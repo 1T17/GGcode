@@ -1,0 +1,31 @@
+// Spiral Example
+// This example shows how to create a spiral pattern
+
+let center_x = 0
+let center_y = 0
+let max_radius = 20
+let angle_step = 4
+let radius_step = 0.1
+let max_steps = 200
+
+// Move to center
+G0 X[center_x] Y[center_y]
+
+// Draw spiral using step counter
+let i = 1
+while (i <= max_steps) {
+    let angle_deg = i * angle_step
+    let angle_rad = angle_deg * DEG_TO_RAD
+    let radius = i * radius_step
+    
+    if (radius <= max_radius) {
+        let x = center_x + radius * cos(angle_rad)
+        let y = center_y + radius * sin(angle_rad)
+        G1 X[x] Y[y] F200
+    }
+    
+    i = i + 1
+}
+
+// Return to center
+G0 X[center_x] Y[center_y] 
