@@ -35,10 +35,6 @@ Runtime* get_runtime() {
     return &g_runtime;
 }
 
-void set_input_file(const char* filename) {
-    input_file = filename;
-}
-
 const char* get_input_file() {
     return input_file;
 }

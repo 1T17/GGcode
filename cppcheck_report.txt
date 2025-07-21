@@ -1,0 +1,365 @@
+src/bindings/nodejs.c:1:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/bindings/nodejs.c:2:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/bindings/nodejs.c:3:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/config/config.h:4:0: information: Include file: <stddef.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stddef.h>
+^
+src/runtime/runtime_state.h:6:0: information: Include file: <stddef.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stddef.h>
+^
+src/runtime/evaluator.h:4:0: information: Include file: <stddef.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stddef.h>
+^
+src/runtime/evaluator.h:5:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/runtime/evaluator.h:6:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/utils/output_buffer.h:4:0: information: Include file: <stddef.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stddef.h>
+^
+src/generator/emitter.h:4:0: information: Include file: "parser/parser.h" not found. [missingInclude]
+#include "parser/parser.h"
+^
+src/error/error.h:15:0: information: Include file: <setjmp.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <setjmp.h>
+^
+src/bindings/nodejs.c:11:0: information: Include file: <time.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <time.h>
+^
+src/bindings/nodejs.c:45:16: style: Variable 't' can be declared as pointer to const [constVariablePointer]
+    struct tm *t = localtime(&now);
+               ^
+src/config/config.c:2:0: information: Include file: <stddef.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stddef.h>
+^
+src/config/config.c:3:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/error/error.c:3:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/error/error.c:4:0: information: Include file: <stdarg.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdarg.h>
+^
+src/error/error.c:5:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/error/error.c:10:0: information: Include file: "config/config.h" not found. [missingInclude]
+#include "config/config.h"
+^
+src/generator/emitter.c:3:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/generator/emitter.c:4:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/generator/emitter.c:5:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/generator/emitter.c:8:0: information: Include file: "runtime/evaluator.h" not found. [missingInclude]
+#include "runtime/evaluator.h"
+^
+src/generator/emitter.c:12:0: information: Include file: "utils/output_buffer.h" not found. [missingInclude]
+#include "utils/output_buffer.h"
+^
+src/generator/emitter.c:13:0: information: Include file: "config/config.h" not found. [missingInclude]
+#include "config/config.h"
+^
+src/generator/emitter.c:14:0: information: Include file: "error/error.h" not found. [missingInclude]
+#include "error/error.h"
+^
+src/generator/emitter.c:25:0: information: Include file: <math.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <math.h>
+^
+src/generator/emitter.c:120:26: style: Local variable 'rt' shadows outer variable [shadowVariable]
+                Runtime *rt = get_runtime();
+                         ^
+src/generator/emitter.c:75:14: note: Shadowed declaration
+    Runtime *rt = get_runtime();
+             ^
+src/generator/emitter.c:120:26: note: Shadow variable
+                Runtime *rt = get_runtime();
+                         ^
+src/generator/emitter.c:120:26: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+                Runtime *rt = get_runtime();
+                         ^
+src/generator/emitter.c:133:28: style: Variable 'val' can be declared as pointer to const [constVariablePointer]
+                    Value *val = get_var(varname);
+                           ^
+src/generator/emitter.c:239:20: style: Variable 'v' can be declared as pointer to const [constVariablePointer]
+            Value *v = eval_expr(node->gcode_stmt.args[i].indexExpr);
+                   ^
+src/generator/emitter.c:272:16: style: Variable 'cond' can be declared as pointer to const [constVariablePointer]
+        Value *cond = eval_expr(node->while_stmt.condition);
+               ^
+src/generator/emitter.c:309:12: style: Variable 'v_from' can be declared as pointer to const [constVariablePointer]
+    Value *v_from = eval_expr(node->for_stmt.from);
+           ^
+src/generator/emitter.c:310:12: style: Variable 'v_to' can be declared as pointer to const [constVariablePointer]
+    Value *v_to = eval_expr(node->for_stmt.to);
+           ^
+src/generator/emitter.c:311:12: style: Variable 'v_step' can be declared as pointer to const [constVariablePointer]
+    Value *v_step = node->for_stmt.step ? eval_expr(node->for_stmt.step) : make_number_value(1.0);
+           ^
+src/lexer/lexer.c:1:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/lexer/lexer.c:2:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/lexer/lexer.c:3:0: information: Include file: <ctype.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <ctype.h>
+^
+src/lexer/lexer.c:4:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/utils/compat.h:4:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/utils/compat.h:5:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/lexer/lexer.c:6:0: information: Include file: "error/error.h" not found. [missingInclude]
+#include "error/error.h"
+^
+src/lexer/lexer.c:291:10: style: Variable 'unknown' can be declared as const array [constVariable]
+    char unknown[2] = {c, '\0'};
+         ^
+src/lexer/token_utils.c:1:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/lexer/token_utils.c:2:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/lexer/token_utils.c:3:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/main.c:1:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/main.c:2:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/main.c:3:0: information: Include file: <time.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <time.h>
+^
+src/main.c:4:0: information: Include file: <sys/types.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <sys/types.h>
+^
+src/main.c:5:0: information: Include file: <unistd.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <unistd.h>
+^
+src/main.c:6:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/main.c:7:0: information: Include file: <libgen.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <libgen.h>
+^
+src/main.c:8:0: information: Include file: <errno.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <errno.h>
+^
+src/main.c:15:0: information: Include file: <dirent.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <dirent.h>
+^
+src/utils/time_utils.h:24:0: information: Include file: <time.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <time.h>
+^
+src/main.c:93:16: style: Variable 'tm_info' can be declared as pointer to const [constVariablePointer]
+    struct tm* tm_info = localtime(&now);
+               ^
+src/main.c:239:20: style: Variable 'entry' can be declared as pointer to const [constVariablePointer]
+    struct dirent *entry;
+                   ^
+src/main.c:11:0: information: Include file: <tchar.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <tchar.h>
+^
+src/main.c:12:0: information: Include file: <windows.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <windows.h>
+^
+src/main.c:13:0: information: Include file: <psapi.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <psapi.h>
+^
+src/utils/time_utils.h:5:0: information: Include file: <windows.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <windows.h>
+^
+src/main.c:22:0: information: Include file: <sys/wait.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <sys/wait.h>
+^
+src/main.c:23:0: information: Include file: <sys/resource.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <sys/resource.h>
+^
+src/parser/ast_helpers.c:2:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/parser/ast_helpers.c:3:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/parser/parser.c:1:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/parser/parser.c:2:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/parser/parser.c:3:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/parser/parser.c:9:0: information: Include file: "error/error.h" not found. [missingInclude]
+#include "error/error.h"
+^
+src/parser/parser.c:10:0: information: Include file: <ctype.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <ctype.h>
+^
+src/parser/parser.c:11:0: information: Include file: <setjmp.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <setjmp.h>
+^
+src/parser/parser.c:192:33: style: Condition 'rt->parser.current.type==TOKEN_RPAREN' is always false [knownConditionTrueFalse]
+    if (rt->parser.current.type == TOKEN_RPAREN) {
+                                ^
+src/parser/parser.c:185:29: note: Assuming that condition 'rt->parser.current.type==TOKEN_LPAREN' is not redundant
+if (rt->parser.current.type == TOKEN_LPAREN)
+                            ^
+src/parser/parser.c:192:33: note: Condition 'rt->parser.current.type==TOKEN_RPAREN' is always false
+    if (rt->parser.current.type == TOKEN_RPAREN) {
+                                ^
+src/parser/parser.c:298:44: style: Condition 'rt->parser.current.type!=TOKEN_RPAREN' is always true [knownConditionTrueFalse]
+            while (rt->parser.current.type != TOKEN_RPAREN)
+                                           ^
+src/parser/parser.c:290:37: note: Assuming that condition 'rt->parser.current.type==TOKEN_LPAREN' is not redundant
+        if (rt->parser.current.type == TOKEN_LPAREN)
+                                    ^
+src/parser/parser.c:298:44: note: Condition 'rt->parser.current.type!=TOKEN_RPAREN' is always true
+            while (rt->parser.current.type != TOKEN_RPAREN)
+                                           ^
+src/parser/parser.c:309:45: style: Condition 'rt->parser.current.type==TOKEN_COMMA' is always false [knownConditionTrueFalse]
+                if (rt->parser.current.type == TOKEN_COMMA)
+                                            ^
+src/parser/parser.c:290:37: note: Assuming that condition 'rt->parser.current.type==TOKEN_LPAREN' is not redundant
+        if (rt->parser.current.type == TOKEN_LPAREN)
+                                    ^
+src/parser/parser.c:309:45: note: Condition 'rt->parser.current.type==TOKEN_COMMA' is always false
+                if (rt->parser.current.type == TOKEN_COMMA)
+                                            ^
+src/parser/parser.c:364:37: style: Condition 'rt->parser.current.type!=TOKEN_RBRACKET' is always true [knownConditionTrueFalse]
+        if (rt->parser.current.type != TOKEN_RBRACKET)
+                                    ^
+src/parser/parser.c:356:33: note: Assuming that condition 'rt->parser.current.type==TOKEN_LBRACKET' is not redundant
+    if (rt->parser.current.type == TOKEN_LBRACKET)
+                                ^
+src/parser/parser.c:364:37: note: Condition 'rt->parser.current.type!=TOKEN_RBRACKET' is always true
+        if (rt->parser.current.type != TOKEN_RBRACKET)
+                                    ^
+src/parser/parser.c:984:37: style: Condition 'rt->parser.current.type==TOKEN_IF' is always false [knownConditionTrueFalse]
+        if (rt->parser.current.type == TOKEN_IF)
+                                    ^
+src/parser/parser.c:981:33: note: Assuming that condition 'rt->parser.current.type==TOKEN_ELSE' is not redundant
+    if (rt->parser.current.type == TOKEN_ELSE)
+                                ^
+src/parser/parser.c:984:37: note: Condition 'rt->parser.current.type==TOKEN_IF' is always false
+        if (rt->parser.current.type == TOKEN_IF)
+                                    ^
+src/parser/parser.c:988:42: style: Condition 'rt->parser.current.type==TOKEN_LBRACE' is always false [knownConditionTrueFalse]
+        else if (rt->parser.current.type == TOKEN_LBRACE)
+                                         ^
+src/parser/parser.c:981:33: note: Assuming that condition 'rt->parser.current.type==TOKEN_ELSE' is not redundant
+    if (rt->parser.current.type == TOKEN_ELSE)
+                                ^
+src/parser/parser.c:988:42: note: Condition 'rt->parser.current.type==TOKEN_LBRACE' is always false
+        else if (rt->parser.current.type == TOKEN_LBRACE)
+                                         ^
+src/parser/parser.c:303:21: error: Common realloc mistake: 'args' nulled but not freed upon failure [memleakOnRealloc]
+                    args = realloc(args, arg_capacity * sizeof(ASTNode *));
+                    ^
+src/parser/parser.c:371:21: error: Common realloc mistake: 'elements' nulled but not freed upon failure [memleakOnRealloc]
+                    elements = realloc(elements, capacity * sizeof(ASTNode *));
+                    ^
+src/parser/parser.c:708:17: error: Common realloc mistake: 'statements' nulled but not freed upon failure [memleakOnRealloc]
+                statements = realloc(statements, capacity * sizeof(ASTNode *));
+                ^
+src/parser/parser.c:941:13: error: Common realloc mistake: 'args' nulled but not freed upon failure [memleakOnRealloc]
+            args = realloc(args, capacity * sizeof(GArg));
+            ^
+src/parser/parser.c:57:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/parser/parser.c:148:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/parser/parser.c:433:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/parser/parser.c:575:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/parser/parser.c:622:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/parser/parser.c:693:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/parser/parser.c:732:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/parser/parser.c:961:14: style: Variable 'rt' can be declared as pointer to const [constVariablePointer]
+    Runtime *rt = get_runtime();
+             ^
+src/runtime/evaluator.c:2:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/runtime/evaluator.c:3:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/runtime/evaluator.c:4:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/runtime/evaluator.c:6:0: information: Include file: <math.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <math.h>
+^
+src/runtime/evaluator.c:8:0: information: Include file: "error/error.h" not found. [missingInclude]
+#include "error/error.h"
+^
+src/runtime/evaluator.c:10:0: information: Include file: "config/config.h" not found. [missingInclude]
+#include "config/config.h"
+^
+src/runtime/evaluator.c:11:0: information: Include file: "generator/emitter.h" not found. [missingInclude]
+#include "generator/emitter.h"
+^
+src/utils/file_utils.c:1:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/utils/file_utils.c:2:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/utils/output_buffer.c:1:0: information: Include file: <stdlib.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdlib.h>
+^
+src/utils/output_buffer.c:2:0: information: Include file: <string.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <string.h>
+^
+src/utils/output_buffer.c:3:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/utils/output_buffer.c:6:0: information: Include file: <time.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <time.h>
+^
+src/utils/output_buffer.c:7:0: information: Include file: "config/config.h" not found. [missingInclude]
+#include "config/config.h"
+^
+src/utils/output_buffer.c:8:0: information: Include file: "runtime/evaluator.h" not found. [missingInclude]
+#include "runtime/evaluator.h"
+^
+src/utils/report.c:2:0: information: Include file: <stdio.h> not found. Please note: Cppcheck does not need standard library headers to get proper results. [missingIncludeSystem]
+#include <stdio.h>
+^
+src/bindings/nodejs.c:16:0: style: The function 'compile_ggcode_from_string' is never used. [unusedFunction]
+const char* compile_ggcode_from_string(const char* source_code) {
+^
+nofile:0:0: information: Active checkers: 113/592 (use --checkers-report=<filename> to see details) [checkersReport]
+

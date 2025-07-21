@@ -1,9 +1,15 @@
 #include "Unity/src/unity.h"
 #include "../src/lexer/lexer.h"
-#include "../src/lexer/token_utils.h"
 #include "../src/lexer/token_types.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+// Add static test-local implementation of token_free at the top
+static void token_free(Token token) {
+    if (token.value) {
+        free(token.value);
+    }
+}
 
 int print_tokens_logs = 0;
 

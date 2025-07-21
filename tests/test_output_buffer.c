@@ -4,6 +4,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Move save_output_to_file implementation here for testing only
+static void save_output_to_file(const char* filename) {
+    const char *buffer = get_output_buffer();
+    size_t length = get_output_length();
+    FILE* out = fopen(filename, "w");
+    if (!out) {
+        perror("Failed to write output file");
+        return;
+    }
+    fwrite(buffer, 1, length, out);
+    fclose(out);
+}
+
 void setUp(void)
 {
     init_output_buffer();

@@ -30,7 +30,8 @@ void write_to_output(const char* line) {
     size_t len = strlen(line);
     if (gcode_output_length + len + 2 > gcode_output_capacity) {
         gcode_output_capacity = (gcode_output_capacity + len + 256) * 2;
-        gcode_output = realloc(gcode_output, gcode_output_capacity);
+        char *tmp = realloc(gcode_output, gcode_output_capacity);
+        if (!tmp) { /* handle error */ } else { gcode_output = tmp; }
     }
     memcpy(gcode_output + gcode_output_length, line, len);
     gcode_output_length += len;
@@ -46,23 +47,14 @@ size_t get_output_length() {
     return gcode_output_length;
 }
 
-void save_output_to_file(const char* filename) {
-    FILE* out = fopen(filename, "w");
-    if (!out) {
-        perror("Failed to write output file");
-        return;
-    }
-    fwrite(gcode_output, 1, gcode_output_length, out);
-    fclose(out);
-}
-
 
 void prepend_to_output_buffer(const char* prefix) {
     size_t prefix_len = strlen(prefix);
 
     if (prefix_len + gcode_output_length >= gcode_output_capacity) {
         gcode_output_capacity = (gcode_output_capacity + prefix_len + 256) * 2;
-        gcode_output = realloc(gcode_output, gcode_output_capacity);
+        char *tmp = realloc(gcode_output, gcode_output_capacity);
+        if (!tmp) { /* handle error */ } else { gcode_output = tmp; }
     }
 
     // Shift current contents to the right
@@ -75,7 +67,7 @@ void prepend_to_output_buffer(const char* prefix) {
 void emit_gcode_preamble(const char* default_filename) {
     char id_line[64];
     if (var_exists("id")) {
-        Value *id_val = get_var("id");
+        const Value *id_val = get_var("id");
         if (id_val && id_val->type == VAL_NUMBER) {
             snprintf(id_line, sizeof(id_line), "%.0f", id_val->number);
         } else {
@@ -88,7 +80,7 @@ void emit_gcode_preamble(const char* default_filename) {
     // Set RUNTIME_TIME
     char time_line[64];
     time_t now = time(NULL);
-    struct tm *t = localtime(&now);
+    const struct tm *t = localtime(&now);
     strftime(time_line, sizeof(time_line), "%Y-%m-%d %H:%M:%S", t);
     strncpy(RUNTIME_TIME, time_line, sizeof(RUNTIME_TIME) - 1);
     RUNTIME_TIME[sizeof(RUNTIME_TIME) - 1] = '\0';

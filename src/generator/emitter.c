@@ -56,12 +56,6 @@ Value *make_number_value(double num)
     return val;
 }
 
-int get_statement_count()
-{
-    Runtime *rt = get_runtime();
-    return rt->statement_count;
-}
-
 // Global flag to reset emitter state
 static int emitter_reset_flag = 0;
 

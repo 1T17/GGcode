@@ -27,7 +27,7 @@ void eval_while(ASTNode *stmt);
 static ASTNode *find_function(const char *name);
 static int runtime_has_returned = 0;
 
-double get_number(Value *val)
+double get_number(const Value *val)
 {
     if (!val || val->type != VAL_NUMBER)
     {
@@ -39,7 +39,7 @@ double get_number(Value *val)
 
 double get_scalar(ASTNode *node)
 {
-    Value *v = eval_expr(node);
+    const Value *v = eval_expr(node);
     if (!v || v->type != VAL_NUMBER)
     {
         report_error("[Runtime evaluator] get_scalar() expected number");
@@ -63,7 +63,7 @@ Value *eval(ASTNode *node)
 
 Value *get_var(const char *name)
 {
-    Runtime *rt = get_runtime();
+    const Runtime *rt = get_runtime();
     for (int i = rt->var_count - 1; i >= 0; --i)
     {
         if (strcmp(rt->variables[i].name, name) == 0)
@@ -73,22 +73,6 @@ Value *get_var(const char *name)
     }
     report_error("[Runtime evaluator] Variable not found: %s", name);
     return NULL;
-}
-
-Value *get_array_item(Value *arr, int index)
-{
-    if (!arr || arr->type != VAL_ARRAY)
-    {
-        report_error("[get_array_item] Not an array");
-        return NULL;
-    }
-    if (index < 0 || index >= (int)arr->array.count)
-    {
-        report_error("[get_array_item] Index %d out of bounds (len=%zu)", index, arr->array.count);
-        return NULL;
-    }
-
-    return arr->array.items[index];
 }
 
 void set_parents_recursive(ASTNode *node, ASTNode *parent) {
@@ -436,10 +420,13 @@ case AST_VAR:
 
     case AST_IF:
     {
-        double cond = get_number(eval_expr(node->if_stmt.condition));
-        if (cond)
+        const Value *cond = eval_expr(node->if_stmt.condition);
+        if (cond && cond->type == VAL_NUMBER)
         {
-            return eval_expr(node->if_stmt.then_branch);
+            if (cond->number != 0)
+            {
+                return eval_expr(node->if_stmt.then_branch);
+            }
         }
         else if (node->if_stmt.else_branch)
         {
@@ -470,7 +457,7 @@ return ret;
 case AST_INDEX:
 {
     Value *target = eval_expr(node->index_expr.array);
-    Value *index_val = eval_expr(node->index_expr.index);
+    const Value *index_val = eval_expr(node->index_expr.index);
 
     if (!target || target->type != VAL_ARRAY) {
         report_error("[Runtime] AST_INDEX: Not an array");
@@ -746,33 +733,9 @@ for (int i = 0; i < body->block.count; i++) {
 #undef SCALAR
 }
 
-void declare_array(const char *name, Value **items, size_t count)
-{
-    Runtime *rt = get_runtime();
-    if (rt->var_count >= MAX_VARIABLES)
-    {
-        fprintf(stderr, "[declare_array evaluator] ERROR: variable limit reached.\n");
-        FATAL_ERROR("[declare_array evaluator] ERROR: variable limit reached.");
-    }
-
-    Value *arr_val = malloc(sizeof(Value));
-    if (!arr_val) {
-        report_error("[declare_array] malloc failed for arr_val");
-        return;
-    }
-    arr_val->type = VAL_ARRAY;
-    arr_val->array.items = items;
-    arr_val->array.count = count;
-
-    rt->variables[rt->var_count].name = strdup(name);
-    rt->variables[rt->var_count].val = arr_val;
-    rt->variables[rt->var_count].scope_level = rt->current_scope_level;
-    rt->var_count++;
-}
-
 int var_exists_in_current_scope(const char *name)
 {
-    Runtime *rt = get_runtime();
+    const Runtime *rt = get_runtime();
     for (int i = rt->var_count - 1; i >= 0; --i)
     {
         if (rt->variables[i].name && strcmp(rt->variables[i].name, name) == 0)
@@ -813,7 +776,7 @@ void eval_block(ASTNode *block)
                 break;
             }
 
-            Runtime *rt = get_runtime();
+            const Runtime *rt = get_runtime();
             if (!var_exists_in_current_scope(stmt->let_stmt.name))
             {
                 printf("[Runtime evaluator] DECLARE '%s' = %.4f (scope level %d)\n",
@@ -846,7 +809,6 @@ void eval_block(ASTNode *block)
             break;
 
         case AST_WHILE:
-            printf("[Runtime evaluator] WHILE encountered\n");
             eval_while(stmt);
             break;
 
@@ -900,14 +862,14 @@ void eval_block(ASTNode *block)
 
 void eval_if(ASTNode *stmt)
 {
-    Value *cond = eval_expr(stmt->if_stmt.condition);
+    const Value *cond = eval_expr(stmt->if_stmt.condition);
     if (cond && cond->type == VAL_NUMBER)
     {
-        printf("[Eval_IF evaluator] condition evaluates to: %.2f\n", cond->number);
+        //printf("[Eval_IF evaluator] condition evaluates to: %.2f\n", cond->number);
     }
     else
     {
-        printf("[Eval_IF evaluator] condition is NULL or non-number\n");
+        //printf("[Eval_IF evaluator] condition is NULL or non-number\n");
     }
 
     if (cond && cond->type == VAL_NUMBER && cond->number != 0)
@@ -922,14 +884,14 @@ void eval_if(ASTNode *stmt)
 
 void eval_for(ASTNode *stmt)
 {
-    Value *v_from = eval_expr(stmt->for_stmt.from);
-    Value *v_to = eval_expr(stmt->for_stmt.to);
-    Value *v_step = stmt->for_stmt.step ? eval_expr(stmt->for_stmt.step) : make_number_value(1.0);
+    const Value *v_from = eval_expr(stmt->for_stmt.from);
+    const Value *v_to = eval_expr(stmt->for_stmt.to);
+    const Value *v_step = stmt->for_stmt.step ? eval_expr(stmt->for_stmt.step) : make_number_value(1.0);
 
     if (!v_from || !v_to || !v_step ||
         v_from->type != VAL_NUMBER || v_to->type != VAL_NUMBER || v_step->type != VAL_NUMBER)
     {
-        printf("[Runtime evaluator] ERROR: FOR loop expects numeric values\n");
+        //printf("[Runtime evaluator] ERROR: FOR loop expects numeric values\n");
         return;
     }
 
@@ -994,7 +956,7 @@ void eval_while(ASTNode *stmt)
 
     while (1)
     {
-        Value *cond = eval_expr(stmt->while_stmt.condition);
+        const Value *cond = eval_expr(stmt->while_stmt.condition);
 
         if (!cond)
         {
@@ -1008,8 +970,8 @@ void eval_while(ASTNode *stmt)
             break;
         }
 
-        printf("[EVAL evaluator] WHILE ITERATION %d, cond = %.2f\n", iter, cond->number);
-        fflush(stdout);
+        //printf("[EVAL evaluator] WHILE ITERATION %d, cond = %.2f\n", iter, cond->number);
+        //fflush(stdout);
 
         if (cond->number == 0)
         {
@@ -1070,7 +1032,7 @@ void declare_var(const char *name, Value *val)
 // Check if variable exists
 int var_exists(const char *name)
 {
-    Runtime *rt = get_runtime();
+    const Runtime *rt = get_runtime();
     for (int i = 0; i < rt->var_count; i++)
     {
         if (rt->variables[i].name && strcmp(rt->variables[i].name, name) == 0)
@@ -1096,7 +1058,7 @@ void register_function(ASTNode *node)
 
 static ASTNode *find_function(const char *name)
 {
-    Runtime *rt = get_runtime();
+    const Runtime *rt = get_runtime();
     for (int i = 0; i < rt->function_count; i++)
     {
         if (strcmp(rt->function_table[i].name, name) == 0)
@@ -1129,7 +1091,6 @@ void free_value(Value *val) {
 
     val->type = FREED_MAGIC;  // poison to catch reuse
     free(val);
-    val = NULL;
 }
 
 

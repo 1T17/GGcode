@@ -13,13 +13,7 @@
 #define PARSE_ERROR(msg, ...) \
     fatal_error(get_runtime()->parser.lexer->source, get_runtime()->parser.current.line, get_runtime()->parser.current.column, msg, ##__VA_ARGS__)
 
-static int gcode_mode_active = 0;
 // Parser moved to runtime state - no more global parser
-
-// Function to reset parser static variables
-void reset_parser_static_vars(void) {
-    gcode_mode_active = 0;
-}
 
 static ASTNode *parse_binary_expression();
 static ASTNode *parse_block();
@@ -38,8 +32,9 @@ static ASTNode *parse_return();
 static ASTNode *parse_postfix_expression(); // <-- add this
 
 // Forward declaration
-Token lexer_peek_token(Lexer *lexer);
 
+// Restore static variable needed by parse_gcode
+static int gcode_mode_active = 0;
 
 /// @brief step 2
 /// @return
@@ -1148,16 +1143,4 @@ case AST_EXPR_STMT:
     }
 
     free(node);
-}
-
-Token lexer_peek_token(Lexer *lexer)
-{
-    int saved_pos = lexer->pos;
-    int saved_column = lexer->column;
-
-    Token next = lexer_next_token(lexer);
-
-    lexer->pos = saved_pos;
-    lexer->column = saved_column;
-    return next;
 }
