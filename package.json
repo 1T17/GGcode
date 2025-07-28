@@ -2,8 +2,5 @@
   "dependencies": {
     "gcode-parser": "^2.2.0",
     "three": "^0.178.0"
-  },
-  "devDependencies": {
-    "vite": "^5.4.19"
   }
 }
