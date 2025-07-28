@@ -32,37 +32,37 @@ let bit_test = 5 & 3
 
 // Use operators in conditional logic
 if (a > b && c == a) {
-    G1 X[center_x + 10] Y[center_y] F100
+    G1 X[center_x + 10] Y[center_y] F[100]
 } else {
-    G1 X[center_x - 10] Y[center_y] F100
+    G1 X[center_x - 10] Y[center_y] F[100]
 }
 
 if (b < a || c != b) {
-    G1 X[center_x] Y[center_y + 10] F100
+    G1 X[center_x] Y[center_y + 10] F[100]
 }
 
 if (!(a < b)) {
-    G1 X[center_x] Y[center_y - 10] F100
+    G1 X[center_x] Y[center_y - 10] F[100]
 }
 
 // Use operators in loops
 let i = 0
 while (i < 5 && i >= 0) {
-    G1 X[center_x + i] Y[center_y + i] F100
+    G1 X[center_x + i] Y[center_y + i] F[100]
     i = i + 1
 }
 
 // Use operators in for loops with step
 for j = 0..10 step 2 {
     if (j > 5 || j == 0) {
-        G1 X[center_x + j] Y[center_y - j] F100
+        G1 X[center_x + j] Y[center_y - j] F[100]
     }
 }
 
 // Test complex logical expressions
 let complex_test = (a > b) && (c == a) || (b < 5)
 if (complex_test) {
-    G1 X[center_x + 15] Y[center_y + 15] F100
+    G1 X[center_x + 15] Y[center_y + 15] F[100]
 }
 
 // Return to center

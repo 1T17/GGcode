@@ -50,6 +50,7 @@ const char* compile_ggcode_from_string(const char* source_code) {
     emit_gcode_preamble(ggcode_file_name);
     const char* output = strdup(get_output_buffer());
     long output_size = get_output_length();
+    fprintf(stderr, "[GGCODE FFI] Allocated output at %p (%ld bytes)\n", (void*)output, output_size);
     if (has_errors()) {
         report_error("[NodeJS] Compilation failed or errors detected");
         print_errors();
@@ -67,5 +68,11 @@ const char* compile_ggcode_from_string(const char* source_code) {
     free_ast(root);
     free_output_buffer();
     return output;
+}
+
+// Add this at the end of the file for FFI memory management
+void free_ggcode_string(char* ptr) {
+    fprintf(stderr, "[GGCODE FFI] Freeing output at %p\n", (void*)ptr);
+    free(ptr);
 }
 

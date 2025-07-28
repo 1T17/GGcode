@@ -15,7 +15,7 @@ for i = 0..points {
     let angle = (i * 2 * PI / points)
     let x = center_x + outer_radius * cos(angle)
     let y = center_y + outer_radius * sin(angle)
-    G1 X[x] Y[y] F150
+    G1 X[x] Y[y] F[150]
 }
 
 // Draw star - inner points
@@ -23,7 +23,7 @@ for i = 0..points {
     let angle = (i * 2 * PI / points) + (PI / points)
     let x = center_x + inner_radius * cos(angle)
     let y = center_y + inner_radius * sin(angle)
-    G1 X[x] Y[y] F150
+    G1 X[x] Y[y] F[150]
 }
 
 // Return to center

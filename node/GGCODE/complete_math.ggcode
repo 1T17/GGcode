@@ -51,22 +51,22 @@ let dist_val = distance(0, 0, 3, 4)
 let noise_val = noise(1.5)
 
 // Draw a pattern using all the calculated values
-G1 X[center_x + value1] Y[center_y] F100
-G1 X[center_x + value2] Y[center_y + value3] F100
-G1 X[center_x + value4] Y[center_y + value5] F100
-G1 X[center_x + value6] Y[center_y + value7] F100
-G1 X[center_x + value8] Y[center_y + value9] F100
-G1 X[center_x + value10] Y[center_y + value11] F100
+G1 X[center_x + value1] Y[center_y] F1[00]
+G1 X[center_x + value2] Y[center_y + value3] F[100]
+G1 X[center_x + value4] Y[center_y + value5] F[100]
+G1 X[center_x + value6] Y[center_y + value7] F[100]
+G1 X[center_x + value8] Y[center_y + value9] F[100]
+G1 X[center_x + value10] Y[center_y + value11] F[100]
 
 // Draw using trigonometric values
 G0 X[center_x + 20] Y[center_y]
-G1 X[center_x + 20 + 10 * cos_val] Y[center_y + 10 * sin_val] F100
-G1 X[center_x + 20 + 10 * tan_val] Y[center_y + 10 * asin_val] F100
+G1 X[center_x + 20 + 10 * cos_val] Y[center_y + 10 * sin_val] F[100]
+G1 X[center_x + 20 + 10 * tan_val] Y[center_y + 10 * asin_val] F[100]
 
 // Draw using interpolation values
 G0 X[center_x - 20] Y[center_y]
-G1 X[center_x - 20 + lerp_val] Y[center_y + map_val] F100
-G1 X[center_x - 20 + dist_val] Y[center_y + noise_val] F100
+G1 X[center_x - 20 + lerp_val] Y[center_y + map_val] F[100]
+G1 X[center_x - 20 + dist_val] Y[center_y + noise_val] F[100]
 
 // Return to center
 G0 X[center_x] Y[center_y] 

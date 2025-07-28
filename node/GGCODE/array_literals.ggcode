@@ -19,21 +19,21 @@ let second_point = points[1]
 let grid_value = grid[1][2]  // Should be 5
 
 // Draw using array values
-G1 X[center_x + first_point] Y[center_y] F100
-G1 X[center_x + second_point] Y[center_y + 10] F100
-G1 X[center_x + grid_value] Y[center_y + 20] F100
+G1 X[center_x + first_point] Y[center_y] F[100]
+G1 X[center_x + second_point] Y[center_y + 10] F[100]
+G1 X[center_x + grid_value] Y[center_y + 20] F[100]
 
 // Iterate through array (points has 5 elements, indices 0-4)
 for i = 0..<5 {
     let point = points[i]
-    G1 X[center_x + point] Y[center_y + i * 5] F100
+    G1 X[center_x + point] Y[center_y + i * 5] F[100]
 }
 
 // Iterate through 2D array (grid has 3 rows, each with 3 columns, indices 0-2)
 for row = 0..<3 {
     for col = 0..<3 {
         let value = grid[row][col]
-        G1 X[center_x + value * 2] Y[center_y + row * 10] F100
+        G1 X[center_x + value * 2] Y[center_y + row * 10] F[100]
     }
 }
 

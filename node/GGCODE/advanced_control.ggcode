@@ -41,16 +41,16 @@ for i = 0..10 step 2 {
 
 // Test for loop with step and exclusive range
 for j = 0..<10 step 3 {
-    G1 X[center_x - j] Y[center_y - j] F150
+    G1 X[center_x - j] Y[center_y - j] F[150]
 }
 
 // Test while loop with complex condition
 let k = 0
 while (k < 8 && k >= 0) {
     if (mod(k, 2) == 0) {
-        G1 X[center_x + k] Y[center_y + 5] F100
+        G1 X[center_x + k] Y[center_y + 5] F[100]
     } else {
-        G1 X[center_x + k] Y[center_y - 5] F100
+        G1 X[center_x + k] Y[center_y - 5] F[100]
     }
     k = k + 1
 }
@@ -59,11 +59,11 @@ while (k < 8 && k >= 0) {
 for x = 0..5 {
     for y = 0..5 {
         if (x == y) {
-            G1 X[center_x + x * 2] Y[center_y + y * 2] F200
+            G1 X[center_x + x * 2] Y[center_y + y * 2] F[200]
         } else if (x > y) {
-            G1 X[center_x + x * 2] Y[center_y - y * 2] F150
+            G1 X[center_x + x * 2] Y[center_y - y * 2] F[150]
         } else {
-            G1 X[center_x - x * 2] Y[center_y + y * 2] F100
+            G1 X[center_x - x * 2] Y[center_y + y * 2] F[100]
         }
     }
 }

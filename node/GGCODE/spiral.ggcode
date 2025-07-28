@@ -21,7 +21,7 @@ while (i <= max_steps) {
     if (radius <= max_radius) {
         let x = center_x + radius * cos(angle_rad)
         let y = center_y + radius * sin(angle_rad)
-        G1 X[x] Y[y] F200
+        G1 X[x] Y[y] F[200]
     }
     
     i = i + 1

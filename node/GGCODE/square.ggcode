@@ -16,10 +16,10 @@ let y2 = center_y + half_size
 G0 X[x1] Y[y1]
 
 // Draw square
-G1 X[x2] Y[y1] F100  // Top edge
-G1 X[x2] Y[y2] F100  // Right edge
-G1 X[x1] Y[y2] F100  // Bottom edge
-G1 X[x1] Y[y1] F100  // Left edge
+G1 X[x2] Y[y1] F[100]  // Top edge
+G1 X[x2] Y[y2] F[100]  // Right edge
+G1 X[x1] Y[y2] F[100]  // Bottom edge
+G1 X[x1] Y[y1] F[100]  // Left edge
 
 // Return to center
 G0 X[center_x] Y[center_y] 

@@ -5,12 +5,13 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = 6990;
 
 // FFI Setup
 const libPath = path.resolve(__dirname, 'libggcode.so');
 const ggcode = ffi.Library(libPath, {
-  compile_ggcode_from_string: ['string', ['pointer', 'int']]
+  compile_ggcode_from_string: ['pointer', ['pointer', 'int']],
+  free_ggcode_string: ['void', ['pointer']]
 });
 
 function decodeHTMLEntities(str) {
@@ -37,12 +38,20 @@ app.get('/', (req, res) => {
 app.post('/compile', (req, res) => {
   const rawInput = req.body.ggcode || '';
   const decodedInput = decodeHTMLEntities(rawInput);
-  const cleanInput = stripCarriageReturns(decodedInput);  
-const inputBuffer = Buffer.from(cleanInput + '\0', 'utf8');
+  const cleanInput = stripCarriageReturns(decodedInput);
+  const inputBuffer = Buffer.from(cleanInput + '\0', 'utf8');
 
-  const output = ggcode.compile_ggcode_from_string(inputBuffer, 1);
-
-
+  const outputPtr = ggcode.compile_ggcode_from_string(inputBuffer, 1);
+  let output = '';
+  if (outputPtr && !outputPtr.isNull && typeof outputPtr.readCString === 'function') {
+    output = outputPtr.readCString();
+  } else if (outputPtr) {
+    output = outputPtr.readCString ? outputPtr.readCString() : Buffer.from(outputPtr).toString();
+  }
+  ggcode.free_ggcode_string(outputPtr);
+  if (global.gc) {
+    global.gc();
+  }
   res.render('index', { output, input: rawInput });
 });
 
@@ -59,7 +68,17 @@ app.post('/api/compile', (req, res) => {
   const inputBuffer = Buffer.from(cleanInput + '\0', 'utf8');
 
   try {
-    const output = ggcode.compile_ggcode_from_string(inputBuffer, 1);
+    const outputPtr = ggcode.compile_ggcode_from_string(inputBuffer, 1);
+    let output = '';
+    if (outputPtr && !outputPtr.isNull && typeof outputPtr.readCString === 'function') {
+      output = outputPtr.readCString();
+    } else if (outputPtr) {
+      output = outputPtr.readCString ? outputPtr.readCString() : Buffer.from(outputPtr).toString();
+    }
+    ggcode.free_ggcode_string(outputPtr);
+    if (global.gc) {
+      global.gc();
+    }
     res.json({ success: true, output });
   } catch (err) {
     res.json({ success: false, error: err.message || 'Compilation error' });

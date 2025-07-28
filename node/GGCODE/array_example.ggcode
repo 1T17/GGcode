@@ -30,13 +30,13 @@ G0 X[center_x + first_point[0]] Y[center_y + first_point[1]]
 let i = 1
 while i < count {
     let pt = points[i]
-    G1 X[center_x + pt[0]] Y[center_y + pt[1]] F100
+    G1 X[center_x + pt[0]] Y[center_y + pt[1]] F[100]
     i = i + 1
 }
 
 // Close the polygon
 let first_pt = points[0]
-G1 X[center_x + first_pt[0]] Y[center_y + first_pt[1]] F100
+G1 X[center_x + first_pt[0]] Y[center_y + first_pt[1]] F[100]
 
 // Return to center
 G0 X[center_x] Y[center_y] 

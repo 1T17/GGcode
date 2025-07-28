@@ -46,12 +46,15 @@ G0 X[center_x] Y[center_y]
 draw_flower(5, 8, 150)
 
 // Move to new position and draw another flower
-G0 X[center_x + 25] Y[center_y]
+center_x  = center_x + 25
+G0 X[center_x] Y[center_y]
 draw_flower(6, 6, 200)
 
 // Move to another position and draw a spiral
-G0 X[center_x - 25] Y[center_y]
+center_x  = center_x - 50
+G0 X[center_x] Y[center_y]
 draw_spiral(10, 100)
 
 // Return to center
+center_x  = center_x + 25
 G0 X[center_x] Y[center_y] 

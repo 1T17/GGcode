@@ -13,10 +13,10 @@ let angle_45 = 45 * DEG_TO_RAD
 let angle_60 = 60 * DEG_TO_RAD
 
 // Draw a triangle using sin and cos
-G1 X[center_x + 10 * cos(angle_30)] Y[center_y + 10 * sin(angle_30)] F100
-G1 X[center_x + 10 * cos(angle_60)] Y[center_y + 10 * sin(angle_60)] F100
-G1 X[center_x + 10 * cos(0)] Y[center_y + 10 * sin(0)] F100
-G1 X[center_x + 10 * cos(angle_30)] Y[center_y + 10 * sin(angle_30)] F100
+G1 X[center_x + 10 * cos(angle_30)] Y[center_y + 10 * sin(angle_30)] F[100]
+G1 X[center_x + 10 * cos(angle_60)] Y[center_y + 10 * sin(angle_60)] F[100]
+G1 X[center_x + 10 * cos(0)] Y[center_y + 10 * sin(0)] F[100]
+G1 X[center_x + 10 * cos(angle_30)] Y[center_y + 10 * sin(angle_30)] F[100]
 
 // Test other math functions
 let value1 = abs(-15)
@@ -28,17 +28,16 @@ let value6 = hypot(3, 4)
 
 // Draw a pattern using calculated values
 G0 X[center_x + value1] Y[center_y]
-G1 X[center_x + value2] Y[center_y + value3] F100
-G1 X[center_x + value4] Y[center_y + value5] F100
-G1 X[center_x + value6] Y[center_y] F100
+G1 X[center_x + value2] Y[center_y + value3] F[100]
+G1 X[center_x + value4] Y[center_y + value5] F[100]
+G1 X[center_x + value6] Y[center_y] F[100]
 
 // Test clamp function
 let clamped_value = clamp(15, 0, 10)
-G1 X[center_x + clamped_value] Y[center_y + 5] F100
+G1 X[center_x + clamped_value] Y[center_y + 5] F[100]
 
 // Test distance function
 let dist = distance(0, 0, 5, 5)
-G1 X[center_x + dist] Y[center_y - 5] F100
-
+G1 X[center_x + dist] Y[center_y - 5] F[100]
 // Return to center
 G0 X[center_x] Y[center_y] 

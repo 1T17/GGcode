@@ -5,9 +5,7 @@
 win/
 winbin/
 Unity/
-BACKUP/
 tests/temp/
-BK/
 ggcode
 node_modules/
 
@@ -15,6 +13,8 @@ node_modules/
 
 function.html
 function.txt
+
+OrbitControls.js
 
 Doxyfile
 

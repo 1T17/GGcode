@@ -99,16 +99,16 @@ for i = 0..<11 step 2 {
 
 // For loops with exclusive range
 for j = 0..<10 step 3 {
-    G1 X[center_x - j] Y[center_y - j] F150
+    G1 X[center_x - j] Y[center_y - j] F[150]
 }
 
 // While loops with complex conditions
 let k = 0
 while (k < 8 && k >= 0) {
     if (mod(k, 2) == 0) {
-        G1 X[center_x + k] Y[center_y + 5] F100
+        G1 X[center_x + k] Y[center_y + 5] F[100]
     } else {
-        G1 X[center_x + k] Y[center_y - 5] F100
+        G1 X[center_x + k] Y[center_y - 5] F[100]
     }
     k = k + 1
 }
@@ -117,11 +117,11 @@ while (k < 8 && k >= 0) {
 for x = 0..<5 {
     for y = 0..<5 {
         if (x == y) {
-            G1 X[center_x + x * 2] Y[center_y + y * 2] F200
+            G1 X[center_x + x * 2] Y[center_y + y * 2] F[200]
         } else if (x > y) {
-            G1 X[center_x + x * 2] Y[center_y - y * 2] F150
+            G1 X[center_x + x * 2] Y[center_y - y * 2] F[150]
         } else {
-            G1 X[center_x - x * 2] Y[center_y + y * 2] F100
+            G1 X[center_x - x * 2] Y[center_y + y * 2] F[100]
         }
     }
 }
@@ -166,8 +166,8 @@ G1 X[center_x + abs_val] Y[center_y + mod_val] F[get_feed_rate(150)]
 G1 X[center_x + sin_val * 10] Y[center_y + cos_val * 10] F[get_feed_rate(200)]
 
 // Use array values
-G1 X[center_x + points[2]] Y[center_y + points[4]] F100
-G1 X[center_x + grid[0][1]] Y[center_y + grid[2][0]] F150
+G1 X[center_x + points[2]] Y[center_y + points[4]] F[100]
+G1 X[center_x + grid[0][1]] Y[center_y + grid[2][0]] F[150]
 
 // Use mathematical expressions
 G1 X[center_x + sqrt_val] Y[center_y + pow_val/100] F[get_feed_rate(50)]

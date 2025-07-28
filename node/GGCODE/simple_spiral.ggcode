@@ -16,7 +16,7 @@ for i = 0..(revolutions * steps_per_rev) {
     let radius = (i / steps_per_rev) * (max_radius / revolutions)
     let x = center_x + radius * cos(angle)
     let y = center_y + radius * sin(angle)
-    G1 X[x] Y[y] F150
+    G1 X[x] Y[y] F[150]
 }
 
 // Return to center
