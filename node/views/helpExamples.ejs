@@ -1,0 +1,398 @@
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">GGcode Help</h2>
+        <button class="modal-close" onclick="closeModal('helpModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="search-container">
+          <input type="text" id="helpSearchInput" class="search-input" placeholder="Search help topics, functions, operators..." />
+          <div id="helpSearchResults" class="search-results"></div>
+        </div>
+        <div class="help-content" id="helpContent">
+          <div class="help-section">
+            <h3>What is GGcode?</h3>
+            <p>GGcode is a high-level programming language specifically designed for generating G-code for CNC machines, 3D printers, and other computer-controlled manufacturing equipment. It combines the simplicity of basic programming with powerful mathematical functions, making it easy to create complex toolpaths and geometric patterns.</p>
+          
+          <p><strong>Key Features:</strong></p>
+          <ul>
+            <li>Simple, readable syntax without semicolons</li>
+            <li>Extensive mathematical function library</li>
+            <li>Array support for complex data structures</li>
+            <li>Function definitions with parameters and return values</li>
+            <li>Control structures (loops, conditionals)</li>
+            <li>Direct G-code generation</li>
+            <li>Implicit features for convenience</li>
+          </ul>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Basic Syntax</h3>
+            <p><strong>Variables:</strong> Use <code>let</code> to declare variables. No semicolons required!</p>
+          <pre>let radius = 10
+let center_x = 0
+let feed_rate = 150</pre>
+          
+          <p><strong>G-code Commands:</strong> Standard G-code commands with variable interpolation</p>
+          <pre>G0 X10 Y5        // Rapid move to position
+G1 X20 Y15 F100  // Linear move with feed rate
+G1 X[center_x] Y[center_y] F[feed_rate]  // Using variables</pre>
+          
+          <p><strong>Comments:</strong> Use <code>//</code> for single-line or <code>/* */</code> for multi-line</p>
+          <pre>// This is a single-line comment
+/* This is a
+   multi-line comment */</pre>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Mathematical Functions</h3>
+            <p>GGcode provides a comprehensive library of mathematical functions for complex calculations and geometric operations.</p>
+          
+          <h4>Basic Math Functions</h4>
+          <p><code>abs(x)</code> - Absolute value | <code>mod(a, b)</code> - Modulo (remainder) | <code>floor(x)</code> - Round down | <code>ceil(x)</code> - Round up</p>
+          <p><code>round(x)</code> - Round to nearest | <code>min(a, b)</code> - Minimum value | <code>max(a, b)</code> - Maximum value | <code>clamp(x, min, max)</code> - Constrain value</p>
+          <pre>let abs_val = abs(-15)      // Returns 15
+let mod_val = mod(17, 5)    // Returns 2
+let floor_val = floor(3.7)  // Returns 3
+let clamp_val = clamp(15, 0, 10)  // Returns 10</pre>
+          
+          <h4>Trigonometric Functions</h4>
+          <p><code>sin(x)</code> - Sine | <code>cos(x)</code> - Cosine | <code>tan(x)</code> - Tangent</p>
+          <p><code>asin(x)</code> - Arcsine | <code>acos(x)</code> - Arccosine | <code>atan(x)</code> - Arctangent | <code>atan2(y, x)</code> - Arctangent of y/x</p>
+          <pre>let angle = 45 * DEG_TO_RAD
+let x = radius * cos(angle)
+let y = radius * sin(angle)
+let angle_from_atan = atan2(y, x)</pre>
+          
+          <h4>Geometric Functions</h4>
+          <p><code>sqrt(x)</code> - Square root | <code>pow(x, y)</code> - Power (x^y) | <code>hypot(x, y)</code> - Hypotenuse | <code>distance(x1, y1, x2, y2)</code> - Distance between points</p>
+          <pre>let sqrt_val = sqrt(25)           // Returns 5
+let pow_val = pow(2, 8)           // Returns 256
+let hyp = hypot(3, 4)             // Returns 5
+let dist = distance(0, 0, 3, 4)   // Returns 5</pre>
+          
+          <h4>Interpolation Functions</h4>
+          <p><code>lerp(a, b, t)</code> - Linear interpolation | <code>map(x, in_min, in_max, out_min, out_max)</code> - Re-map value</p>
+          <pre>let lerp_val = lerp(0, 100, 0.5)  // Returns 50
+let mapped = map(50, 0, 100, 0, 200)  // Returns 100</pre>
+          
+          <h4>Advanced Functions</h4>
+          <p><code>sign(x)</code> - Sign (-1, 0, 1) | <code>log(x)</code> - Natural logarithm | <code>exp(x)</code> - Exponential | <code>noise(x)</code> - Perlin noise</p>
+          <pre>let sign_val = sign(-5)    // Returns -1
+let log_val = log(10)      // Returns ~2.3
+let exp_val = exp(1)       // Returns ~2.7
+let noise_val = noise(1.5) // Returns noise value</pre>
+          
+          <h4>Conversion Functions</h4>
+          <p><code>deg(x)</code> - Radians to degrees | <code>rad(x)</code> - Degrees to radians</p>
+          <pre>let deg_val = deg(PI)    // Returns 180
+let rad_val = rad(180)     // Returns PI</pre>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Control Structures</h3>
+            <p>GGcode provides powerful control structures for creating complex toolpaths and conditional operations.</p>
+          
+          <h4>For Loops</h4>
+          <p><strong>Basic For Loop:</strong> Use <code>for variable = start..end</code> syntax</p>
+          <pre>for i = 0..10 {
+    G1 X[i] Y[i] F100
+}</pre>
+          
+          <p><strong>For Loops with Step:</strong> Use <code>for variable = start..end step increment</code></p>
+          <pre>for i = 0..10 step 2 {
+    G1 X[i] Y[i] F100
+}</pre>
+          
+          <p><strong>Exclusive Range:</strong> Use <code>..<</code> for exclusive end (recommended for arrays)</p>
+          <pre>for i = 0..<10 {
+    G1 X[i] Y[i] F100
+}</pre>
+          
+          <p><strong>Nested For Loops:</strong> Create complex patterns</p>
+          <pre>for x = 0..<5 {
+    for y = 0..<5 {
+        if (x == y) {
+            G1 X[x*2] Y[y*2] F200
+        }
+    }
+}</pre>
+          
+          <h4>While Loops</h4>
+          <p><strong>Basic While Loop:</strong> Use <code>while (condition)</code> syntax</p>
+          <pre>let i = 0
+while (i < 10) {
+    G1 X[i] Y[i] F100
+    i = i + 1
+}</pre>
+          
+          <p><strong>Complex Conditions:</strong> Combine multiple conditions</p>
+          <pre>let k = 0
+while (k < 8 && k >= 0) {
+    if (mod(k, 2) == 0) {
+        G1 X[k] Y[5] F100
+    } else {
+        G1 X[k] Y[-5] F100
+    }
+    k = k + 1
+}</pre>
+          
+          <h4>Conditional Statements</h4>
+          <p><strong>If-Else:</strong> Use <code>if (condition)</code> and <code>else</code></p>
+          <pre>if (x > 5) {
+    G1 X[x] Y[y] F100
+} else {
+    G1 X[x] Y[y] F50
+}</pre>
+          
+          <p><strong>If-Else If-Else:</strong> Multiple conditions</p>
+          <pre>if (speed > 100) {
+    return 300
+} else if (speed > 50) {
+    return 200
+} else {
+    return 100
+}</pre>
+
+                    </div>
+          
+          <div class="help-section">
+            <h3>Arrays</h3>
+            <p>Arrays in GGcode allow you to store and manipulate collections of values, making it easy to work with complex data structures and coordinate points.</p>
+          
+          <h4>Array Literals</h4>
+          <p><strong>Single-dimensional Arrays:</strong> Create arrays with initial values</p>
+          <pre>let points = [10, 20, 30, 40, 50]
+let first = points[0]    // Access first element
+let last = points[4]     // Access last element</pre>
+          
+          <p><strong>Multi-dimensional Arrays:</strong> Create nested arrays for grids and matrices</p>
+          <pre>let grid = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+let value = grid[1][2]   // Access element at row 1, column 2 (returns 5)</pre>
+          
+          <p><strong>3D Arrays:</strong> Create complex data structures</p>
+          <pre>let matrix = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+let value = matrix[0][1][0]  // Access nested element (returns 3)</pre>
+          
+          <h4>Array Operations</h4>
+          <p><strong>Array Assignment:</strong> Modify array elements</p>
+          <pre>let maze = [[1, 2], [3, 4]]
+maze[1][0] = 0  // Change element at position [1][0] to 0</pre>
+          
+          <p><strong>Dynamic Arrays:</strong> Build arrays programmatically</p>
+          <pre>let points = []
+let count = 0
+points[count] = [10, 20]  // Add point at index 0
+count = count + 1
+points[count] = [30, 40]  // Add point at index 1
+
+let pt = points[0]        // Get first point
+let x = pt[0]             // Get x coordinate
+let y = pt[1]             // Get y coordinate</pre>
+          
+          <p><strong>Array Iteration:</strong> Loop through array elements</p>
+          <pre>let values = [10, 20, 30, 40, 50]
+for i = 0..<5 {
+    G1 X[values[i]] Y[i*10] F100
+}</pre>
+
+                    </div>
+          
+          <div class="help-section">
+            <h3>Functions</h3>
+            <p>Functions in GGcode allow you to create reusable code blocks with parameters and return values, making your code more modular and maintainable.</p>
+          
+          <h4>Function Definition</h4>
+          <p><strong>Basic Function:</strong> Define functions with parameters</p>
+          <pre>function draw_circle(radius, feed_rate) {
+    for i = 0..36 {
+        let angle = (i * 10) * DEG_TO_RAD
+        let x = radius * cos(angle)
+        let y = radius * sin(angle)
+        G1 X[x] Y[y] F[feed_rate]
+    }
+}</pre>
+          
+          <h4>Functions with Return Values</h4>
+          <p><strong>Return Statement:</strong> Functions can return calculated values</p>
+          <pre>function calculate_area(radius) {
+    let area = PI * radius * radius
+    return area
+}
+
+function get_feed_rate(speed) {
+    if (speed > 100) {
+        return 300
+    } else if (speed > 50) {
+        return 200
+    } else {
+        return 100
+    }
+}</pre>
+          
+          <h4>Function Usage</h4>
+          <p><strong>Calling Functions:</strong> Use functions with parameters</p>
+          <pre>draw_circle(10, 150)        // Draw circle with radius 10, feed rate 150
+let area = calculate_area(5)   // Calculate area of circle with radius 5
+let feed = get_feed_rate(75)   // Get feed rate for speed 75</pre>
+          
+          <h4>Complex Functions</h4>
+          <p><strong>Multi-parameter Functions:</strong> Functions can take multiple parameters</p>
+          <pre>function draw_rectangle(width, height, center_x, center_y, feed_rate) {
+    let x1 = center_x - width/2
+    let y1 = center_y - height/2
+    let x2 = center_x + width/2
+    let y2 = center_y + height/2
+    
+    G0 X[x1] Y[y1]
+    G1 X[x2] Y[y1] F[feed_rate]
+    G1 X[x2] Y[y2] F[feed_rate]
+    G1 X[x1] Y[y2] F[feed_rate]
+    G1 X[x1] Y[y1] F[feed_rate]
+}</pre>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Operators</h3>
+            <p>GGcode provides a comprehensive set of operators for mathematical calculations, comparisons, and logical operations.</p>
+          
+          <h4>Comparison Operators</h4>
+          <p><code>==</code> - Equal to | <code>!=</code> - Not equal to | <code><</code> - Less than | <code><=</code> - Less than or equal</p>
+          <p><code>></code> - Greater than | <code>>=</code> - Greater than or equal</p>
+          <pre>let a = 10
+let b = 5
+let eq_test = a == 10    // Returns true
+let ne_test = a != b     // Returns true
+let lt_test = b < a      // Returns true
+let le_test = b <= a     // Returns true</pre>
+          
+          <h4>Logical Operators</h4>
+          <p><code>&&</code> - Logical AND | <code>||</code> - Logical OR | <code>!</code> - Logical NOT</p>
+          <pre>let and_test = (a > b) && (a == 10)  // Returns true
+let or_test = (a < b) || (a != 5)     // Returns true
+let not_test = !(a < b)               // Returns true</pre>
+          
+          <h4>Arithmetic Operators</h4>
+          <p><code>+</code> - Addition | <code>-</code> - Subtraction | <code>*</code> - Multiplication | <code>/</code> - Division</p>
+          <pre>let sum = a + b        // Returns 15
+let diff = a - b       // Returns 5
+let product = a * b    // Returns 50
+let quotient = a / b   // Returns 2</pre>
+          
+          <h4>Bitwise Operators</h4>
+          <p><code>&</code> - Bitwise AND</p>
+          <pre>let bit_test = 5 & 3  // Returns 1 (binary: 101 & 011 = 001)</pre>
+          
+          <h4>Unary Operators</h4>
+          <p><code>-</code> - Negation | <code>!</code> - Logical NOT</p>
+          <pre>let negative = -5      // Returns -5
+let logical_not = !0   // Returns true
+let double_not = !!1   // Returns true</pre>
+          
+          <h4>Important Notes</h4>
+          <p><strong>Modulo:</strong> Use the <code>mod(a, b)</code> function, not the <code>%</code> operator</p>
+          <pre>let remainder = mod(17, 5)  // Returns 2 (correct)
+// let remainder = 17 % 5  // This will cause an error!</pre>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Constants</h3>
+            <p>GGcode provides several built-in mathematical constants for common calculations.</p>
+          <p><code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - Euler's number (2.71828...)</p>
+          <p><code>DEG_TO_RAD</code> - Degrees to radians conversion | <code>RAD_TO_DEG</code> - Radians to degrees conversion</p>
+          <pre>let pi_val = PI                    // 3.14159...
+let tau_val = TAU                  // 6.28318...
+let eu_val = EU                    // 2.71828...
+let deg_to_rad_val = DEG_TO_RAD    // π/180
+let rad_to_deg_val = RAD_TO_DEG    // 180/π</pre>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Documentation Features</h3>
+          <h4>Note Blocks</h4>
+          <p>Use <code>note { }</code> blocks for file documentation and headers</p>
+          <pre>note {
+  This is a documentation block
+  Can contain multiple lines
+  Useful for file headers and descriptions
+  Author: Your Name
+  Version: 1.0
+}</pre>
+          
+          <h4>Comments</h4>
+          <p>Use <code>//</code> for single-line comments or <code>/* */</code> for multi-line comments</p>
+          <pre>// This is a single-line comment
+let radius = 10  // Inline comment
+
+/* This is a multi-line comment
+   Can span multiple lines
+   Useful for detailed explanations */</pre>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Special Features</h3>
+            <p>GGcode includes several special features that make programming more convenient.</p>
+          
+          <h4>Implicit Assignment</h4>
+          <p><strong>Automatic Variable Creation:</strong> Writing just an identifier creates an assignment with 0</p>
+          <pre>unexpected_token  // Automatically becomes: unexpected_token = 0</pre>
+          
+          <h4>Implicit G1 Commands</h4>
+          <p><strong>Automatic G1:</strong> G-code coordinates without explicit command become G1</p>
+          <pre>X[10] Y[20]  // Automatically becomes: G1 X[10] Y[20]</pre>
+          
+          <h4>Array Assignment</h4>
+          <p><strong>Direct Assignment:</strong> Assign values directly to array elements</p>
+          <pre>let grid = [[1, 2], [3, 4]]
+grid[1][0] = 0  // Change element at position [1][0] to 0</pre>
+          
+          <h4>Complex Expressions</h4>
+          <p><strong>Nested Operations:</strong> Combine multiple operations in single expressions</p>
+          <pre>let complex_expr = (a + b) * (c - d) / (e + f)
+let nested_func = sin(cos(tan(45 * DEG_TO_RAD)))</pre>
+          
+                    </div>
+          
+          <div class="help-section">
+            <h3>Best Practices</h3>
+          <ul>
+            <li><strong>Use exclusive ranges</strong> for array iteration: <code>for i = 0..<10</code> instead of <code>for i = 0..10</code></li>
+            <li><strong>Declare variables</strong> before using them in complex expressions</li>
+            <li><strong>Use functions</strong> to organize complex operations</li>
+            <li><strong>Add comments</strong> to explain complex logic</li>
+            <li><strong>Use note blocks</strong> for file documentation</li>
+            <li><strong>Test small sections</strong> before building complex programs</li>
+                      </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Examples Modal -->
+  <div id="examplesModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Example Files</h2>
+        <button class="modal-close" onclick="closeModal('examplesModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="search-container">
+          <input type="text" id="examplesSearchInput" class="search-input" placeholder="Search examples by name or description..." />
+          <div id="examplesSearchResults" class="search-results"></div>
+        </div>
+        <div id="examplesList" class="examples-list">
+          <!-- Examples will be loaded here dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
