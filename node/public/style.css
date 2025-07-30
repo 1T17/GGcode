@@ -1,6 +1,7 @@
 
 html,
 body {
+  background-color: #252526;
   height: 100%;
   min-height: 0;
   overflow: hidden;

@@ -211,18 +211,15 @@ static void emit_gcode_stmt(ASTNode *node)
         increment_line_number();
     }
 
-    if (strcmp(node->gcode_stmt.code, "G1") == 0)
+    // Check if current G-code matches the last remembered one (modal behavior)
+    if (strcmp(node->gcode_stmt.code, last_code) == 0)
     {
-        if (strcmp(last_code, "G1") != 0)
-        {
-            size_t len = strlen(line);
-            snprintf(line + len, sizeof(line) - len, "%s", "G1");
-            strncpy(last_code, "G1", sizeof(last_code) - 1);
-            last_code[sizeof(last_code) - 1] = '\0';
-        }
+        // Same G-code as last time - don't output it (modal behavior)
+        // Just keep the last_code as is
     }
     else
     {
+        // Different G-code - output it and remember it
         size_t len = strlen(line);
         snprintf(line + len, sizeof(line) - len, "%s", node->gcode_stmt.code);
         strncpy(last_code, node->gcode_stmt.code, sizeof(last_code) - 1);
