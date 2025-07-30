@@ -1,11 +1,11 @@
 // Star Pattern Example
 // This example shows how to create a star pattern
 
-let center_x = 0
-let center_y = 0
-let outer_radius = 15
-let inner_radius = 5
-let points = 5
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
+let outer_radius = 15 /// @number 5 30 // Outer radius of star
+let inner_radius = 5 /// @number 2 15 // Inner radius of star
+let points = 5 /// @number 3 12 // Number of star points
 
 // Move to starting position
 G0 X[center_x + outer_radius] Y[center_y]

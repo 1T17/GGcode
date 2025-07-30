@@ -1,496 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>GGcode Compiler</title>
   <link rel="stylesheet" href="/style.css">
-  <style>
-    html, body {
-      height: 100%;
-      min-height: 0;
-      overflow: hidden;
-      padding: 0px 0px;
-      margin: 0px 0px;
-    }
 
-    #ggform {
-      height: 100%;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      
-    }
-
-    .main-content {
-      flex: 1 1 0%;
-      display: flex;
-      min-height: 0;
-    }
-
-    .left-panel,
-    .right-panel {
-      flex: 1 1 0%;
-      min-width: 0;
-      min-height: 0;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #editor, #output {
-      min-height: 0;
-      min-width: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    .right-panel {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        position: relative;
-    }
-    .gcode-header {
-        flex: 0 0 auto;
-        position: static;
-        width: 100%;
-        z-index: 1;
-    }
-    #output {
-        flex: 1 1 auto;
-        position: static;
-        min-height: 0;
-        min-width: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-
-        .control-bar {
-            background: #252526;
-            border-top: 1px solid #3c3c3c;
-            padding: 5px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .control-bar button {
-            background: transparent;
-            color: #cccccc;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 400;
-            transition: background-color 0.1s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            min-width: 70px;
-            justify-content: center;
-        }
-
-        .control-bar button:hover {
-            background: #2a2d2e;
-            color: #ffffff;
-        }
-
-        .control-bar button:active {
-            background: #37373d;
-        }
-
-        .control-bar button.primary {
-            color: #ffffff;
-        }
-
-        .control-bar button.primary:hover {
-            background: #7a7a7a23;
-            color: #ffffff;
-        }
-
-        
-        .control-bar button.danger {
-            color: #ffffff;
-        }
-
-
-        .control-bar button.danger:hover {
-            background: #7070705d;
-            color: #ffffff;
-        }
-
-        
-        .control-bar button.success {
-            color: #ffffff;
-        }
-
-        .control-bar button.success:hover {
-            background: #7272723a;
-            color: #ffffff;
-        }
-
-
-
-        .control-bar .toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        .control-bar .toggle-container input[type="checkbox"] {
-            width: 12px;
-            height: 12px;
-            accent-color: #007acc;
-            margin: 0;
-        }
-
-        .control-bar .separator {
-            width: 1px;
-            height: 20px;
-            background: #3c3c3c;
-            margin: 0 6px;
-        }
-
-        .control-bar .spacer {
-            flex: 1;
-        }
-
-        .control-bar .button-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .control-bar .group-label {
-            color: #8c8c8c;
-            font-size: 16px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-right: 4px;
-        }
-
-        .control-left,
-        .control-right {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .control-right {
-          border-left: 2px solid #3c3c3c;
-
-          padding-left: 7px;
-
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            position: relative;
-        }
-
-
-
-        .control-right .gcode-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .control-right .utility-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: auto;
-        }
-
-
-
-            .gcode-header {
-        background: #252526;
-        border-bottom: 1px solid #3c3c3c;
-        padding: 8px 12px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        position: static; /* Remove absolute */
-        width: 100%;
-        z-index: 1;
-    }
-
-        .gcode-title {
-            color: #cccccc;
-            font-size: 12px;
-            font-weight: 500;
-            margin-right: auto;
-        }
-
-        .gcode-header button {
-            background: transparent;
-            color: #cccccc;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 400;
-            transition: background-color 0.1s ease;
-        }
-
-        .gcode-header button:hover {
-            background: #2a2d2e;
-            color: #ffffff;
-        }
-
-        .gcode-header button:last-child {
-            color: #365235;
-        }
-
-        .gcode-header button:last-child:hover {
-            background: #8585853d;
-            color: #ffffff;
-        }
-
-        /* Popup Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: #252526;
-            border: 1px solid #3c3c3c;
-            border-radius: 6px;
-            max-width: 600px;
-            max-height: 80vh;
-            width: 90%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-
-pre {
-  color: #a7d198;
-}
-
-
-        .modal-header {
-            background: #2d2d30;
-            padding: 16px 20px;
-            border-bottom: 1px solid #3c3c3c;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .search-container {
-            margin-bottom: 16px;
-            position: relative;
-        }
-
-        .search-input {
-            width: 95%;
-            padding: 8px 12px;
-            background: #1e1e1e;
-            border: 1px solid #3c3c3c;
-            border-radius: 4px;
-            color: #cccccc;
-            font-size: 14px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #007acc;
-        }
-
-        .search-input::placeholder {
-            color: #8c8c8c;
-        }
-
-        .search-results {
-            color: #8c8c8c;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .help-section {
-            margin-bottom: 24px;
-        }
-
-        .help-section.hidden {
-            display: none;
-        }
-
-        .help-section.highlight {
-            background: rgba(0, 122, 204, 0.15);
-            border-left: 3px solid #007acc;
-            padding-left: 12px;
-            margin-left: -12px;
-            border-radius: 4px;
-            box-shadow: 0 0 8px rgba(0, 122, 204, 0.2);
-        }
-
-        .help-section.hidden {
-            display: none !important;
-        }
-
-        .modal-title {
-            color: #cccccc;
-            font-size: 18px;
-            font-weight: 500;
-            margin: 0;
-        }
-
-        .modal-close {
-            background: transparent;
-            color: #cccccc;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 3px;
-            transition: background-color 0.1s ease;
-        }
-
-        .modal-close:hover {
-            background: #3c3c3c;
-            color: #ffffff;
-        }
-
-        .modal-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .help-content {
-            color: #cccccc;
-            line-height: 1.6;
-        }
-
-        .help-content h3 {
-            color: #007acc;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        .help-content code {
-            background: #1e1e1e;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            color: #d4d4d4;
-        }
-
-        .help-content pre {
-            background: #1e1e1e;
-            padding: 12px;
-            border-radius: 4px;
-            overflow-x: auto;
-            margin: 10px 0;
-            position: relative;
-        }
-
-        .copy-button {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: #007acc;
-            color: #ffffff;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 11px;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s ease;
-        }
-
-        .copy-button:hover {
-            opacity: 1;
-        }
-
-        .copy-button.copied {
-            background: #65bb68;
-        }
-
-        .examples-list {
-            display: grid;
-            gap: 12px;
-        }
-
-        .example-item {
-            background: #2d2d30;
-            border: 1px solid #3c3c3c;
-            border-radius: 4px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .example-item:hover {
-            background: #3c3c3c;
-            border-color: #007acc;
-        }
-
-        .example-title {
-            color: #007acc;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .example-description {
-            color: #cccccc;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .example-preview {
-            color: #8c8c8c;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 12px;
-            margin-top: 8px;
-            background: #1e1e1e;
-            padding: 8px;
-            border-radius: 3px;
-            max-height: 60px;
-            overflow: hidden;
-        }
-
-  </style>
 </head>
 <body>
-
-
-
-
-
-
 
 
   <form id="ggform" action="/compile" method="POST" onsubmit="return submitGGcode(event)">
     <!-- Editor and Output -->
     <div class="main-content">
-      <div class="left-panel"><div id="editor"></div></div>
+      <div class="left-panel">
+        <div id="editor"></div>
+      </div>
       <div class="right-panel">
         <div id="output"></div>
       </div>
@@ -499,108 +24,133 @@ pre {
     <textarea name="ggcode" id="ggcode" style="display:none;"><%= input %></textarea>
 
     <!-- Bottom Control Bar -->
-<div class="control-bar">
-  <div class="control-left">
-    <div class="button-group">
+    <div class="control-bar">
+      <div class="control-left">
+        <div class="button-group">
 
 
-      <!-- Compile -->
-      <button type="submit" title="Compile GGcode">
-<svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M0 16h16V0H0zm2-2V2h12v12zm4-3 5-3-5-3z" fill-rule="evenodd"/></svg>
-        </svg>
-        Compile
-      </button>
-      <div class="separator"></div>
+          <!-- Compile -->
+          <button type="submit" title="Compile GGcode">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 16h16V0H0zm2-2V2h12v12zm4-3 5-3-5-3z" fill-rule="evenodd" />
+            </svg>
+            </svg>
+            Compile
+          </button>
+          <div class="separator"></div>
 
-      <!-- Configurator -->
-      <button type="button" onclick="showConfigurator()" title="Open Configurator" id="configuratorBtn">
-        <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 1a1 1 0 0 1 1 1v1.07a5.97 5.97 0 0 1 1.36.36l.76-.76a1 1 0 1 1 1.41 1.41l-.76.76c.14.44.24.9.29 1.37H14a1 1 0 1 1 0 2h-1.07a5.97 5.97 0 0 1-.36 1.36l.76.76a1 1 0 1 1-1.41 1.41l-.76-.76a5.97 5.97 0 0 1-1.37.29V14a1 1 0 1 1-2 0v-1.07a5.97 5.97 0 0 1-1.36-.36l-.76.76a1 1 0 1 1-1.41-1.41l.76-.76a5.97 5.97 0 0 1-.29-1.37H2a1 1 0 1 1 0-2h1.07a5.97 5.97 0 0 1 .36-1.36l-.76-.76a1 1 0 1 1 1.41-1.41l.76.76c.44-.14.9-.24 1.37-.29V2a1 1 0 0 1 1-1zm0 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
-        </svg>
-        Config
-      </button>
+          <!-- Configurator -->
+          <button type="button" onclick="showConfigurator()" title="Open Configurator" id="configuratorBtn">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M8 1a1 1 0 0 1 1 1v1.07a5.97 5.97 0 0 1 1.36.36l.76-.76a1 1 0 1 1 1.41 1.41l-.76.76c.14.44.24.9.29 1.37H14a1 1 0 1 1 0 2h-1.07a5.97 5.97 0 0 1-.36 1.36l.76.76a1 1 0 1 1-1.41 1.41l-.76-.76a5.97 5.97 0 0 1-1.37.29V14a1 1 0 1 1-2 0v-1.07a5.97 5.97 0 0 1-1.36-.36l-.76.76a1 1 0 1 1-1.41-1.41l.76-.76a5.97 5.97 0 0 1-.29-1.37H2a1 1 0 1 1 0-2h1.07a5.97 5.97 0 0 1 .36-1.36l-.76-.76a1 1 0 1 1 1.41-1.41l.76.76c.44-.14.9-.24 1.37-.29V2a1 1 0 0 1 1-1zm0 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+            </svg>
+            Configurator
+          </button>
 
 
-      <div class="separator"></div>
+          <div class="separator"></div>
 
-      <!-- Open -->
-      <button type="button" id="openGGcodeBtn" title="Open GGcode file">
-<svg  width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M0 16h16V0H0zm2-4V2h12v10zm2-2h2V8H4zm6 0h2V8h-2z" fill-rule="evenodd"/></svg>
-        </svg>
-        Open
-      </button>
+          <!-- Open -->
+          <button type="button" id="openGGcodeBtn" title="Open GGcode file">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 16h16V0H0zm2-4V2h12v10zm2-2h2V8H4zm6 0h2V8h-2z" fill-rule="evenodd" />
+            </svg>
+            </svg>
+            Open
+          </button>
 
-      <div class="separator"></div>
+          <div class="separator"></div>
 
-      <!-- Examples -->
-      <button type="button" onclick="showExamples()" title="Load example files">
-<svg  width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="m0 10 8 4 8-4v2l-8 4-8-4zm0-4 8 4 8-4v2l-8 4-8-4zm8-6 8 4-8 4-8-4z" fill-rule="evenodd"/></svg>
-        </svg>
-        Examples
-      </button>
+          <!-- Examples -->
+          <button type="button" onclick="showExamples()" title="Load example files">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="m0 10 8 4 8-4v2l-8 4-8-4zm0-4 8 4 8-4v2l-8 4-8-4zm8-6 8 4-8 4-8-4z" fill-rule="evenodd" />
+            </svg>
+            </svg>
+            Examples
+          </button>
 
-      <div class="separator"></div>
+          <div class="separator"></div>
 
-      <!-- Save -->
-      <button type="button" onclick="saveGGcode()" title="Save GGcode input to file">
-<svg width="14" height="14" fill="#ffffff"  viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M11 14v-4H5v4H3V8h10v6zh3V2H4v4h8V2h-2v2H6V2H2v12h3zM0 0h16v16H0z" fill-rule="evenodd"/></svg>
-        Save
-      </button>
-    </div>
-  </div>
+          <!-- Save -->
+          <button type="button" onclick="saveGGcode()" title="Save GGcode input to file">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 14v-4H5v4H3V8h10v6zh3V2H4v4h8V2h-2v2H6V2H2v12h3zM0 0h16v16H0z" fill-rule="evenodd" />
+            </svg>
+            Save
+          </button>
+        </div>
+      </div>
 
-  <div class="control-right">
-    <div class="gcode-group">
+      <div class="control-right">
+        <div class="gcode-group">
 
-      <!-- Copy -->
-      <button type="button" onclick="copyOutput()" title="Copy output G-code">
-<svg width="14" height="14" fill="#ffffff"  viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14 12V2H4V0h12v12zM0 4h12v12H0zm2 2v8h8V6z" fill-rule="evenodd"/></svg>
-        Copy
-      </button>
+          <!-- Copy -->
+          <button type="button" onclick="copyOutput()" title="Copy output G-code">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 12V2H4V0h12v12zM0 4h12v12H0zm2 2v8h8V6z" fill-rule="evenodd" />
+            </svg>
+            Copy
+          </button>
 
-      <div class="separator"></div>
+          <div class="separator"></div>
 
-      <!-- Visualizer -->
-      <button type="button" onclick="showGcodeViewer()" title="Open 3D G-code visualizer">
-<svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm-1-9h2v4h-2zm0 6h2v2h-2z" fill-rule="evenodd"/></svg>
-        Visualizer
-      </button>
+          <!-- Visualizer -->
+          <button type="button" onclick="showGcodeViewer()" title="Open 3D G-code visualizer">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm-1-9h2v4h-2zm0 6h2v2h-2z"
+                fill-rule="evenodd" />
+            </svg>
+            Visualizer
+          </button>
 
-      <div class="separator"></div>
+          <div class="separator"></div>
 
-      <!-- Export -->
-      <button type="button" onclick="saveOutput()" title="Save output G-code to file">
-<svg width="14" height="14" fill="#ffffff"  viewBox="0 0 16 16"  xmlns="http://www.w3.org/2000/svg"><path d="M14 3.5 8.5 9 7 7.5 12.5 2H10V0h6v6h-2zM6 0v2H2v12h12v-4h2v6H0V0z" fill-rule="evenodd"/></svg>
-        Export
-      </button>
-    </div>
+          <!-- Export -->
+          <button type="button" onclick="saveOutput()" title="Save output G-code to file">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 3.5 8.5 9 7 7.5 12.5 2H10V0h6v6h-2zM6 0v2H2v12h12v-4h2v6H0V0z" fill-rule="evenodd" />
+            </svg>
+            Export
+          </button>
+        </div>
 
-    <div class="utility-group">
+        <div class="utility-group">
 
-      <!-- Help -->
-      <button type="button" onclick="showHelp()" title="Show help and documentation">
-<svg width="14" height="14" fill="#ffffff"  viewBox="0 0 16 16"  xmlns="http://www.w3.org/2000/svg"><path d="M0 8c0-4.418 3.59-8 8-8 4.418 0 8 3.59 8 8 0 4.418-3.59 8-8 8-4.418 0-8-3.59-8-8m2 0c0 3.307 2.686 6 6 6 3.307 0 6-2.686 6-6 0-3.307-2.686-6-6-6-3.307 0-6 2.686-6 6m2 0c0-2.21 1.795-4 4-4 2.21 0 4 1.795 4 4 0 2.21-1.795 4-4 4-2.21 0-4-1.795-4-4m2 0c0 1.112.895 2 2 2 1.112 0 2-.895 2-2 0-1.112-.895-2-2-2-1.112 0-2 .895-2 2" fill-rule="evenodd"/></svg>
-        Help
-      </button>
+          <!-- Help -->
+          <button type="button" onclick="showHelp()" title="Show help and documentation">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0 8c0-4.418 3.59-8 8-8 4.418 0 8 3.59 8 8 0 4.418-3.59 8-8 8-4.418 0-8-3.59-8-8m2 0c0 3.307 2.686 6 6 6 3.307 0 6-2.686 6-6 0-3.307-2.686-6-6-6-3.307 0-6 2.686-6 6m2 0c0-2.21 1.795-4 4-4 2.21 0 4 1.795 4 4 0 2.21-1.795 4-4 4-2.21 0-4-1.795-4-4m2 0c0 1.112.895 2 2 2 1.112 0 2-.895 2-2 0-1.112-.895-2-2-2-1.112 0-2 .895-2 2"
+                fill-rule="evenodd" />
+            </svg>
+            Help
+          </button>
 
-      <!-- Clear -->
-      <button type="button" onclick="clearMemory()" title="Clear saved content and settings">
-<svg width="14" height="14" fill="#ffffff"  viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M0 14.545 1.455 16 8 9.455 14.545 16 16 14.545 9.455 8 16 1.455 14.545 0 8 6.545 1.455 0 0 1.455 6.545 8z" fill-rule="evenodd"/></svg>
-        Clear
-      </button>
+          <!-- Clear -->
+          <button type="button" onclick="clearMemory()" title="Clear saved content and settings">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0 14.545 1.455 16 8 9.455 14.545 16 16 14.545 9.455 8 16 1.455 14.545 0 8 6.545 1.455 0 0 1.455 6.545 8z"
+                fill-rule="evenodd" />
+            </svg>
+            Clear
+          </button>
 
-      <div class="separator"></div>
+          <div class="separator"></div>
 
-      <!-- Auto Compile -->
-      <div class="toggle-container">
-        <input type="checkbox" id="autoCompileCheckbox" />
-        <label for="autoCompileCheckbox">Auto</label>
+          <!-- Auto Compile -->
+          <div class="toggle-container">
+            <input type="checkbox" id="autoCompileCheckbox" />
+            <label for="autoCompileCheckbox">Auto</label>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-     <input type="file" id="ggcodeFileInput" accept=".ggcode,.txt" style="display:none;" />
+    <input type="file" id="ggcodeFileInput" accept=".ggcode,.txt" style="display:none;" />
   </form>
 
 
@@ -609,364 +159,369 @@ pre {
 
 
 
-  <!-- Configurator Modal -->
-<div id="configuratorModal" style="display:none; position:fixed; top:0; left:0; right:auto; width:50vw; height:100vh; background:rgba(30,30,30,0.97); z-index:3000; box-shadow: 4px 0 24px #0008; flex-direction:column;">
-  <div style="width:100%; display:flex; justify-content:flex-end; padding:10px;">
-    <button onclick="closeConfigurator()" title="Close" class="sim-btn sim-exit" style="margin-left:auto;">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 2L14 14M14 2L2 14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
-  </div>
-  <!-- Configurator content goes here -->
-</div>
+    <!-- Configurator Modal -->
+    <div id="configuratorModal"
+      style="display:none; position:fixed; top:0; left:0; right:auto; width:50vw; height:100vh; background:rgba(30, 30, 30, 0.856); z-index:1000; box-shadow: 4px 0 24px #0008; flex-direction:column;">
+      <div style="width:100%; display:flex; justify-content:flex-end; padding:10px;">
+        <button onclick="closeConfigurator()" title="Close" class="sim-btn sim-exit" style="margin-left:auto;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 2L14 14M14 2L2 14" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+
+
+      <div id="configuratorContent" style="overflow-y:auto; height:calc(100vh - 60px);">
+      <!-- configurator Content here -->
+      </div>
+
+
+
+      <div class="control-bar">
+        <div class="button-group">
+
+          <!-- Save & Compile -->
+          <button type="button" title="Save & Compile GGcode" onclick="configuratorSaveAndCompile()">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 14v-4H5v4H3V8h10v6zh3V2H4v4h8V2h-2v2H6V2H2v12h3zM0 0h16v16H0z" fill-rule="evenodd" />
+            </svg>
+            Save
+          </button>
+
+          <div class="separator"></div>
+          
+          <!-- Compile -->
+          <button type="button" title="Compile GGcode" onclick="configuratorCompileOnly()">
+            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 16h16V0H0zm2-2V2h12v12zm4-3 5-3-5-3z" fill-rule="evenodd" />
+            </svg>
+            Compile
+          </button>
+
+        </div>
+      </div>
+
+
+    </div>
+
+
+
+
+    <!-- Three.js for 3D visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/OrbitControls.js"></script>
+
+    <!-- Monaco loader -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <%- include('app.ejs') %>
+    <%- include('view.ejs') %>
 
 
 
 
 
 
+        <script>
+          // --- Configurator GGcode Parser and Form Renderer ---
+          function parseConfiguratorVars(ggcode) {
+            const lines = ggcode.split(/\r?\n/);
+            const configVars = [];
+            for (const line of lines) {
+              const match = line.match(/^\s*let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^/]+?)\s*\/\/\/\s*(.*)$/);
+              if (!match) continue;
+              const name = match[1];
+              const rawValue = match[2].trim();
+              let tag = match[3].trim();
+              let description = '';
+              // Extract description if present (after //)
+              const descIdx = tag.indexOf('//');
+              if (descIdx !== -1) {
+                description = tag.slice(descIdx + 2).trim();
+                tag = tag.slice(0, descIdx).trim();
+              }
+              let type, params = {}, defaultValue = rawValue;
+              if (tag.startsWith('@number')) {
+                type = 'number';
+                const numMatch = tag.match(/@number\s+(-?\d+(?:\.\d+)?)(?:\s+|\s*to\s*)(-?\d+(?:\.\d+)?)/);
+                if (numMatch) {
+                  params.min = parseFloat(numMatch[1]);
+                  params.max = parseFloat(numMatch[2]);
+                }
+                defaultValue = parseFloat(rawValue);
+              } else if (tag.startsWith('@check')) {
+                type = 'check';
+                defaultValue = (rawValue == '1' || rawValue.toLowerCase() == 'true');
+              } else if (tag.startsWith('@selction')) {
+                type = 'selection';
+                const selMatch = tag.match(/@selction\s+([\d, ]+)/);
+                if (selMatch) {
+                  params.options = selMatch[1].split(',').map(s => s.trim()).filter(Boolean);
+                }
+                defaultValue = rawValue;
+              } else if (tag.startsWith('@text')) {
+                type = 'text';
+                const textMatch = tag.match(/@text\s+(\d+)(?:\s+max\s*(\d+))?/);
+                if (textMatch) {
+                  params.rows = parseInt(textMatch[1]);
+                  if (textMatch[2]) params.max = parseInt(textMatch[2]);
+                }
+                defaultValue = rawValue;
+              } else {
+                continue; // skip unknown tags
+              }
+              configVars.push({ name, type, defaultValue, params, description });
+            }
+            return configVars;
+          }
 
-  <!-- Three.js for 3D visualization -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="/OrbitControls.js"></script>
-  
-  <!-- Monaco loader -->
-  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
-<%- include('app.ejs') %>
-<%- include('view.ejs') %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-// --- Configurator GGcode Parser and Form Renderer ---
-function parseConfiguratorVars(ggcode) {
-  const lines = ggcode.split(/\r?\n/);
-  const configVars = [];
-  for (const line of lines) {
-    const match = line.match(/^\s*let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^/]+?)\s*\/\/\/\s*(.*)$/);
-    if (!match) continue;
-    const name = match[1];
-    const rawValue = match[2].trim();
-    let tag = match[3].trim();
-    let description = '';
-    // Extract description if present (after //)
-    const descIdx = tag.indexOf('//');
-    if (descIdx !== -1) {
-      description = tag.slice(descIdx + 2).trim();
-      tag = tag.slice(0, descIdx).trim();
-    }
-    let type, params = {}, defaultValue = rawValue;
-    if (tag.startsWith('@number')) {
-      type = 'number';
-      const numMatch = tag.match(/@number\s+(-?\d+(?:\.\d+)?)(?:\s+|\s*to\s*)(-?\d+(?:\.\d+)?)/);
-      if (numMatch) {
-        params.min = parseFloat(numMatch[1]);
-        params.max = parseFloat(numMatch[2]);
-      }
-      defaultValue = parseFloat(rawValue);
-    } else if (tag.startsWith('@check')) {
-      type = 'check';
-      defaultValue = (rawValue == '1' || rawValue.toLowerCase() == 'true');
-    } else if (tag.startsWith('@selction')) {
-      type = 'selection';
-      const selMatch = tag.match(/@selction\s+([\d, ]+)/);
-      if (selMatch) {
-        params.options = selMatch[1].split(',').map(s => s.trim()).filter(Boolean);
-      }
-      defaultValue = rawValue;
-    } else if (tag.startsWith('@text')) {
-      type = 'text';
-      const textMatch = tag.match(/@text\s+(\d+)(?:\s+max\s*(\d+))?/);
-      if (textMatch) {
-        params.rows = parseInt(textMatch[1]);
-        if (textMatch[2]) params.max = parseInt(textMatch[2]);
-      }
-      defaultValue = rawValue;
-    } else {
-      continue; // skip unknown tags
-    }
-    configVars.push({ name, type, defaultValue, params, description });
-  }
-  return configVars;
-}
-
-function renderConfiguratorForm(configVars) {
-  if (!Array.isArray(configVars) || configVars.length === 0) {
-    return '<div style="color:#aaa; padding:2em;">No configurable variables found in GGcode.</div>';
-  }
-  let html = `
-    <div style="background: #23272e; border-radius: 14px; box-shadow: 0 2px 16px #0002; padding: 28px 24px 12px 24px; max-width: 480px; margin: 0 auto;">
-      <div style="font-size: 1.25em; font-weight: 600; color: #fff; margin-bottom: 18px; letter-spacing: 0.5px;">Configurator</div>
-    <form id="configuratorForm" style="display:flex; flex-direction:column; gap:22px;">`;
-  for (const v of configVars) {
-    html += `<div style="display:flex; flex-direction:column; gap:6px;">`;
-    html += `<label style="color:#e0e0e0; font-weight:500; font-size:1.07em; margin-bottom:2px;">${v.name}</label>`;
-    if (v.type === 'number') {
-      let numberInputHtml = `<input type="number" name="${v.name}" value="${v.defaultValue}" min="${v.params.min ?? ''}" max="${v.params.max ?? ''}" style="margin-left:0; width:160px; padding:7px 10px; border-radius:6px; border:1.5px solid #444; background:#181b20; color:#fff; font-size:1em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'; if(this.value !== '' && !isNaN(this.value)) { this.value = Math.max(this.min, Math.min(this.max, this.value)); }">`;
-      let minMaxHtml = '';
-      if (v.params.min !== undefined && v.params.max !== undefined) {
-        minMaxHtml = ` <span style="color:#ffb347; font-size:0.97em; margin-left:8px;">[min: ${v.params.min}, max: ${v.params.max}]</span>`;
-      }
-      html += `<div style="display:flex; align-items:center; gap:8px;">${numberInputHtml}${minMaxHtml}</div>`;
-    } else if (v.type === 'check') {
-      html += `<input type="checkbox" name="${v.name}" ${v.defaultValue ? 'checked' : ''} style="margin-left:0; width:22px; height:22px; accent-color:#0074D9;">`;
+          function renderConfiguratorForm(configVars) {
+            if (!Array.isArray(configVars) || configVars.length === 0) {
+              return '<div style="color:#aaa; padding:2em;">No configurable variables found in GGcode.</div>';
+            }
+            let html = `
+    <div style="background: #23272e; border-radius: 12px; box-shadow: 0 2px 16px #0002; padding: 20px 20px 8px 20px; max-width: 420px; margin: 0 auto;">
+      <div style="font-size: 1.1em; font-weight: 600; color: #fff; margin-bottom: 16px; letter-spacing: 0.3px;">Configurator</div>
+    <form id="configuratorForm" style="display:flex; flex-direction:column; gap:16px;">`;
+              for (const v of configVars) {
+    html += `<div style="display:flex; align-items:center; gap:8px; padding:4px 0;">`;
+    html += `<label style="color:#e0e0e0; font-weight:500; font-size:0.9em; min-width:80px; text-align:right;">${v.name}:</label>`;
+              if (v.type === 'number') {
+                let numberInputHtml = `<input type="number" title="${v.description}" name="${v.name}" value="${v.defaultValue}" min="${v.params.min ?? ''}" max="${v.params.max ?? ''}" style="margin-left:0; width:140px; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'; if(this.value !== '' && !isNaN(this.value)) { this.value = Math.max(this.min, Math.min(this.max, this.value)); }">`;
+                let minMaxHtml = '';
+                if (v.params.min !== undefined && v.params.max !== undefined) {
+                  minMaxHtml = ` <span style="color:#ffb347; font-size:0.85em; margin-left:6px;">[${v.params.min}-${v.params.max}]</span>`;
+                }
+                html += `<div style="display:flex; align-items:center; gap:6px; flex:1;">${numberInputHtml}${minMaxHtml}</div>`;
+                  } else if (v.type === 'check') {
+      html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><input title="${v.description}" type="checkbox" name="${v.name}" ${v.defaultValue ? 'checked' : ''} style="margin-left:0; width:18px; height:18px; accent-color:#0074D9;"></div>`;
     } else if (v.type === 'selection') {
-      html += `<select name="${v.name}" style="margin-left:0; width:180px; padding:7px 10px; border-radius:6px; border:1.5px solid #444; background:#181b20; color:#fff; font-size:1em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
-      for (const opt of v.params.options || []) {
-        html += `<option value="${opt}"${opt == v.defaultValue ? ' selected' : ''}>${opt}</option>`;
-      }
-      html += `</select>`;
+      html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><select title="${v.description}" name="${v.name}" style="margin-left:0; width:160px; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
+                for (const opt of v.params.options || []) {
+                  html += `<option value="${opt}"${opt == v.defaultValue ? ' selected' : ''}>${opt}</option>`;
+                }
+                      html += `</select></div>`;
     } else if (v.type === 'text') {
       if (v.params.rows && v.params.rows > 1) {
-        html += `<textarea name="${v.name}" rows="${v.params.rows}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:180px; max-width:100%; padding:7px 10px; border-radius:6px; border:1.5px solid #444; background:#181b20; color:#fff; font-size:1em; transition:border 0.2s; outline:none; resize:vertical;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">${v.defaultValue}</textarea>`;
+        html += `<div style="display:flex; align-items:flex-start; gap:6px; flex:1;"><textarea title="${v.description}" name="${v.name}" rows="${v.params.rows}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:160px; max-width:100%; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none; resize:vertical;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">${v.defaultValue}</textarea></div>`;
       } else {
-        html += `<input type="text" name="${v.name}" value="${v.defaultValue}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:180px; max-width:100%; padding:7px 10px; border-radius:6px; border:1.5px solid #444; background:#181b20; color:#fff; font-size:1em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
+        html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><input type="text" title="${v.description}" name="${v.name}" value="${v.defaultValue}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:160px; max-width:100%; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
+        if (v.params.max) html += ` <span style="color:#888; font-size:0.85em;">[max ${v.params.max}]</span>`;
+        html += `</div>`;
       }
-      if (v.params.max) html += ` <span style="color:#888; font-size:0.97em;">[max ${v.params.max} chars]</span>`;
-    }
-    if (v.description) {
-      html += `<div style=\"color:#b0b0b0; font-size:0.97em; margin:2px 0 0 2px; opacity:0.85;\">${v.description}</div>`;
-    }
-    html += `</div>`;
-  }
-  html += '</form>';
-  html += '<hr style="border: none; border-top: 1.5px solid #333; margin: 24px 0 12px 0;">';
-  html += '</div>';
-  return html;
-}
+              }
+
+
+              // if (v.description) {
+              //   html += `<div style=\"color:#b0b0b0; font-size:0.85em; margin:1px 0 0 1px; opacity:0.8;\">${v.description}</div>`;
+              // }
+
+
+              html += `</div>`;
+            }
+            html += '</form>';
+            html += '<hr style="border: none; border-top: 1px solid #333; margin: 18px 0 8px 0;">';
+            html += '</div>';
+            return html;
+          }
 
 
 
 
 
 
-function validateConfiguratorForm(form) {
-  let valid = true;
-  const numberInputs = form.querySelectorAll('input[type=number]');
-  numberInputs.forEach(input => {
-    const min = input.min !== '' ? parseFloat(input.min) : -Infinity;
-    const max = input.max !== '' ? parseFloat(input.max) : Infinity;
-    const val = parseFloat(input.value);
-    if (isNaN(val) || val < min || val > max) {
-      input.style.border = '2px solid red';
-      valid = false;
-    } else {
-      input.style.border = '';
-    }
-  });
-  return valid;
-}
+          function validateConfiguratorForm(form) {
+            let valid = true;
+            const numberInputs = form.querySelectorAll('input[type=number]');
+            numberInputs.forEach(input => {
+              const min = input.min !== '' ? parseFloat(input.min) : -Infinity;
+              const max = input.max !== '' ? parseFloat(input.max) : Infinity;
+              const val = parseFloat(input.value);
+              if (isNaN(val) || val < min || val > max) {
+                input.style.border = '2px solid red';
+                valid = false;
+              } else {
+                input.style.border = '';
+              }
+            });
+            return valid;
+          }
 
-function showConfigurator() {
-  const modal = document.getElementById('configuratorModal');
-  if (!modal) return;
-  // Always get GGcode from the main editor (same as compile)
-  let ggcode = '';
-  if (typeof editor !== 'undefined' && typeof editor.getValue === 'function') {
-    ggcode = editor.getValue();
-  } else if (window.editor && typeof window.editor.getValue === 'function') {
-    ggcode = window.editor.getValue();
-  } else {
-    const ta = document.getElementById('ggcode');
-    if (ta) ggcode = ta.value;
-  }
-  const configVars = parseConfiguratorVars(ggcode);
-  modal.innerHTML = `
-    <div style="width:100%; display:flex; justify-content:flex-end; padding:10px;">
-      <button onclick="closeConfigurator()" title="Close" class="sim-btn sim-exit" style="margin-left:auto;">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 2L14 14M14 2L2 14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
-    <div style="overflow-y:auto; max-height:calc(100vh - 60px);">${renderConfiguratorForm(configVars)}</div>
-  `;
-  modal.innerHTML += `
-  <div style="display:flex; gap:16px; justify-content:flex-end; padding:16px 24px 8px 24px; border-top:1px solid #333;">
-    <button type="button" class="sim-btn sim-play" onclick="configuratorSaveAndCompile()">Save & Compile</button>
-    <button type="button" class="sim-btn" onclick="configuratorCompileOnly()">Compile Only</button>
-  </div>
-`;
-  modal.style.display = 'flex';
-}
+          function showConfigurator() {
+            const modal = document.getElementById('configuratorModal');
+            const inerModal = document.getElementById('configuratorContent');
+            if (!modal) return;
+            // get GGcode from the main editor (same as compile)
+            let ggcode = '';
+
+            if (typeof editor !== 'undefined' && typeof editor.getValue === 'function') {
+              ggcode = editor.getValue();
+            } else if (window.editor && typeof window.editor.getValue === 'function') {
+              ggcode = window.editor.getValue();
+            } else {
+              const ta = document.getElementById('ggcode');
+              if (ta) ggcode = ta.value;
+            }
 
 
+            const configVars = parseConfiguratorVars(ggcode);
 
-function closeConfigurator() {
-  document.getElementById('configuratorModal').style.display = 'none';
-}
+            inerModal.innerHTML = renderConfiguratorForm(configVars);
 
-// --- Helper to read form values ---
-function getConfiguratorFormValues() {
-  const form = document.getElementById('configuratorForm');
-  if (!form) return {};
-  const values = {};
-  for (const el of form.elements) {
-    if (!el.name) continue;
-    if (el.type === 'checkbox') {
-      values[el.name] = el.checked ? 1 : 0;
-    } else {
-      values[el.name] = el.value;
-    }
-  }
-  return values;
-}
-
-// --- Save & Compile ---
-function configuratorSaveAndCompile() {
-  let code = '';
-  if (typeof editor !== 'undefined' && typeof editor.getValue === 'function') {
-    code = editor.getValue();
-  } else if (window.editor && typeof window.editor.getValue === 'function') {
-    code = window.editor.getValue();
-  } else {
-    const ta = document.getElementById('ggcode');
-    if (ta) code = ta.value;
-  }
-  const values = getConfiguratorFormValues();
-  console.log('[Configurator] Saving values from form:', values);
-  // Replace let ... = ... /// ... lines with new values
-  const lines = code.split(/\r?\n/);
-  let foundVars = {};
-  const newLines = lines.map(line => {
-    const match = line.match(/^\s*let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^/]+)(\/\/\/)/);
-    if (!match) return line;
-    const name = match[1];
-    if (values.hasOwnProperty(name)) {
-      foundVars[name] = true;
-      // Replace value, keep tag and description
-      const newLine = line.replace(/(let\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*)([^/]+)(\/\/\/)/, function(_, p1, p2, p3) {
-        return p1 + values[name] + ' ' + p3;
-      });
-      console.log(`[Configurator] Updated line for '${name}':`, newLine);
-      return newLine;
-    }
-    return line;
-  });
-  // Log any variables not found in code
-  Object.keys(values).forEach(name => {
-    if (!foundVars[name]) {
-      console.warn(`[Configurator] No matching let line found for variable '${name}'`);
-    }
-  });
-  const newCode = newLines.join('\n');
-  console.log('[Configurator] Old code:', code);
-  console.log('[Configurator] New code:', newCode);
-  // Update editor
-  if (typeof editor !== 'undefined' && typeof editor.setValue === 'function') {
-    editor.setValue(newCode);
-    console.log('[Configurator] Editor updated with new values.');
-  } else if (window.editor && typeof window.editor.setValue === 'function') {
-    window.editor.setValue(newCode);
-    console.log('[Configurator] Editor updated with new values.');
-  } else {
-    const ta = document.getElementById('ggcode');
-    if (ta) ta.value = newCode;
-    console.log('[Configurator] Textarea updated with new values.');
-  }
-  // Optionally close modal
-  document.getElementById('configuratorModal').style.display = 'none';
-  // Trigger compile (simulate clicking Compile button)
-  if (typeof compileGGcode === 'function') {
-    compileGGcode();
-  } else if (typeof window.compileGGcode === 'function') {
-    window.compileGGcode();
-  } else {
-    // Try to find and click the Compile button
-    const btn = document.querySelector('button[title="Compile GGcode"]');
-    if (btn) btn.click();
-  }
-}
-
-// --- Compile Only ---
-async function configuratorCompileOnly() {
-  console.log('configuratorCompileOnly');
-  let code = '';
-  if (typeof editor !== 'undefined' && typeof editor.getValue === 'function') {
-    code = editor.getValue();
-  } else if (window.editor && typeof window.editor.getValue === 'function') {
-    code = window.editor.getValue();
-  } else {
-    const ta = document.getElementById('ggcode');
-    if (ta) code = ta.value;
-  }
-  const values = getConfiguratorFormValues();
-  // Replace let ... = ... /// ... lines with new values (in memory only)
-  const lines = code.split(/\r?\n/);
-  const newLines = lines.map(line => {
-    const match = line.match(/^\s*let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^/]+)(\/\/\/)/);
-    if (!match) return line;
-    const name = match[1];
-    if (values.hasOwnProperty(name)) {
-      return line.replace(/(let\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*)([^/]+)(\/\/\/)/, function(_, p1, p2, p3) {
-        return p1 + values[name] + ' ' + p3;
-      });
-    }
-    return line;
-  });
-  const tempCode = newLines.join('\n');
-  // Compile tempCode by sending to /api/compile, just like submitGGcode
-  if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
-    window.outputEditor.setValue('Compiling...');
-  }
-  try {
-    const response = await fetch('/api/compile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ggcode: tempCode })
-    });
-    const result = await response.json();
-    if (result.success) {
-      if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
-        window.outputEditor.setValue(result.output);
-      }
-    } else {
-      if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
-        window.outputEditor.setValue('Error: ' + result.error);
-      }
-    }
-  } catch (err) {
-    if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
-      window.outputEditor.setValue('Network error: ' + err.message);
-    }
-  }
-  // Do NOT close the modal!
-}
-
-
-
-
-
-</script>
+            modal.style.display = 'flex';
+          }
 
 
 
 
 
 
+
+          function closeConfigurator() {
+            document.getElementById('configuratorModal').style.display = 'none';
+          }
+
+          // --- Helper to read form values ---
+          function getConfiguratorFormValues() {
+            const form = document.getElementById('configuratorForm');
+            if (!form) return {};
+            const values = {};
+            for (const el of form.elements) {
+              if (!el.name) continue;
+              if (el.type === 'checkbox') {
+                values[el.name] = el.checked ? 1 : 0;
+              } else {
+                values[el.name] = el.value;
+              }
+            }
+            return values;
+          }
+
+          // --- Save & Compile ---
+          function configuratorSaveAndCompile() {
+            let code = '';
+            if (typeof editor !== 'undefined' && typeof editor.getValue === 'function') {
+              code = editor.getValue();
+            } else if (window.editor && typeof window.editor.getValue === 'function') {
+              code = window.editor.getValue();
+            } else {
+              const ta = document.getElementById('ggcode');
+              if (ta) code = ta.value;
+            }
+            const values = getConfiguratorFormValues();
+            console.log('[Configurator] Saving values from form:', values);
+            // Replace let ... = ... /// ... lines with new values
+            const lines = code.split(/\r?\n/);
+            let foundVars = {};
+            const newLines = lines.map(line => {
+              const match = line.match(/^\s*let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^/]+)(\/\/\/)/);
+              if (!match) return line;
+              const name = match[1];
+              if (values.hasOwnProperty(name)) {
+                foundVars[name] = true;
+                // Replace value, keep tag and description
+                const newLine = line.replace(/(let\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*)([^/]+)(\/\/\/)/, function (_, p1, p2, p3) {
+                  return p1 + values[name] + ' ' + p3;
+                });
+                console.log(`[Configurator] Updated line for '${name}':`, newLine);
+                return newLine;
+              }
+              return line;
+            });
+            // Log any variables not found in code
+            Object.keys(values).forEach(name => {
+              if (!foundVars[name]) {
+                console.warn(`[Configurator] No matching let line found for variable '${name}'`);
+              }
+            });
+            const newCode = newLines.join('\n');
+            console.log('[Configurator] Old code:', code);
+            console.log('[Configurator] New code:', newCode);
+            // Update editor
+            if (typeof editor !== 'undefined' && typeof editor.setValue === 'function') {
+              editor.setValue(newCode);
+              console.log('[Configurator] Editor updated with new values.');
+            } else if (window.editor && typeof window.editor.setValue === 'function') {
+              window.editor.setValue(newCode);
+              console.log('[Configurator] Editor updated with new values.');
+            } else {
+              const ta = document.getElementById('ggcode');
+              if (ta) ta.value = newCode;
+              console.log('[Configurator] Textarea updated with new values.');
+            }
+            // Optionally close modal
+            document.getElementById('configuratorModal').style.display = 'none';
+            // Trigger compile (simulate clicking Compile button)
+            if (typeof compileGGcode === 'function') {
+              compileGGcode();
+            } else if (typeof window.compileGGcode === 'function') {
+              window.compileGGcode();
+            } else {
+              // Try to find and click the Compile button
+              const btn = document.querySelector('button[title="Compile GGcode"]');
+              if (btn) btn.click();
+            }
+          }
+
+          // --- Compile Only ---
+          async function configuratorCompileOnly() {
+            console.log('configuratorCompileOnly');
+            let code = '';
+            if (typeof editor !== 'undefined' && typeof editor.getValue === 'function') {
+              code = editor.getValue();
+            } else if (window.editor && typeof window.editor.getValue === 'function') {
+              code = window.editor.getValue();
+            } else {
+              const ta = document.getElementById('ggcode');
+              if (ta) code = ta.value;
+            }
+            const values = getConfiguratorFormValues();
+            // Replace let ... = ... /// ... lines with new values (in memory only)
+            const lines = code.split(/\r?\n/);
+            const newLines = lines.map(line => {
+              const match = line.match(/^\s*let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^/]+)(\/\/\/)/);
+              if (!match) return line;
+              const name = match[1];
+              if (values.hasOwnProperty(name)) {
+                return line.replace(/(let\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*)([^/]+)(\/\/\/)/, function (_, p1, p2, p3) {
+                  return p1 + values[name] + ' ' + p3;
+                });
+              }
+              return line;
+            });
+            const tempCode = newLines.join('\n');
+            // Compile tempCode by sending to /api/compile, just like submitGGcode
+            if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
+              window.outputEditor.setValue('Compiling...');
+            }
+            try {
+              const response = await fetch('/api/compile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ggcode: tempCode })
+              });
+              const result = await response.json();
+              if (result.success) {
+                if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
+                  window.outputEditor.setValue(result.output);
+                }
+              } else {
+                if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
+                  window.outputEditor.setValue('Error: ' + result.error);
+                }
+              }
+            } catch (err) {
+              if (window.outputEditor && typeof window.outputEditor.setValue === 'function') {
+                window.outputEditor.setValue('Network error: ' + err.message);
+              }
+            }
+            // Do NOT close the modal!
+          }
+
+
+
+
+
+        </script>
 
 
 

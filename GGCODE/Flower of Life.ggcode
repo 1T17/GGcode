@@ -17,16 +17,21 @@ G54
 M8
 
 // Settings
-let radius      = 5
-let z_safe      = 1
-let z_cut       = -1
-let feed        = 300
-let step_deg    = 3
-let round_eps   = 0.0001
+let radius      = 5 /// @number 0 100
+let z_safe      = 1 /// @number 0 100
+let z_cut       = -1 /// @number 0 100
+let feed        = 300 /// @number 0 100
+let step_deg    = 3 /// @number 0 100
+let round_eps   = 0.0001 /// @number 0 100
+let outer_rings = 2.5 /// @number 0 100
+
 
 let spacing_x   = radius
 let spacing_y   = radius * sqrt(3) / 2
-let outer_r     = radius * 2.5
+
+
+
+let outer_r     = radius * outer_rings
 
 
 

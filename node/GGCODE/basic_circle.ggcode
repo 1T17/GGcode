@@ -1,10 +1,10 @@
 // Basic Circle Example
 // This example shows how to create a simple circle
 
-let radius = 10
-let center_x = 0
-let center_y = 0
-let steps = 36
+let radius = 10 /// @number 5 50 // Circle radius in mm
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
+let steps = 36 /// @number 12 72 // Number of steps for circle resolution
 
 // Move to starting position
 G0 X[center_x + radius] Y[center_y]

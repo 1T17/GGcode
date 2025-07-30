@@ -1,8 +1,8 @@
 // Array Example
 // This example shows how to use arrays in GGcode
 
-let center_x = 0
-let center_y = 0
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
 
 // Define array of points for a polygon
 let points = []

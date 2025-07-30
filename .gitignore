@@ -8,17 +8,10 @@ Unity/
 tests/temp/
 ggcode
 node_modules/
-
 .gitignore
-
 function.html
 function.txt
-
-OrbitControls.js
-
 Doxyfile
-
-test.nc
 r.sh
 g.sh
 *.gcode
@@ -53,13 +46,6 @@ core
 *~
 *.bak
 *.tmp
-
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
-Desktop.ini
 
 # Code::Blocks
 *.depend

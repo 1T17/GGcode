@@ -1,8 +1,8 @@
 // Advanced Patterns Example
 // This example combines functions and math functions for complex patterns
 
-let center_x = 0
-let center_y = 0
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
 
 // Function to draw a flower petal
 function draw_petal(radius, angle, feed_rate) {

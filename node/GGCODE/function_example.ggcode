@@ -1,8 +1,8 @@
 // Function Example
 // This example shows how to define and use functions in GGcode
 
-let center_x = 0
-let center_y = 0
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
 
 // Define a function to draw a circle
 function draw_circle(radius, feed_rate) {

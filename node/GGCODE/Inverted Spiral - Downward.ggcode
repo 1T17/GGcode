@@ -1,0 +1,59 @@
+// Inverted Spiral - Downward 30° Slope
+let id = 98766
+note {
+   Inverted Spiral - Downward 30° Slope
+   File: [ggcode_file_name]
+   Time: [time]  | ID: [id]
+}
+
+G90 G94 G17
+G20
+G53 G0 Z0
+T1 M6
+S[6000] M3
+G54
+M8
+
+// Settings
+let start_radius   = 1 /// @number 0.5 5 // Starting radius
+let max_radius     = 45 /// @number 20 80 // Maximum radius
+let angle_step_deg = 0.5 /// @number 0.1 2 // Angle step in degrees
+let feed           = 300 /// @number 100 600 // Feed rate
+let z_safe         = 1 /// @number 0.5 3 // Safe Z height
+
+let angle = 0
+let radius = start_radius
+let z = 0
+
+// Inverted incline: -30 degrees slope
+let incline_ratio = tan(30 * DEG_TO_RAD)   // ≈ 0.577
+
+// Move to starting point
+x = radius * cos(angle * DEG_TO_RAD)
+y = radius * sin(angle * DEG_TO_RAD)
+G0 Z[z_safe]
+G0 X[x] Y[y]
+G1 Z[z] F[feed]
+
+// Spiral outward and downward
+while (radius <= max_radius) {
+    angle = angle + angle_step_deg
+    radius = start_radius + angle * (angle_step_deg / 360)
+
+    // Spiral coordinates
+    x = radius * cos(angle * DEG_TO_RAD)
+    y = radius * sin(angle * DEG_TO_RAD)
+    z = -incline_ratio * (radius - start_radius)  // Negative = DOWN
+
+    // Precision
+    x = floor(x * 1000 + 0.5) / 1000
+    y = floor(y * 1000 + 0.5) / 1000
+    z = floor(z * 1000 + 0.5) / 1000
+    if (abs(x) < 0.0001) { x = 0 }
+    if (abs(y) < 0.0001) { y = 0 }
+
+    G1 X[x] Y[y] Z[z] F[feed]
+}
+
+// Return to safe Z
+G0 Z[z_safe]

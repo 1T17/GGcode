@@ -1,8 +1,8 @@
 // Complete Math Functions Example
 // This example demonstrates ALL available mathematical functions and operators
 
-let center_x = 0
-let center_y = 0
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
 
 // Move to starting position
 G0 X[center_x] Y[center_y]

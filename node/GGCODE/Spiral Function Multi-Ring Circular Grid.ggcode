@@ -1,0 +1,78 @@
+//Spiral Function Multi-Ring Circular Grid Test
+
+let id = 99903
+note {
+  Concentric Circular Spiral Grid
+  File: [ggcode_file_name]
+  Time: [time]
+  Program ID: [id]
+}
+
+G90 G94 G17
+G20
+G53 G0 Z0
+T1 M6
+S[6000] M3
+G54
+M8
+
+let z_safe = 1
+let feed = 300
+
+// ── Spiral Function ──
+function spiral_down(cx, cy, start_radius, max_radius, slope_deg, angle_step_deg) {
+    let angle = 0
+    let radius = start_radius
+    let z = 0
+    let incline_ratio = tan(slope_deg * DEG_TO_RAD)
+
+    let x = cx + radius * cos(angle * DEG_TO_RAD)
+    let y = cy + radius * sin(angle * DEG_TO_RAD)
+
+    G0 Z[z_safe]
+    G0 X[x] Y[y]
+    G1 Z[z] F[feed]
+
+    while (radius <= max_radius) {
+        angle = angle + angle_step_deg
+        radius = start_radius + angle * (angle_step_deg / 360)
+
+        x = cx + radius * cos(angle * DEG_TO_RAD)
+        y = cy + radius * sin(angle * DEG_TO_RAD)
+        z = -incline_ratio * (radius - start_radius)
+
+        x = floor(x * 1000 + 0.5) / 1000
+        y = floor(y * 1000 + 0.5) / 1000
+        z = floor(z * 1000 + 0.5) / 1000
+
+        if (abs(x) < 0.0001) { x = 0 }
+        if (abs(y) < 0.0001) { y = 0 }
+
+        G1 X[x] Y[y] Z[z] F[feed]
+    }
+
+    G0 Z[z_safe]
+}
+
+// 🔄 Multi-Ring Circular Grid
+let ring_count         = 4 /// @number 2 8 // Number of concentric rings
+let ring_spacing       = 90 /// @number 50 150 // Distance between each ring
+let spirals_first_ring = 6 /// @number 3 12 // Number of spirals on innermost ring
+
+let spiral_start_r     = 1 /// @number 0.5 5 // Spiral start radius
+let spiral_max_r       = 30 /// @number 10 50 // Spiral maximum radius
+let spiral_angle_step  = 2 /// @number 1 5 // Spiral angle step
+let spiral_slope       = 30 /// @number 10 60 // Spiral slope angle
+
+for ring = 1..ring_count {
+    let radius = ring * ring_spacing
+    let spiral_count = spirals_first_ring * ring  // More spirals per outer ring
+
+    for i = 0..(spiral_count - 1) {
+        let theta = (360 / spiral_count) * i
+        let cx = radius * cos(theta * DEG_TO_RAD)
+        let cy = radius * sin(theta * DEG_TO_RAD)
+
+        spiral_down(cx, cy, spiral_start_r, spiral_max_r, spiral_slope, spiral_angle_step)
+    }
+}

@@ -1,11 +1,11 @@
 // Simple Spiral Example
 // This example creates a basic spiral pattern
 
-let center_x = 0
-let center_y = 0
-let max_radius = 15
-let revolutions = 3
-let steps_per_rev = 36
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
+let max_radius = 15 /// @number 5 30 // Maximum spiral radius
+let revolutions = 3 /// @number 1 8 // Number of spiral revolutions
+let steps_per_rev = 36 /// @number 12 72 // Steps per revolution
 
 // Move to center
 G0 X[center_x] Y[center_y]

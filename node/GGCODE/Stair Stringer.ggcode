@@ -1,0 +1,103 @@
+// Stair Stringer
+
+let id = 88888
+note {
+  Stair Stringer Generator - Flat Layout with Correct Stair Angle
+  File: [ggcode_file_name]
+  Time: [time]
+  Program ID: [id]
+}
+
+G90 G94 G17
+G20
+G53 G0 Z0
+T1 M6
+S[8000] M3
+G54
+M8
+
+// ── Safety & Feed ──
+let z_safe = 1         // Safe retract height
+let z_cut  = -1        // Cutting depth
+let feed   = 300       // Feedrate
+
+// ── Input Parameters ──
+let total_run        = 190 /// @number 100 300 // Total horizontal stair run
+let total_rise       = 100 /// @number 50 200 // Total vertical stair rise
+let max_rise         = 8.25 /// @number 6 12 // Max legal rise per step
+let stringer_spacing = 30 /// @number 20 50 // Space between stringers (Y)
+let board_margin     = 5 /// @number 2 10 // Bottom Y offset
+
+// ── Geometry Calculations ──
+let step_count   = ceil(total_rise / max_rise)       // Total steps
+let rise         = total_rise / step_count           // Rise per step
+let run          = total_run / step_count            // Run per step
+let stair_angle  = atan(rise / run)                  // Slope angle (radians)
+let stair_angle_deg = stair_angle * 180 / PI         // Angle in degrees
+
+let cosA = cos(stair_angle)
+let sinA = sin(stair_angle)
+
+let projected_run   = run * cosA + rise * sinA       // Flat board X step span
+let projected_rise  = -run * sinA + rise * cosA      // Flat board Y offset (≈0)
+let step_cut_length = sqrt(run*run + rise*rise)      // Hypotenuse per step
+
+// ── Summary Info ──
+note {
+  z_safe = [z_safe]
+  z_cut = [z_cut]
+  feed = [feed]
+  total_run = [total_run]
+  total_rise = [total_rise]
+  max_rise = [max_rise]
+  step_count = [step_count]
+  rise per step = [rise]
+  run per step = [run]
+  step cut length (hypotenuse) = [step_cut_length]
+  stair_angle (rad) = [stair_angle], degrees ≈ [stair_angle_deg]
+  cosA = [cosA]
+  sinA = [sinA]
+  projected run (flat X) = [projected_run]
+  projected rise (flat Y) = [projected_rise]
+  stringer_spacing = [stringer_spacing]
+  board_margin = [board_margin]
+}
+
+// ── Draw One Stringer ──
+function draw_flat_stringer(offset_y) {
+  note {function draw_flat_stringer([offset_y])}
+
+  let x = 0
+  let y = 0
+
+  // First rotated point
+  let X = x * cosA + y * sinA
+  let Y = -x * sinA + y * cosA + offset_y
+
+  G0 Z[z_safe]
+  G0 X[X] Y[Y]
+  G0 Z[z_cut] F[feed]
+
+  for i = 0..(step_count - 1) {
+    // Tread
+    x = x + run
+    let X1 = x * cosA + y * sinA
+    let Y1 = -x * sinA + y * cosA + offset_y
+    G1 X[X1] Y[Y1] F[feed]
+
+    // Riser
+    y = y + rise
+    let X2 = x * cosA + y * sinA
+    let Y2 = -x * sinA + y * cosA + offset_y
+    G1 X[X2] Y[Y2] F[feed]
+  }
+
+  G0 Z[z_safe]
+}
+
+// ── Cut Two Stringers ──
+note {Begin Bottom Stringer}
+draw_flat_stringer(board_margin)
+
+note {Begin Top Stringer}
+draw_flat_stringer(board_margin + stringer_spacing)

@@ -351,7 +351,10 @@ function copyOutput() {
 
 function saveOutput() {
   if (outputEditor) {
-    const blob = new Blob([outputEditor.getValue()], { type: 'text/plain' });
+    const text = outputEditor.getValue();
+const utf8Bytes = new TextEncoder().encode(text);
+const blob = new Blob([utf8Bytes], { type: 'application/octet-stream' }); // avoids any BOM magic
+
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     // Improved filename logic for output
@@ -469,12 +472,12 @@ async function loadExamples() {
     
     if (examples.success) {
       examplesList.innerHTML = examples.files.map(file => `
-  < div class="example-item" onclick = "loadExample('${file.name}')" >
+        <div class="example-item" onclick="loadExample('${file.name}')">
           <div class="example-title">${file.name}</div>
           <div class="example-description">${file.description || 'Click to load this example'}</div>
           <div class="example-preview">${file.preview || ''}</div>
-        </div >
-    `).join('');
+        </div>
+      `).join('');
     } else {
       examplesList.innerHTML = '<p style="color: #cccccc;">Failed to load examples</p>';
     }
@@ -485,7 +488,7 @@ async function loadExamples() {
 
 async function loadExample(filename) {
   try {
-    const response = await fetch(`/ api / examples / ${ encodeURIComponent(filename) } `);
+    const response = await fetch(`/api/examples/${encodeURIComponent(filename)}`);
     const result = await response.json();
     
     if (result.success) {
