@@ -1,0 +1,397 @@
+{
+  "language": "pt",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "O que é GGcode?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode é uma linguagem de programação de alto nível projetada especificamente para gerar código G para máquinas CNC, impressoras 3D e outros equipamentos de fabricação controlados por computador. Combina a simplicidade da programação básica com funções matemáticas poderosas, facilitando a criação de trajetórias de ferramentas e padrões geométricos complexos."
+        },
+        {
+          "type": "list",
+          "title": "Características Principais:",
+          "items": [
+            "Sintaxe simples e legível sem ponto e vírgula",
+            "Biblioteca extensa de funções matemáticas",
+            "Suporte para arrays de estruturas de dados complexas",
+            "Definições de funções com parâmetros e valores de retorno",
+            "Estruturas de controle (loops, condicionais)",
+            "Geração direta de código G",
+            "Recursos implícitos para maior conveniência"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "Guia de Uso da Aplicação",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Esta aplicação permite criar, editar e visualizar código GGcode com uma interface intuitiva e ferramentas avançadas."
+        },
+        {
+          "type": "subsection",
+          "title": "Interface Principal",
+          "description": "A aplicação inclui:",
+          "list": [
+            "<strong>Editor de Código</strong> - Escreva e edite seu código GGcode com destaque de sintaxe",
+            "<strong>Visualizador 3D</strong> - Prévia em tempo real da trajetória da ferramenta",
+            "<strong>Configurador</strong> - Modal para ajustar parâmetros de configuração",
+            "<strong>Sistema de Ajuda</strong> - Documentação completa e exemplos",
+            "<strong>Gerenciamento de Arquivos</strong> - Carregar, salvar e exportar arquivos GGcode"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Controles do Editor",
+          "description": "Funções do editor de código:",
+          "list": [
+            "<strong>Destaque de Sintaxe</strong> - Cores para comandos, variáveis e funções",
+            "<strong>Autocompletar</strong> - Sugestões de funções e comandos",
+            "<strong>Números de Linha</strong> - Referência visual para navegação",
+            "<strong>Buscar e Substituir</strong> - Encontre e modifique texto rapidamente",
+            "<strong>Desfazer/Refazer</strong> - Controle de alterações com Ctrl+Z/Ctrl+Y"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Sistema de Ajuda",
+          "description": "Acesso à documentação:",
+          "list": [
+            "<strong>Botão de Ajuda</strong> - Abre documentação completa com exemplos",
+            "<strong>Busca na Ajuda</strong> - Encontre informações específicas rapidamente",
+            "<strong>Exemplos Interativos</strong> - Código de exemplo que você pode copiar e usar",
+            "<strong>Múltiplos Idiomas</strong> - Documentação disponível em vários idiomas"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Fluxo de Trabalho",
+          "description": "Processo recomendado:",
+          "list": [
+            "<strong>1. Escrever Código</strong> - Use o editor para criar seu programa GGcode",
+            "<strong>2. Configurar Parâmetros</strong> - Ajuste valores usando o configurador se necessário",
+            "<strong>3. Pré-visualizar</strong> - Use o visualizador 3D para verificar a trajetória",
+            "<strong>4. Compilar</strong> - Gere o código G final",
+            "<strong>5. Exportar</strong> - Salve ou baixe o arquivo para sua máquina"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Atalhos de Teclado",
+          "description": "Comandos rápidos:",
+          "list": [
+            "<strong>Ctrl+S</strong> - Salvar arquivo",
+            "<strong>Ctrl+O</strong> - Abrir arquivo",
+            "<strong>Ctrl+Z</strong> - Desfazer",
+            "<strong>Ctrl+Y</strong> - Refazer",
+            "<strong>Ctrl+F</strong> - Buscar no código",
+            "<strong>F1</strong> - Abrir ajuda"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Dicas de Uso",
+          "description": "Melhores práticas:",
+          "list": [
+            "<strong>Salve Frequentemente</strong> - Evite perder trabalho",
+            "<strong>Teste Código Pequeno</strong> - Verifique funções antes de programas grandes",
+            "<strong>Use Comentários</strong> - Documente seu código para referências futuras",
+            "<strong>Verifique a Pré-visualização</strong> - Certifique-se de que a trajetória está correta"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Configuração Inline",
+          "description": "Adicione diretivas de configuração às suas declarações de variáveis:",
+          "code": "let radius = 10 /// @number 5 50 // Raio do círculo em mm\nlet enabled = 1 /// @check // Habilitar função\nlet mode = 2 /// @selection 1, 2, 3 // Selecionar modo\nlet notes = \"\" /// @text 3 max 120 // Notas para o operador"
+        },
+        {
+          "type": "subsection",
+          "title": "Referência de Diretivas de Configuração",
+          "description": "Tipos de diretivas disponíveis:",
+          "list": [
+            "<strong>@number min max</strong> - Entrada numérica com validação de intervalo",
+            "<strong>@check</strong> - Entrada de caixa de seleção (booleano)",
+            "<strong>@selection options</strong> - Menu suspenso com opções predefinidas",
+            "<strong>@text rows [max N]</strong> - Entrada de texto ou área de texto"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Usar Valores de Configuração no Código",
+          "description": "Use os nomes das variáveis diretamente no seu GGcode:",
+          "code": "let radius = 10 /// @number 5 50 // Raio do círculo\nlet feed_rate = 150 /// @number 50 500 // Velocidade de avanço\nlet enabled = 1 /// @check // Habilitar função\n\n// Use no seu código\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // Fazer algo\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Exemplo Completo de Configuração",
+          "description": "Exemplo mostrando todos os tipos de diretivas:",
+          "code": "let radius = 10 /// @number 5 50 // Raio do círculo\nlet center_x = 0 /// @number -100 100 // Centro X\nlet feed_rate = 150 /// @number 50 500 // Velocidade de avanço\nlet draw_circle = 1 /// @check // Desenhar círculo\nlet pattern = 1 /// @selection 1, 2, 3 // Tipo de padrão\nlet notes = \"\" /// @text 3 max 120 // Notas\n\n// Use no código\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Como Funciona",
+          "description": "Detalhes técnicos:",
+          "list": [
+            "<strong>Análise</strong> - Procura por <code>let variable = value /// @directive parameters // description</code>",
+            "<strong>Geração de Formulário</strong> - Cria formulário HTML dinâmico das variáveis analisadas",
+            "<strong>Validação</strong> - Intervalos numéricos, conversão de caixas, validação de opções",
+            "<strong>Atualizações em Tempo Real</strong> - Mudanças atualizam imediatamente o código fonte GGcode antes da compilação"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Melhores Práticas",
+          "description": "Dicas para configuração eficaz:",
+          "list": [
+            "<strong>Comece Seguro</strong> - Comece com valores conservadores, depois otimize",
+            "<strong>Teste Pequeno</strong> - Teste configurações em peças pequenas primeiro",
+            "<strong>Documente Configurações</strong> - Mantenha notas para materiais diferentes",
+            "<strong>Segurança Primeiro</strong> - Sempre verifique os limites da área de trabalho"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "Sintaxe Básica",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "Variáveis",
+          "description": "Use <code>let</code> para declarar variáveis. Nenhum ponto e vírgula necessário!",
+          "code": "let radius = 10\nlet center_x = 0\nlet feed_rate = 150"
+        },
+        {
+          "type": "subsection",
+          "title": "Comandos G-code",
+          "description": "Comandos G-code padrão com interpolação de variáveis e comportamento modal",
+          "code": "G0 X10 Y5        // Movimento rápido para posição\nG1 X20 Y15 F100  // Movimento linear com velocidade de avanço\nX30 Y25          // Continua movimento linear G1 (modal)\nG1 X[center_x] Y[center_y] F[feed_rate]  // Usando variáveis"
+        },
+        {
+          "type": "subsection",
+          "title": "Comentários",
+          "description": "Use <code>//</code> para comentários de uma linha ou <code>/* */</code> para comentários de múltiplas linhas",
+          "code": "// Este é um comentário de uma linha\n/* Este é um\n   comentário de múltiplas linhas */"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "Funções Matemáticas",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode fornece uma biblioteca completa de funções matemáticas para cálculos complexos e operações geométricas."
+        },
+        {
+          "type": "subsection",
+          "title": "Funções Matemáticas Básicas",
+          "description": "<code>abs(x)</code> - Valor absoluto | <code>mod(a, b)</code> - Módulo (resto) | <code>floor(x)</code> - Arredondar para baixo | <code>ceil(x)</code> - Arredondar para cima",
+          "additionalInfo": "<code>round(x)</code> - Arredondar para o mais próximo | <code>min(a, b)</code> - Valor mínimo | <code>max(a, b)</code> - Valor máximo | <code>clamp(x, min, max)</code> - Limitar valor",
+          "code": "let abs_val = abs(-15)      // Retorna 15\nlet mod_val = mod(17, 5)    // Retorna 2\nlet floor_val = floor(3.7)  // Retorna 3\nlet clamp_val = clamp(15, 0, 10)  // Retorna 10"
+        },
+        {
+          "type": "subsection",
+          "title": "Funções Trigonométricas",
+          "description": "<code>sin(x)</code> - Seno | <code>cos(x)</code> - Cosseno | <code>tan(x)</code> - Tangente",
+          "additionalInfo": "<code>asin(x)</code> - Arco seno | <code>acos(x)</code> - Arco cosseno | <code>atan(x)</code> - Arco tangente | <code>atan2(y, x)</code> - Arco tangente de y/x",
+          "code": "let angle = 45 * DEG_TO_RAD\nlet x = radius * cos(angle)\nlet y = radius * sin(angle)\nlet angle_from_atan = atan2(y, x)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "Estruturas de Controle",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode fornece estruturas de controle poderosas para criar trajetórias de ferramentas complexas e operações condicionais."
+        },
+        {
+          "type": "subsection",
+          "title": "Loops For",
+          "description": "<strong>Loop For Básico:</strong> Use a sintaxe <code>for variable = start..end</code>",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Loops While",
+          "description": "<strong>Loop While Básico:</strong> Use a sintaxe <code>while (condition)</code>",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "Recursos Especiais",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode inclui vários recursos especiais que tornam a programação mais conveniente."
+        },
+        {
+          "type": "subsection",
+          "title": "Comportamento Modal G-code",
+          "description": "<strong>G-code Modal:</strong> Uma vez que você especifica um comando G (G0, G1, G2, G3), ele continua se aplicando às linhas subsequentes até que um novo comando G seja especificado. Isso segue o comportamento modal padrão do G-code.",
+          "code": "G1 X[10] Y[20] F[100]  // Movimento linear\nX[30] Y[40]             // Continua movimento linear G1\nX[50] Y[60]             // Ainda movimento linear G1\nG0 X[0] Y[0]            // Novo comando de movimento rápido\nX[10] Y[10]             // Continua movimento rápido G0"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "Arrays",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Arrays no GGcode permitem que você armazene e manipule coleções de valores, facilitando o trabalho com estruturas de dados complexas e pontos de coordenadas."
+        },
+        {
+          "type": "subsection",
+          "title": "Literais de Array",
+          "description": "<strong>Arrays Unidimensionais:</strong> Criar arrays com valores iniciais",
+          "code": "let points = [10, 20, 30, 40, 50]\nlet first = points[0]    // Acessar primeiro elemento\nlet last = points[4]     // Acessar último elemento"
+        },
+        {
+          "type": "subsection",
+          "title": "Arrays Multidimensionais",
+          "description": "<strong>Arrays Multidimensionais:</strong> Criar arrays aninhados para grades e matrizes",
+          "code": "let grid = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]\nlet value = grid[1][2]   // Acessar elemento na linha 1, coluna 2 (retorna 5)"
+        },
+        {
+          "type": "subsection",
+          "title": "Arrays 3D",
+          "description": "<strong>Arrays 3D:</strong> Criar estruturas de dados complexas",
+          "code": "let matrix = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]\nlet value = matrix[0][1][0]  // Acessar elemento aninhado (retorna 3)"
+        },
+        {
+          "type": "subsection",
+          "title": "Operações de Array",
+          "description": "<strong>Atribuição de Array:</strong> Modificar elementos do array",
+          "code": "let maze = [[1, 2], [3, 4]]\nmaze[1][0] = 0  // Mudar elemento na posição [1][0] para 0"
+        },
+        {
+          "type": "subsection",
+          "title": "Arrays Dinâmicos",
+          "description": "<strong>Arrays Dinâmicos:</strong> Construir arrays programaticamente",
+          "code": "let points = []\nlet count = 0\npoints[count] = [10, 20]  // Adicionar ponto no índice 0\ncount = count + 1\npoints[count] = [30, 40]  // Adicionar ponto no índice 1\n\nlet pt = points[0]        // Obter primeiro ponto\nlet x = pt[0]             // Obter coordenada x\nlet y = pt[1]             // Obter coordenada y"
+        },
+        {
+          "type": "subsection",
+          "title": "Iteração de Array",
+          "description": "<strong>Iteração de Array:</strong> Percorrer elementos do array",
+          "code": "let values = [10, 20, 30, 40, 50]\nfor i = 0..<5 {\n    G1 X[values[i]] Y[i*10] F100\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "Operadores",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode fornece um conjunto abrangente de operadores para cálculos matemáticos, comparações e operações lógicas."
+        },
+        {
+          "type": "subsection",
+          "title": "Operadores de Comparação",
+          "description": "<code>==</code> - Igual a | <code>!=</code> - Não igual a | <code><</code> - Menor que | <code><=</code> - Menor ou igual",
+          "additionalInfo": "<code>></code> - Maior que | <code>>=</code> - Maior ou igual",
+          "code": "let a = 10\nlet b = 5\nlet eq_test = a == 10    // Retorna true\nlet ne_test = a != b     // Retorna true\nlet lt_test = b < a      // Retorna true\nlet le_test = b <= a     // Retorna true"
+        },
+        {
+          "type": "subsection",
+          "title": "Operadores Lógicos",
+          "description": "<code>&&</code> - AND lógico | <code>||</code> - OR lógico | <code>!</code> - NOT lógico",
+          "code": "let and_test = (a > b) && (a == 10)  // Retorna true\nlet or_test = (a < b) || (a != 5)     // Retorna true\nlet not_test = !(a < b)               // Retorna true"
+        },
+        {
+          "type": "subsection",
+          "title": "Operadores Aritméticos",
+          "description": "<code>+</code> - Adição | <code>-</code> - Subtração | <code>*</code> - Multiplicação | <code>/</code> - Divisão",
+          "code": "let sum = a + b        // Retorna 15\nlet diff = a - b       // Retorna 5\nlet product = a * b    // Retorna 50\nlet quotient = a / b   // Retorna 2"
+        },
+        {
+          "type": "subsection",
+          "title": "Operadores Bit a Bit",
+          "description": "<code>&</code> - AND bit a bit",
+          "code": "let bit_test = 5 & 3  // Retorna 1 (binário: 101 & 011 = 001)"
+        },
+        {
+          "type": "subsection",
+          "title": "Operadores Unários",
+          "description": "<code>-</code> - Negação | <code>!</code> - NOT lógico",
+          "code": "let negative = -5      // Retorna -5\nlet logical_not = !0   // Retorna true\nlet double_not = !!1   // Retorna true"
+        },
+        {
+          "type": "subsection",
+          "title": "Notas Importantes",
+          "description": "<strong>Módulo:</strong> Use a função <code>mod(a, b)</code>, não o operador <code>%</code>",
+          "code": "let remainder = mod(17, 5)  // Retorna 2 (correto)\n// let remainder = 17 % 5  // Isso causará um erro!"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "Constantes",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode fornece várias constantes matemáticas integradas para cálculos comuns."
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - Número de Euler (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - Conversão graus para radianos | <code>RAD_TO_DEG</code> - Conversão radianos para graus"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "Recursos de Documentação",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "Blocos de Nota",
+          "description": "Use blocos <code>note { }</code> para documentação de arquivos e cabeçalhos",
+          "code": "note {\n  Este é um bloco de documentação\n  Pode conter múltiplas linhas\n  Útil para cabeçalhos de arquivos e descrições\n  Autor: Seu Nome\n  Versão: 1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Comentários",
+          "description": "Use <code>//</code> para comentários de uma linha ou <code>/* */</code> para comentários de múltiplas linhas",
+          "code": "// Este é um comentário de uma linha\nlet radius = 10  // Comentário inline\n\n/* Este é um comentário de múltiplas linhas\n   Pode abranger múltiplas linhas\n   Útil para explicações detalhadas */"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "Melhores Práticas",
+      "content": [
+        {
+          "type": "list",
+          "title": "Diretrizes de Programação",
+          "items": [
+            "<strong>Use intervalos exclusivos</strong> para iteração de arrays: <code>for i = 0..<10</code> em vez de <code>for i = 0..10</code>",
+            "<strong>Declare variáveis</strong> antes de usá-las em expressões complexas",
+            "<strong>Use funções</strong> para organizar operações complexas",
+            "<strong>Adicione comentários</strong> para explicar lógica complexa",
+            "<strong>Use blocos de nota</strong> para documentação de arquivos",
+            "<strong>Teste seções pequenas</strong> antes de construir programas complexos"
+          ]
+        }
+      ]
+    }
+  }
+}

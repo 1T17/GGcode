@@ -1,0 +1,56 @@
+/* Flag Icons using CSS Background Images - Official SVG Data */
+.flag-icon {
+  display: inline-block;
+  width: 16px;
+  height: 12px;
+  margin-right: 8px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 2px;
+}
+
+/* United Kingdom */
+.flag-en { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='a'%3E%3Cpath d='M30 15h30v15zv15H0zH0V0zV0h30z'/%3E%3C/clipPath%3E%3Cpath d='M0 0v30h60V0z' fill='%23012169'/%3E%3Cpath d='M0 0L60 30m0-30L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0L60 30m0-30L0 30' clip-path='url(%23a)' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23C8102E' stroke-width='6'/%3E%3C/svg%3E"); }
+
+/* Spain */
+.flag-es { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 750 500'%3E%3Crect width='750' height='500' fill='%23c60b1e'/%3E%3Crect width='750' height='250' y='125' fill='%23ffc400'/%3E%3C/svg%3E"); }
+
+/* France */
+.flag-fr { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3Crect width='3' height='2' fill='%23ED2939'/%3E%3Crect width='2' height='2' fill='%23fff'/%3E%3Crect width='1' height='2' fill='%23002395'/%3E%3C/svg%3E"); }
+
+/* Germany */
+.flag-de { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 3'%3E%3Crect width='5' height='3' fill='%23FFCE00'/%3E%3Crect width='5' height='2' y='1' fill='%23D00'/%3E%3Crect width='5' height='1' y='2' fill='%23000'/%3E%3C/svg%3E"); }
+
+/* Italy */
+.flag-it { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3Crect width='3' height='2' fill='%23009246'/%3E%3Crect width='2' height='2' fill='%23fff'/%3E%3Crect width='1' height='2' fill='%23CE2B37'/%3E%3C/svg%3E"); }
+
+/* Portugal */
+.flag-pt { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23f00'/%3E%3Crect width='240' height='400' fill='%230600'/%3E%3Ccircle cx='240' cy='200' r='80' fill='%23ff0'/%3E%3Ccircle cx='240' cy='200' r='60' fill='%23fff'/%3E%3Ccircle cx='240' cy='200' r='40' fill='%23f00'/%3E%3C/svg%3E"); }
+
+/* Russia */
+.flag-ru { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Crect width='900' height='200' fill='%23fff'/%3E%3Crect width='900' height='200' y='200' fill='%230039A6'/%3E%3Crect width='900' height='200' y='400' fill='%23D52B1E'/%3E%3C/svg%3E"); }
+
+/* China */
+.flag-zh { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Crect width='900' height='600' fill='%23DE2910'/%3E%3Cpolygon points='450,120 480,200 560,200 500,250 520,330 450,280 380,330 400,250 340,200 420,200' fill='%23FFDE00'/%3E%3C/svg%3E"); }
+
+/* Japan */
+.flag-ja { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Crect width='900' height='600' fill='%23fff'/%3E%3Ccircle cx='450' cy='300' r='180' fill='%23bc002d'/%3E%3C/svg%3E"); }
+
+/* South Korea */
+.flag-ko { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Crect width='900' height='600' fill='%23fff'/%3E%3Ccircle cx='450' cy='300' r='120' fill='%23003f87'/%3E%3Ccircle cx='450' cy='300' r='80' fill='%23fff'/%3E%3Ccircle cx='450' cy='300' r='40' fill='%23c70067'/%3E%3C/svg%3E"); }
+
+/* Palestine */
+.flag-ar { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 600'%3E%3Crect width='900' height='200' fill='%23000'/%3E%3Crect width='900' height='200' y='200' fill='%23fff'/%3E%3Crect width='900' height='200' y='400' fill='%23090'/%3E%3Cpolygon points='0,0 300,300 0,600' fill='%23c00'/%3E%3C/svg%3E"); }
+
+/* Israel - Official SVG */
+.flag-he { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2200 1600'%3E%3Crect width='2200' height='1600' fill='%23ffffff'/%3E%3Crect width='2200' height='160' y='720' fill='%23003f87'/%3E%3Crect width='2200' height='160' y='880' fill='%23003f87'/%3E%3Cpolygon points='0,0 660,800 0,1600' fill='%23003f87'/%3E%3Cpolygon points='1100,600 1200,700 1300,600 1250,800 1350,900 1150,850 1050,950 1000,850 1200,800 1100,600' fill='%23ffffff'/%3E%3C/svg%3E"); }
+
+/* Turkey */
+.flag-tr { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3Crect width='1200' height='800' fill='%23E30A17'/%3E%3Ccircle cx='425' cy='400' r='200' fill='%23ffffff'/%3E%3Ccircle cx='475' cy='400' r='160' fill='%23E30A17'/%3E%3Cpolygon points='583.334,400 764.235,458.779 652.431,304.894 652.431,495.106 764.235,341.221' fill='%23ffffff'/%3E%3C/svg%3E"); }
+
+/* Poland */
+.flag-pl { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Crect width='16' height='5' fill='%23fff'/%3E%3Crect width='16' height='5' y='5' fill='%23dc143c'/%3E%3C/svg%3E"); }
+
+/* Netherlands */
+.flag-nl { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 6'%3E%3Crect width='9' height='2' fill='%23AE1C28'/%3E%3Crect width='9' height='2' y='2' fill='%23fff'/%3E%3Crect width='9' height='2' y='4' fill='%2321468B'/%3E%3C/svg%3E"); } 

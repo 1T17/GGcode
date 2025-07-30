@@ -1,0 +1,154 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2024-01-01",
+  "supportedLanguages": [
+    {
+      "code": "en",
+      "name": "English",
+      "flag": "🇺🇸",
+      "file": "en.json"
+    },
+    {
+      "code": "es",
+      "name": "Español",
+      "flag": "🇪🇸",
+      "file": "es.json"
+    },
+    {
+      "code": "fr",
+      "name": "Français",
+      "flag": "🇫🇷",
+      "file": "fr.json"
+    },
+    {
+      "code": "de",
+      "name": "Deutsch",
+      "flag": "🇩🇪",
+      "file": "de.json"
+    },
+    {
+      "code": "it",
+      "name": "Italiano",
+      "flag": "🇮🇹",
+      "file": "it.json"
+    },
+    {
+      "code": "pt",
+      "name": "Português",
+      "flag": "🇵🇹",
+      "file": "pt.json"
+    },
+    {
+      "code": "ru",
+      "name": "Русский",
+      "flag": "🇷🇺",
+      "file": "ru.json"
+    },
+    {
+      "code": "zh",
+      "name": "中文",
+      "flag": "🇨🇳",
+      "file": "zh.json"
+    },
+    {
+      "code": "ja",
+      "name": "日本語",
+      "flag": "🇯🇵",
+      "file": "ja.json"
+    },
+    {
+      "code": "ko",
+      "name": "한국어",
+      "flag": "🇰🇷",
+      "file": "ko.json"
+    },
+    {
+      "code": "ar",
+      "name": "العربية",
+      "flag": "🇸🇦",
+      "file": "ar.json"
+    },
+    {
+      "code": "he",
+      "name": "עברית",
+      "flag": "🇮🇱",
+      "file": "he.json"
+    },
+    {
+      "code": "tr",
+      "name": "Türkçe",
+      "flag": "🇹🇷",
+      "file": "tr.json"
+    },
+    {
+      "code": "pl",
+      "name": "Polski",
+      "flag": "🇵🇱",
+      "file": "pl.json"
+    },
+    {
+      "code": "nl",
+      "name": "Nederlands",
+      "flag": "🇳🇱",
+      "file": "nl.json"
+    }
+  ],
+  "defaultLanguage": "en",
+  "sections": [
+    {
+      "id": "overview",
+      "key": "overview",
+      "name": "Overview"
+    },
+    {
+      "id": "appUsage",
+      "key": "appUsage",
+      "name": "App Usage"
+    },
+    {
+      "id": "syntax",
+      "key": "syntax", 
+      "name": "Syntax"
+    },
+    {
+      "id": "functions",
+      "key": "functions",
+      "name": "Functions"
+    },
+    {
+      "id": "control",
+      "key": "control",
+      "name": "Control Structures"
+    },
+    {
+      "id": "arrays",
+      "key": "arrays",
+      "name": "Arrays"
+    },
+    {
+      "id": "operators",
+      "key": "operators",
+      "name": "Operators"
+    },
+    {
+      "id": "constants",
+      "key": "constants",
+      "name": "Constants"
+    },
+    {
+      "id": "documentation",
+      "key": "documentation",
+      "name": "Documentation"
+    },
+    {
+      "id": "features",
+      "key": "features",
+      "name": "Features"
+    },
+    {
+      "id": "bestPractices",
+      "key": "bestPractices",
+      "name": "Best Practices"
+    }
+  ]
+} 

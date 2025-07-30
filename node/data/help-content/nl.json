@@ -1,0 +1,383 @@
+{
+  "language": "nl",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "Wat is GGcode?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode is een hoog-niveau programmeertaal die speciaal is ontworpen voor het genereren van G-code voor CNC-machines, 3D-printers en andere computerbestuurde productieapparatuur. Het combineert de eenvoud van basisprogrammering met krachtige wiskundige functies, waardoor het gemakkelijk wordt om complexe gereedschapspaden en geometrische patronen te maken."
+        },
+        {
+          "type": "list",
+          "title": "Hoofdfuncties:",
+          "items": [
+            "Eenvoudige en leesbare syntaxis zonder puntkomma's",
+            "Uitgebreide bibliotheek van wiskundige functies",
+            "Array-ondersteuning voor complexe datastructuren",
+            "Functiedefinities met parameters en retourwaarden",
+            "Controle structuren (lussen, voorwaarden)",
+            "Directe G-code generatie",
+            "Impliciete functies voor gemak"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "Applicatie Gebruikersgids",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Deze applicatie stelt u in staat om GGcode te maken, bewerken en visualiseren met een intuïtieve interface en geavanceerde tools."
+        },
+        {
+          "type": "subsection",
+          "title": "Hoofdinterface",
+          "description": "De applicatie bevat:",
+          "list": [
+            "<strong>Code Editor</strong> - Schrijf en bewerk uw GGcode met syntax highlighting",
+            "<strong>3D Visualisator</strong> - Real-time preview van gereedschapspad",
+            "<strong>Configurator</strong> - Modal voor het aanpassen van configuratieparameters",
+            "<strong>Help Systeem</strong> - Volledige documentatie en voorbeelden",
+            "<strong>Bestandsbeheer</strong> - GGcode bestanden laden, opslaan en exporteren"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Editor Besturing",
+          "description": "Code editor functies:",
+          "list": [
+            "<strong>Syntax Highlighting</strong> - Kleuren voor commando's, variabelen en functies",
+            "<strong>Automatisch aanvullen</strong> - Suggesties voor functies en commando's",
+            "<strong>Regelnummers</strong> - Visuele referentie voor navigatie",
+            "<strong>Zoeken en vervangen</strong> - Snel tekst vinden en wijzigen",
+            "<strong>Ongedaan maken/Opnieuw</strong> - Wijzigingscontrole met Ctrl+Z/Ctrl+Y"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Help Systeem",
+          "description": "Toegang tot documentatie:",
+          "list": [
+            "<strong>Help Knop</strong> - Opent volledige documentatie met voorbeelden",
+            "<strong>Help Zoeken</strong> - Vind snel specifieke informatie",
+            "<strong>Interactieve Voorbeelden</strong> - Voorbeeldcode die u kunt kopiëren en gebruiken",
+            "<strong>Meertalig</strong> - Documentatie beschikbaar in meerdere talen"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Werkstroom",
+          "description": "Aanbevolen proces:",
+          "list": [
+            "<strong>1. Code Schrijven</strong> - Gebruik de editor om uw GGcode programma te maken",
+            "<strong>2. Parameters Configureren</strong> - Pas waarden aan met de configurator indien nodig",
+            "<strong>3. Voorvertoning</strong> - Gebruik de 3D visualisator om het pad te verifiëren",
+            "<strong>4. Compileren</strong> - Genereer de finale G-code",
+            "<strong>5. Exporteren</strong> - Sla het bestand op of download het voor uw machine"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Toetsenbord Sneltoetsen",
+          "description": "Snelle commando's:",
+          "list": [
+            "<strong>Ctrl+S</strong> - Bestand opslaan",
+            "<strong>Ctrl+O</strong> - Bestand openen",
+            "<strong>Ctrl+Z</strong> - Ongedaan maken",
+            "<strong>Ctrl+Y</strong> - Opnieuw",
+            "<strong>Ctrl+F</strong> - Zoeken in code",
+            "<strong>F1</strong> - Help openen"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Gebruikstips",
+          "description": "Beste praktijken:",
+          "list": [
+            "<strong>Sla vaak op</strong> - Voorkom werkverlies",
+            "<strong>Test kleine code</strong> - Verificeer functies voordat u grote programma's maakt",
+            "<strong>Gebruik commentaar</strong> - Documenteer uw code voor toekomstige referentie",
+            "<strong>Controleer voorvertoning</strong> - Zorg ervoor dat het pad correct is"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Inline Configuratie",
+          "description": "Voeg configuratierichtlijnen toe aan uw variabele declaraties:",
+          "code": "let radius = 10 /// @number 5 50 // Cirkel radius in mm\nlet enabled = 1 /// @check // Functie inschakelen\nlet mode = 2 /// @selection 1, 2, 3 // Modus selecteren\nlet notes = \"\" /// @text 3 max 120 // Notities voor operator"
+        },
+        {
+          "type": "subsection",
+          "title": "Configuratierichtlijnen Referentie",
+          "description": "Beschikbare richtlijntypen:",
+          "list": [
+            "<strong>@number min max</strong> - Numerieke invoer met bereikvalidatie",
+            "<strong>@check</strong> - Checkbox invoer (boolean)",
+            "<strong>@selection options</strong> - Dropdown menu met vooraf gedefinieerde opties",
+            "<strong>@text rows [max N]</strong> - Tekst invoer of tekstgebied"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Configuratiewaarden Gebruiken in Code",
+          "description": "Gebruik variabelnamen direct in uw GGcode:",
+          "code": "let radius = 10 /// @number 5 50 // Cirkel radius\nlet feed_rate = 150 /// @number 50 500 // Voedingssnelheid\nlet enabled = 1 /// @check // Functie inschakelen\n\n// Gebruik in uw code\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // Doe iets\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Volledig Configuratie Voorbeeld",
+          "description": "Voorbeeld dat alle richtlijntypen toont:",
+          "code": "let radius = 10 /// @number 5 50 // Cirkel radius\nlet center_x = 0 /// @number -100 100 // Centrum X\nlet feed_rate = 150 /// @number 50 500 // Voedingssnelheid\nlet draw_circle = 1 /// @check // Teken cirkel\nlet pattern = 1 /// @selection 1, 2, 3 // Patroon type\nlet notes = \"\" /// @text 3 max 120 // Notities\n\n// Gebruik in code\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Hoe Het Werkt",
+          "description": "Technische details:",
+          "list": [
+            "<strong>Parsing</strong> - Zoekt naar <code>let variable = value /// @directive parameters // description</code>",
+            "<strong>Formulier Generatie</strong> - Maakt dynamisch HTML formulier van geparste variabelen",
+            "<strong>Validatie</strong> - Numerieke bereiken, checkbox conversie, optie validatie",
+            "<strong>Real-time Updates</strong> - Wijzigingen updaten onmiddellijk GGcode broncode voor compilatie"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Beste Praktijken",
+          "description": "Tips voor effectieve configuratie:",
+          "list": [
+            "<strong>Start Veilig</strong> - Begin met conservatieve waarden, optimaliseer dan",
+            "<strong>Test Klein</strong> - Test configuraties eerst op kleine onderdelen",
+            "<strong>Documenteer Configuraties</strong> - Houd notities bij voor verschillende materialen",
+            "<strong>Veiligheid Eerst</strong> - Controleer altijd werkgebied grenzen"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "Syntaxis",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode gebruikt een eenvoudige en intuïtieve syntaxis."
+        },
+        {
+          "type": "subsection",
+          "title": "Variabele declaratie",
+          "description": "Gebruik het let sleutelwoord voor variabele declaratie",
+          "code": "let radius = 10\nlet angle = 45 * DEG_TO_RAD\nlet message = \"Hello World\""
+        },
+        {
+          "type": "subsection",
+          "title": "G-code commando's",
+          "description": "Gebruik standaard G-code commando's",
+          "code": "G0 X0 Y0 Z0    // Snelle beweging\nG1 X10 Y10 F100  // Lineaire beweging\nG2 X20 Y0 R10    // Boog met de klok mee\nG3 X0 Y0 R10     // Boog tegen de klok in"
+        },
+        {
+          "type": "subsection",
+          "title": "Commentaar",
+          "description": "Ondersteuning voor enkelregelige en meerdere regels commentaar",
+          "code": "// Dit is een enkelregelig commentaar\nlet x = 10  // Inline commentaar\n\n/* Dit is een commentaar\n   van meerdere regels */"
+        },
+        {
+          "type": "subsection",
+          "title": "G-code modale gedrag",
+          "description": "G-code commando's zijn modaal - ze blijven geldig tot het volgende commando",
+          "code": "G1 F100        // Voedingssnelheid instellen\nX10 Y10        // G1 is actief\nX20 Y20        // G1 is nog steeds actief\nG0 X0 Y0       // Nieuw G0 commando"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "Functies",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode ondersteunt wiskundige functies voor berekeningen."
+        },
+        {
+          "type": "list",
+          "items": [
+            "<code>abs(x)</code> - Absolute waarde",
+            "<code>mod(x, y)</code> - Modulo (rest)",
+            "<code>sin(x)</code>, <code>cos(x)</code> - Trigonometrische functies",
+            "<code>sqrt(x)</code> - Vierkantswortel",
+            "<code>pow(x, y)</code> - Machtsverheffing",
+            "<code>lerp(a, b, t)</code> - Lineaire interpolatie",
+            "<code>map(x, a, b, c, d)</code> - Bereik mapping",
+            "<code>distance(x1, y1, x2, y2)</code> - Afstand tussen punten",
+            "<code>log(x)</code>, <code>exp(x)</code> - Logaritme en exponentiële functie",
+            "<code>noise(x)</code> - Perlin ruis",
+            "<code>sign(x)</code> - Teken van het getal",
+            "<code>deg(x)</code>, <code>rad(x)</code> - Hoek conversies"
+          ]
+        },
+        {
+          "type": "code",
+          "code": "let angle = sin(45 * DEG_TO_RAD)\nlet dist = distance(0, 0, 10, 10)\nlet mapped = map(5, 0, 10, 0, 100)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "Controle structuren",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode biedt krachtige controle structuren voor het maken van complexe gereedschapspaden en conditionele operaties."
+        },
+        {
+          "type": "subsection",
+          "title": "For lussen",
+          "description": "<strong>Basis For lus:</strong> Gebruik de <code>for variable = start..end</code> syntaxis",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "While lussen",
+          "description": "<strong>Basis While lus:</strong> Gebruik de <code>while (condition)</code> syntaxis",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "Arrays",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode ondersteunt eendimensionale, tweedimensionale en driedimensionale arrays voor gegevensopslag."
+        },
+        {
+          "type": "subsection",
+          "title": "Eendimensionale arrays",
+          "description": "Eendimensionale arrays maken en gebruiken",
+          "code": "let points = [1, 2, 3, 4, 5]\nlet radius = points[0]  // Element toegang\npoints[2] = 10         // Element wijzigen"
+        },
+        {
+          "type": "subsection",
+          "title": "Tweedimensionale arrays",
+          "description": "Tweedimensionale arrays maken en gebruiken",
+          "code": "let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nlet value = matrix[1][2]  // Element toegang\nmatrix[0][1] = 10        // Element wijzigen"
+        },
+        {
+          "type": "subsection",
+          "title": "Dynamische arrays",
+          "description": "Arrays maken met lussen",
+          "code": "let coords = []\nfor i = 0..<10 {\n  coords[i] = i * 10\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "Operatoren",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode ondersteunt standaard vergelijkingsoperatoren, logische en wiskundige operatoren."
+        },
+        {
+          "type": "subsection",
+          "title": "Vergelijkingsoperatoren",
+          "description": "Waarden vergelijken",
+          "code": "==  // Gelijk\n!=  // Niet gelijk\n<   // Kleiner\n<=  // Kleiner of gelijk\n>   // Groter\n>=  // Groter of gelijk"
+        },
+        {
+          "type": "subsection",
+          "title": "Logische operatoren",
+          "description": "Logische bewerkingen",
+          "code": "&&  // EN (AND)\n||  // OF (OR)\n!   // NIET (NOT)"
+        },
+        {
+          "type": "subsection",
+          "title": "Wiskundige operatoren",
+          "description": "Basis wiskundige bewerkingen",
+          "code": "+   // Optellen\n-   // Aftrekken\n*   // Vermenigvuldigen\n/   // Delen\n&   // Bit AND"
+        },
+        {
+          "type": "subsection",
+          "title": "Unaire operatoren",
+          "description": "Operatoren met één operand",
+          "code": "-x  // Negatie\n!x  // Logische negatie"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "Constanten",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode biedt ingebouwde wiskundige constanten voor veelvoorkomende berekeningen."
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - Euler getal (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - Graden naar radialen conversie | <code>RAD_TO_DEG</code> - Radialen naar graden conversie"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "Documentatie functies",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "Notitie blokken",
+          "description": "Gebruik <code>note { }</code> blokken voor bestandsdocumentatie en headers",
+          "code": "note {\n  Dit is een documentatie blok\n  Kan meerdere regels bevatten\n  Handig voor bestandsheaders en beschrijvingen\n  Auteur: Jouw naam\n  Versie: 1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Commentaar",
+          "description": "Gebruik <code>//</code> voor enkelregelig commentaar of <code>/* */</code> voor meerdere regels commentaar",
+          "code": "// Dit is enkelregelig commentaar\nlet radius = 10  // Inline commentaar\n\n/* Dit is commentaar\n   van meerdere regels\n   handig voor gedetailleerde uitleg */"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "Speciale functies",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode bevat verschillende speciale functies die programmeren gemakkelijker maken."
+        },
+        {
+          "type": "subsection",
+          "title": "G-code modaal gedrag",
+          "description": "<strong>Modale G-code:</strong> Wanneer je een G commando (G0, G1, G2, G3) specificeert, blijft het geldig in volgende regels totdat een nieuw G commando wordt gespecificeerd. Dit volgt standaard modaal G-code gedrag.",
+          "code": "G1 X[10] Y[20] F[100]  // Lineaire beweging\nX[30] Y[40]             // G1 gaat door\nX[50] Y[60]             // Nog steeds G1\nG0 X[0] Y[0]            // Nieuw snelle beweging commando\nX[10] Y[10]             // Snelle beweging G0 gaat door"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "Beste praktijken",
+      "content": [
+        {
+          "type": "list",
+          "title": "Programmeerrichtlijnen",
+          "items": [
+            "<strong>Gebruik exclusieve bereiken</strong> voor array iteratie: <code>for i = 0..<10</code> in plaats van <code>for i = 0..10</code>",
+            "<strong>Declareer variabelen</strong> voordat je ze gebruikt in complexe uitdrukkingen",
+            "<strong>Gebruik functies</strong> om complexe operaties te organiseren",
+            "<strong>Voeg commentaar toe</strong> om complexe logica uit te leggen",
+            "<strong>Gebruik notitie blokken</strong> voor bestandsdocumentatie",
+            "<strong>Test kleine delen</strong> voordat je complexe programma's bouwt"
+          ]
+        }
+      ]
+    }
+  }
+} 

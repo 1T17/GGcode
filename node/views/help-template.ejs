@@ -1,0 +1,85 @@
+<div class="help-content" id="helpContent">
+  <% Object.values(sections).forEach(function(section) { %>
+    <div class="help-section-card" data-section="<%= section.id %>">
+      <h3 class="help-section-title"><%= section.title %></h3>
+      <div class="help-section-content">
+        <% section.content.forEach(function(item) { %>
+          
+          <% if (item.type === 'paragraph') { %>
+            <p><%- item.text %></p>
+          <% } %>
+          
+          <% if (item.type === 'list') { %>
+            <% if (item.title) { %>
+              <p><strong><%= item.title %></strong></p>
+            <% } %>
+            <ul>
+              <% item.items.forEach(function(listItem) { %>
+                <li><%- listItem %></li>
+              <% }); %>
+            </ul>
+          <% } %>
+          
+          <% if (item.type === 'subsection') { %>
+            <h4><%= item.title %></h4>
+            <% if (item.description) { %>
+              <p><%- item.description %></p>
+            <% } %>
+            <% if (item.additionalInfo) { %>
+              <p><%- item.additionalInfo %></p>
+            <% } %>
+            <% if (item.code) { %>
+              <pre><%= item.code %></pre>
+            <% } %>
+          <% } %>
+          
+          <% if (item.type === 'code') { %>
+            <pre><%= item.code %></pre>
+          <% } %>
+          
+          <% if (item.type === 'table') { %>
+            <% if (item.title) { %>
+              <h4><%= item.title %></h4>
+            <% } %>
+            <% if (item.description) { %>
+              <p><%- item.description %></p>
+            <% } %>
+            <table class="help-table">
+              <% if (item.columns) { %>
+                <thead>
+                  <tr>
+                    <% item.columns.forEach(function(column) { %>
+                      <th><%= column %></th>
+                    <% }); %>
+                  </tr>
+                </thead>
+              <% } %>
+              <tbody>
+                <% item.rows.forEach(function(row) { %>
+                  <tr>
+                    <% row.forEach(function(cell) { %>
+                      <td><%= cell %></td>
+                    <% }); %>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          <% } %>
+          
+          <% if (item.type === 'warning') { %>
+            <div class="help-warning">
+              <strong>⚠️ Warning:</strong> <%- item.text %>
+            </div>
+          <% } %>
+          
+          <% if (item.type === 'tip') { %>
+            <div class="help-tip">
+              <strong>💡 Tip:</strong> <%- item.text %>
+            </div>
+          <% } %>
+          
+        <% }); %>
+      </div>
+    </div>
+  <% }); %>
+</div> 

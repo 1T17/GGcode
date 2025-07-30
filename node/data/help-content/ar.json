@@ -1,0 +1,395 @@
+{
+  "language": "ar",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "ما هو GGcode؟",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode هي لغة برمجة عالية المستوى مصممة خصيصًا لتوليد كود G لآلات CNC والطابعات ثلاثية الأبعاد ومعدات التصنيع الأخرى التي تتحكم بها الكمبيوتر. تجمع بين بساطة البرمجة الأساسية والدوال الرياضية القوية، مما يسهل إنشاء مسارات أدوات معقدة وأنماط هندسية."
+        },
+        {
+          "type": "list",
+          "title": "الميزات الرئيسية:",
+          "items": [
+            "بناء جملة بسيط وقابل للقراءة، بدون فواصل منقوطة",
+            "مكتبة غنية من الدوال الرياضية",
+            "دعم المصفوفات للبيانات المعقدة",
+            "تعريفات الدوال مع المعاملات والقيم المرجعة",
+            "هياكل التحكم (الحلقات، الشروط)",
+            "توليد كود G مباشر",
+            "دوال ضمنية للراحة"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "دليل استخدام التطبيق",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يتيح لك هذا التطبيق إنشاء وتحرير وتصور كود GGcode بواجهة بديهية وأدوات متقدمة."
+        },
+        {
+          "type": "subsection",
+          "title": "الواجهة الرئيسية",
+          "description": "يتضمن التطبيق:",
+          "list": [
+            "<strong>محرر الكود</strong> - اكتب وحرر كود GGcode مع تمييز بناء الجملة",
+            "<strong>محلل ثلاثي الأبعاد</strong> - معاينة فورية لمسار الأداة",
+            "<strong>المكون</strong> - نافذة منبثقة لضبط معاملات التكوين",
+            "<strong>نظام المساعدة</strong> - وثائق كاملة وأمثلة",
+            "<strong>إدارة الملفات</strong> - تحميل وحفظ وتصدير ملفات GGcode"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "أدوات تحكم المحرر",
+          "description": "وظائف محرر الكود:",
+          "list": [
+            "<strong>تمييز بناء الجملة</strong> - ألوان للأوامر والمتغيرات والدوال",
+            "<strong>الإكمال التلقائي</strong> - اقتراحات للدوال والأوامر",
+            "<strong>أرقام الأسطر</strong> - مرجع بصري للتنقل",
+            "<strong>البحث والاستبدال</strong> - ابحث وغير النص بسرعة",
+            "<strong>تراجع/إعادة</strong> - تحكم في التغييرات مع Ctrl+Z/Ctrl+Y"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "نظام المساعدة",
+          "description": "الوصول إلى الوثائق:",
+          "list": [
+            "<strong>زر المساعدة</strong> - يفتح وثائق كاملة مع أمثلة",
+            "<strong>البحث في المساعدة</strong> - ابحث عن معلومات محددة بسرعة",
+            "<strong>أمثلة تفاعلية</strong> - كود مثال يمكنك نسخه واستخدامه",
+            "<strong>متعدد اللغات</strong> - وثائق متاحة بعدة لغات"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "سير العمل",
+          "description": "العملية الموصى بها:",
+          "list": [
+            "<strong>1. كتابة الكود</strong> - استخدم المحرر لإنشاء برنامج GGcode",
+            "<strong>2. تكوين المعاملات</strong> - اضبط القيم باستخدام المكون إذا لزم الأمر",
+            "<strong>3. المعاينة</strong> - استخدم المحلل ثلاثي الأبعاد للتحقق من المسار",
+            "<strong>4. التجميع</strong> - أنشئ كود G النهائي",
+            "<strong>5. التصدير</strong> - احفظ أو حمل الملف لآلتك"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "اختصارات لوحة المفاتيح",
+          "description": "أوامر سريعة:",
+          "list": [
+            "<strong>Ctrl+S</strong> - حفظ الملف",
+            "<strong>Ctrl+O</strong> - فتح ملف",
+            "<strong>Ctrl+Z</strong> - تراجع",
+            "<strong>Ctrl+Y</strong> - إعادة",
+            "<strong>Ctrl+F</strong> - البحث في الكود",
+            "<strong>F1</strong> - فتح المساعدة"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "نصائح الاستخدام",
+          "description": "أفضل الممارسات:",
+          "list": [
+            "<strong>احفظ كثيراً</strong> - تجنب فقدان العمل",
+            "<strong>اختبر كود صغير</strong> - تحقق من الدوال قبل البرامج الكبيرة",
+            "<strong>استخدم التعليقات</strong> - وثق كودك للرجوع إليه مستقبلاً",
+            "<strong>تحقق من المعاينة</strong> - تأكد من صحة المسار"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "التكوين المضمن",
+          "description": "أضف توجيهات التكوين إلى إعلانات المتغيرات:",
+          "code": "let radius = 10 /// @number 5 50 // نصف قطر الدائرة بالمليمتر\nlet enabled = 1 /// @check // تفعيل الميزة\nlet mode = 2 /// @selection 1, 2, 3 // اختيار الوضع\nlet notes = \"\" /// @text 3 max 120 // ملاحظات للمشغل"
+        },
+        {
+          "type": "subsection",
+          "title": "مرجع توجيهات التكوين",
+          "description": "أنواع التوجيهات المتاحة:",
+          "list": [
+            "<strong>@number min max</strong> - إدخال رقمي مع التحقق من النطاق",
+            "<strong>@check</strong> - إدخال مربع اختيار (منطقي)",
+            "<strong>@selection options</strong> - قائمة منسدلة مع خيارات محددة مسبقاً",
+            "<strong>@text rows [max N]</strong> - إدخال نص أو منطقة نص"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "استخدام قيم التكوين في الكود",
+          "description": "استخدم أسماء المتغيرات مباشرة في GGcode:",
+          "code": "let radius = 10 /// @number 5 50 // نصف قطر الدائرة\nlet feed_rate = 150 /// @number 50 500 // سرعة التغذية\nlet enabled = 1 /// @check // تفعيل الميزة\n\n// استخدم في كودك\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // افعل شيئاً\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "مثال تكوين كامل",
+          "description": "مثال يوضح جميع أنواع التوجيهات:",
+          "code": "let radius = 10 /// @number 5 50 // نصف قطر الدائرة\nlet center_x = 0 /// @number -100 100 // المركز X\nlet feed_rate = 150 /// @number 50 500 // سرعة التغذية\nlet draw_circle = 1 /// @check // رسم الدائرة\nlet pattern = 1 /// @selection 1, 2, 3 // نوع النمط\nlet notes = \"\" /// @text 3 max 120 // ملاحظات\n\n// استخدم في الكود\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "كيف يعمل",
+          "description": "تفاصيل تقنية:",
+          "list": [
+            "<strong>التحليل</strong> - يبحث عن <code>let variable = value /// @directive parameters // description</code>",
+            "<strong>إنشاء النموذج</strong> - ينشئ نموذج HTML ديناميكي من المتغيرات المحللة",
+            "<strong>التحقق</strong> - نطاقات رقمية، تحويل مربعات الاختيار، التحقق من الخيارات",
+            "<strong>تحديثات فورية</strong> - التغييرات تحدث كود المصدر GGcode فوراً قبل التجميع"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "أفضل الممارسات",
+          "description": "نصائح للتكوين الفعال:",
+          "list": [
+            "<strong>ابدأ بأمان</strong> - ابدأ بقيم محافظة، ثم حسّن",
+            "<strong>اختبر الصغير</strong> - اختبر التكوينات على قطع صغيرة أولاً",
+            "<strong>وثق التكوينات</strong> - احتفظ بملاحظات لمواد مختلفة",
+            "<strong>الأمان أولاً</strong> - تحقق دائماً من حدود منطقة العمل"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "التركيب النحوي",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يستخدم GGcode تركيب نحوي بسيط وبديهي."
+        },
+        {
+          "type": "subsection",
+          "title": "إعلان المتغيرات",
+          "description": "استخدم كلمة let لإعلان المتغيرات",
+          "code": "let radius = 10\nlet angle = 45 * DEG_TO_RAD\nlet message = \"Hello World\""
+        },
+        {
+          "type": "subsection",
+          "title": "أوامر G-code",
+          "description": "استخدم أوامر G-code القياسية",
+          "code": "G0 X0 Y0 Z0    // حركة سريعة\nG1 X10 Y10 F100  // حركة خطية\nG2 X20 Y0 R10    // قوس في اتجاه عقارب الساعة\nG3 X0 Y0 R10     // قوس عكس اتجاه عقارب الساعة"
+        },
+        {
+          "type": "subsection",
+          "title": "التعليقات",
+          "description": "يدعم التعليقات أحادية ومتعددة الأسطر",
+          "code": "// هذا تعليق أحادي السطر\nlet x = 10  // تعليق مضمن\n\n/* هذا تعليق\n   متعدد الأسطر */"
+        },
+        {
+          "type": "subsection",
+          "title": "سلوك G-code النمطي",
+          "description": "أوامر G-code نمطية - تطبق حتى الأمر التالي",
+          "code": "G1 F100        // تعيين معدل التغذية\nX10 Y10        // G1 مطبق\nX20 Y20        // G1 مطبق\nG0 X0 Y0       // أمر G0 جديد"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "الدوال",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يدعم GGcode الدوال الرياضية للحسابات."
+        },
+        {
+          "type": "list",
+          "items": [
+            "<code>abs(x)</code> - القيمة المطلقة",
+            "<code>mod(x, y)</code> - باقي القسمة",
+            "<code>sin(x)</code>, <code>cos(x)</code> - الدوال المثلثية",
+            "<code>sqrt(x)</code> - الجذر التربيعي",
+            "<code>pow(x, y)</code> - الرفع للقوة",
+            "<code>lerp(a, b, t)</code> - الاستيفاء الخطي",
+            "<code>map(x, a, b, c, d)</code> - تحويل النطاق",
+            "<code>distance(x1, y1, x2, y2)</code> - المسافة بين النقاط",
+            "<code>log(x)</code>, <code>exp(x)</code> - اللوغاريتم والأس",
+            "<code>noise(x)</code> - ضوضاء بيرلين",
+            "<code>sign(x)</code> - إشارة الرقم",
+            "<code>deg(x)</code>, <code>rad(x)</code> - تحويل الزوايا"
+          ]
+        },
+        {
+          "type": "code",
+          "code": "let angle = sin(45 * DEG_TO_RAD)\nlet dist = distance(0, 0, 10, 10)\nlet mapped = map(5, 0, 10, 0, 100)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "هياكل التحكم",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يوفر GGcode هياكل تحكم قوية لإنشاء مسارات أدوات معقدة وعمليات شرطية."
+        },
+        {
+          "type": "subsection",
+          "title": "حلقات For",
+          "description": "<strong>حلقة For الأساسية：</strong> استخدم بناء الجملة <code>for variable = start..end</code>",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "حلقات While",
+          "description": "<strong>حلقة While الأساسية：</strong> استخدم بناء الجملة <code>while (condition)</code>",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "هياكل التحكم",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يدعم GGcode هياكل التحكم القياسية لإنشاء منطق البرنامج."
+        },
+        {
+          "type": "subsection",
+          "title": "حلقات for",
+          "description": "التكرار عبر النطاقات والمصفوفات",
+          "code": "for i = 0..<10 {\n  // يتم التنفيذ 10 مرات (0 إلى 9)\n}\n\nfor i = 0..10 {\n  // يتم التنفيذ 11 مرة (0 إلى 10)\n}\n\nfor item in myArray {\n  // التكرار عبر عناصر المصفوفة\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "حلقات while",
+          "description": "التنفيذ طالما الشرط صحيح",
+          "code": "let i = 0\nwhile i < 10 {\n  // يتم تنفيذ الكود طالما i < 10\n  i = i + 1\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "العبارات الشرطية",
+          "description": "تنفيذ الكود بناءً على الشروط",
+          "code": "if x > 10 {\n  // يتم التنفيذ إذا كان x > 10\n} else if x > 5 {\n  // يتم التنفيذ إذا كان x > 5 و x <= 10\n} else {\n  // يتم التنفيذ في جميع الحالات الأخرى\n}"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "المصفوفات",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يدعم GGcode المصفوفات أحادية وثنائية وثلاثية الأبعاد لتخزين البيانات."
+        },
+        {
+          "type": "subsection",
+          "title": "المصفوفات أحادية البعد",
+          "description": "إنشاء واستخدام المصفوفات أحادية البعد",
+          "code": "let points = [1, 2, 3, 4, 5]\nlet radius = points[0]  // الوصول للعنصر\npoints[2] = 10         // تعديل العنصر"
+        },
+        {
+          "type": "subsection",
+          "title": "المصفوفات ثنائية البعد",
+          "description": "إنشاء واستخدام المصفوفات ثنائية البعد",
+          "code": "let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nlet value = matrix[1][2]  // الوصول للعنصر\nmatrix[0][1] = 10        // تعديل العنصر"
+        },
+        {
+          "type": "subsection",
+          "title": "المصفوفات الديناميكية",
+          "description": "إنشاء المصفوفات باستخدام الحلقات",
+          "code": "let coords = []\nfor i = 0..<10 {\n  coords[i] = i * 10\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "المشغلات",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يدعم GGcode مشغلات المقارنة القياسية والمشغلات المنطقية والرياضية."
+        },
+        {
+          "type": "subsection",
+          "title": "مشغلات المقارنة",
+          "description": "مقارنة القيم",
+          "code": "==  // يساوي\n!=  // لا يساوي\n<   // أقل من\n<=  // أقل من أو يساوي\n>   // أكبر من\n>=  // أكبر من أو يساوي"
+        },
+        {
+          "type": "subsection",
+          "title": "المشغلات المنطقية",
+          "description": "العمليات المنطقية",
+          "code": "&&  // و (AND)\n||  // أو (OR)\n!   // لا (NOT)"
+        },
+        {
+          "type": "subsection",
+          "title": "المشغلات الرياضية",
+          "description": "العمليات الرياضية الأساسية",
+          "code": "+   // الجمع\n-   // الطرح\n*   // الضرب\n/   // القسمة\n&   // AND البت"
+        },
+        {
+          "type": "subsection",
+          "title": "المشغلات الأحادية",
+          "description": "مشغلات ذات معامل واحد",
+          "code": "-x  // السالب\n!x  // النفي المنطقي"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "الثوابت",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "يوفر GGcode عدة ثوابت رياضية مدمجة للحسابات الشائعة."
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - رقم أويلر (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - تحويل الدرجات إلى راديان | <code>RAD_TO_DEG</code> - تحويل الراديان إلى درجات"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "ميزات التوثيق",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "كتل الملاحظات",
+          "description": "استخدم كتل <code>note { }</code> لتوثيق الملفات والعناوين",
+          "code": "note {\n  هذه كتلة توثيق\n  يمكن أن تحتوي على عدة أسطر\n  مفيدة لعناوين الملفات والأوصاف\n  المؤلف: اسمك\n  الإصدار: 1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "التعليقات",
+          "description": "استخدم <code>//</code> للتعليقات أحادية السطر أو <code>/* */</code> للتعليقات متعددة الأسطر",
+          "code": "// هذا تعليق أحادي السطر\nlet radius = 10  // تعليق مضمن\n\n/* هذا تعليق متعدد الأسطر\n   يمكن أن يمتد عبر عدة أسطر\n   مفيد للشروحات التفصيلية */"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "أفضل الممارسات",
+      "content": [
+        {
+          "type": "list",
+          "title": "إرشادات البرمجة",
+          "items": [
+            "<strong>استخدم النطاقات الحصرية</strong> لتكرار المصفوفات: <code>for i = 0..<10</code> بدلاً من <code>for i = 0..10</code>",
+            "<strong>أعلن المتغيرات</strong> قبل استخدامها في التعبيرات المعقدة",
+            "<strong>استخدم الدوال</strong> لتنظيم العمليات المعقدة",
+            "<strong>أضف التعليقات</strong> لشرح المنطق المعقد",
+            "<strong>استخدم كتل الملاحظات</strong> لتوثيق الملفات",
+            "<strong>اختبر الأقسام الصغيرة</strong> قبل بناء البرامج المعقدة"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,529 @@
+{
+  "language": "en",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "What is GGcode?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode is a high-level programming language specifically designed for generating G-code for CNC machines, 3D printers, and other computer-controlled manufacturing equipment. It combines the simplicity of basic programming with powerful mathematical functions, making it easy to create complex toolpaths and geometric patterns."
+        },
+        {
+          "type": "list",
+          "title": "Key Features:",
+          "items": [
+            "Simple, readable syntax without semicolons",
+            "Extensive mathematical function library",
+            "Array support for complex data structures",
+            "Function definitions with parameters and return values",
+            "Control structures (loops, conditionals)",
+            "Direct G-code generation",
+            "Implicit features for convenience"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "App Usage Guide",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "This comprehensive guide explains how to use the GGcode application interface, all its controls, and their specific use cases for creating, editing, and compiling GGcode programs."
+        },
+        {
+          "type": "subsection",
+          "title": "Main Interface Layout",
+          "description": "The application is divided into two main panels with a control bar at the bottom:",
+          "code": "┌─────────────────┬─────────────────┐\n│   GGcode Editor │  G-code Output  │\n│                 │                 │\n│  (Left Panel)   │  (Right Panel)  │\n├─────────────────┴─────────────────┤\n│        Control Bar                │\n└───────────────────────────────────┘"
+        },
+        {
+          "type": "subsection",
+          "title": "GGcode Editor (Left Panel)",
+          "description": "The main editing area where you write your GGcode programs:",
+          "list": [
+            "<strong>Monaco Editor</strong> - Advanced code editor with syntax highlighting and auto-completion",
+            "<strong>Line Numbers</strong> - Shows line numbers for easy navigation and error reference",
+            "<strong>Syntax Highlighting</strong> - Different colors for keywords, functions, G-code commands, and variables",
+            "<strong>Error Detection</strong> - Real-time syntax error highlighting with red underlines",
+            "<strong>Auto-save</strong> - Automatically saves your work every 30 seconds to browser storage",
+            "<strong>Undo/Redo</strong> - Full undo/redo history for all changes",
+            "<strong>Find/Replace</strong> - Press Ctrl+F to search and replace text in your code"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "G-code Output (Right Panel)",
+          "description": "Displays the compiled G-code that will be sent to your machine:",
+          "list": [
+            "<strong>Read-only Display</strong> - Shows the generated G-code in a formatted, readable way",
+            "<strong>Line Numbers</strong> - Corresponds to the original GGcode line numbers for debugging",
+            "<strong>Syntax Highlighting</strong> - Different colors for G-code commands, coordinates, and comments",
+            "<strong>Scroll Support</strong> - Handles large G-code files with smooth scrolling",
+            "<strong>Copy Functionality</strong> - Select and copy any part of the generated G-code"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Control Bar - Left Side (Primary Controls)",
+          "description": "Essential controls for GGcode development workflow:",
+          "list": [
+            "<strong>Compile Button</strong> (Orange) - Converts your GGcode to G-code. Use this after writing or modifying your code to generate the machine-readable output. The button shows a play icon and 'Compile' text.",
+            "<strong>Configurator Button</strong> (Blue) - Opens the machine configuration panel where you can set up your CNC machine or 3D printer parameters like feed rates, tool settings, and machine dimensions.",
+            "<strong>Open Button</strong> (White) - Loads existing GGcode files from your computer. Supports .ggcode files and can also open text files. Remembers the last opened file location.",
+            "<strong>Examples Button</strong> (Purple) - Opens a modal with pre-built example programs. Great for learning syntax and common patterns. Examples include circles, squares, spirals, and more complex patterns.",
+            "<strong>Save Button</strong> (Green) - Saves your current GGcode program to a file on your computer. Prompts for filename and location. Also saves automatically every 30 seconds to browser storage."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Control Bar - Right Side (Output Controls)",
+          "description": "Controls for managing the generated G-code output:",
+          "list": [
+            "<strong>Copy Button</strong> (White) - Copies the entire generated G-code to your clipboard. Useful for pasting into other applications or machine control software.",
+            "<strong>Visualizer Button</strong> (Yellow) - Opens a 3D G-code visualizer to preview your toolpath in a 3D environment. Great for verifying complex movements before sending to your machine.",
+            "<strong>Export Button</strong> (Green) - Saves the generated G-code as a .gcode file to your computer. Automatically suggests a filename based on your GGcode file name."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Control Bar - Center (Utility Controls)",
+          "description": "Additional utility controls for enhanced workflow:",
+          "list": [
+            "<strong>Help Button</strong> (Cyan) - Opens this comprehensive help system with language documentation, examples, and search functionality.",
+            "<strong>Clear Memory Button</strong> (Red) - Clears all saved data including auto-saved content, last opened files, and settings. Use with caution as this action cannot be undone."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Configurator Modal",
+          "description": "Advanced machine configuration panel that slides in from the left:",
+          "list": [
+            "<strong>Machine Settings</strong> - Configure feed rates, tool settings, work area dimensions, and other machine-specific parameters.",
+            "<strong>Save & Compile</strong> - Apply configuration changes and immediately compile your GGcode with the new settings.",
+            "<strong>Real-time Updates</strong> - Configuration changes affect G-code generation immediately for accurate output.",
+            "<strong>Persistent Settings</strong> - Machine settings are saved and remembered between sessions."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Inline Configuration Setup",
+          "description": "Add configuration directives to your variable declarations:",
+          "code": "let radius = 10 /// @number 5 50 // Circle radius in mm\nlet enabled = 1 /// @check // Enable feature\nlet mode = 2 /// @selection 1, 2, 3 // Select mode\nlet notes = \"\" /// @text 3 max 120 // Notes for operator"
+        },
+        {
+          "type": "subsection",
+          "title": "Configuration Directives Reference",
+          "description": "Available directive types:",
+          "list": [
+            "<strong>@number min max</strong> - Number input with range validation",
+            "<strong>@check</strong> - Checkbox (boolean) input",
+            "<strong>@selection options</strong> - Dropdown with preset options",
+            "<strong>@text rows [max N]</strong> - Text input or textarea"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Using Configuration Values in Code",
+          "description": "Use the variable names directly in your GGcode:",
+          "code": "let radius = 10 /// @number 5 50 // Circle radius\nlet feed_rate = 150 /// @number 50 500 // Feed rate\nlet enabled = 1 /// @check // Enable feature\n\n// Use in your code\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // Do something\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Configurator Modal Interface",
+          "description": "How to use the visual configuration interface:",
+          "list": [
+            "<strong>Open Configurator</strong> - Click the blue Configurator button to open the configuration panel",
+            "<strong>Parameter Input</strong> - Enter values in the input fields for each machine parameter",
+            "<strong>Real-time Preview</strong> - See how your changes affect the configuration immediately",
+            "<strong>Save & Apply</strong> - Click 'Save' to apply changes and compile with new settings",
+            "<strong>Reset to Defaults</strong> - Use reset options to restore default machine parameters",
+            "<strong>Configuration History</strong> - View and restore previous configuration settings"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "How It Works",
+          "description": "Technical details:",
+          "list": [
+            "<strong>Parsing</strong> - Scans for <code>let variable = value /// @directive parameters // description</code>",
+            "<strong>Form Generation</strong> - Creates dynamic HTML form from parsed variables",
+            "<strong>Validation</strong> - Number ranges, checkbox conversion, option validation",
+            "<strong>Real-time Updates</strong> - Changes immediately update GGcode source before compilation"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Best Practices",
+          "description": "Tips for effective configuration:",
+          "list": [
+            "<strong>Start Safe</strong> - Begin with conservative values, then optimize",
+            "<strong>Test Small</strong> - Test configurations on small pieces first",
+            "<strong>Document Settings</strong> - Keep notes for different materials",
+            "<strong>Safety First</strong> - Always verify work area limits"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Complete Configuration Example",
+          "description": "Example showing all directive types:",
+          "code": "let radius = 10 /// @number 5 50 // Circle radius\nlet center_x = 0 /// @number -100 100 // Center X\nlet feed_rate = 150 /// @number 50 500 // Feed rate\nlet draw_circle = 1 /// @check // Draw circle\nlet pattern = 1 /// @selection 1, 2, 3 // Pattern type\nlet notes = \"\" /// @text 3 max 120 // Notes\n\n// Use in code\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Advanced Editor Features",
+          "description": "Professional-grade editing capabilities:",
+          "list": [
+            "<strong>Auto-completion</strong> - Press Ctrl+Space to trigger function and keyword suggestions. Shows available GGcode functions, G-code commands, and variables.",
+            "<strong>Bracket Matching</strong> - Automatically highlights matching brackets, parentheses, and braces for easier code navigation.",
+            "<strong>Multi-cursor Editing</strong> - Hold Alt and click to create multiple cursors for simultaneous editing of multiple lines.",
+            "<strong>Code Folding</strong> - Click the arrow next to line numbers to collapse/expand code blocks for better organization.",
+            "<strong>Word Wrap</strong> - Long lines automatically wrap to fit the editor width for better readability.",
+            "<strong>Zoom Controls</strong> - Use Ctrl+Plus/Minus to zoom in/out of the editor text size."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Help System Features",
+          "description": "Comprehensive documentation and assistance:",
+          "list": [
+            "<strong>Multi-language Support</strong> - Choose from 15 supported languages using the language selector dropdown with flag icons.",
+            "<strong>Search Functionality</strong> - Use the search bar to quickly find specific topics, functions, or keywords across all help content.",
+            "<strong>Copy Code Examples</strong> - Click the copy button on any code example to copy it directly to your clipboard for use in your programs.",
+            "<strong>Section Navigation</strong> - Jump between different help sections using the organized table of contents.",
+            "<strong>Real-time Search</strong> - Search results update as you type, highlighting matching content across all sections."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "3D G-code Visualizer",
+          "description": "Advanced 3D preview system for toolpath visualization:",
+          "list": [
+            "<strong>3D Preview</strong> - View your G-code toolpath in a realistic 3D environment before sending to your machine.",
+            "<strong>Toolpath Validation</strong> - Verify complex movements, check for collisions, and ensure proper tool positioning.",
+            "<strong>Interactive Controls</strong> - Rotate, zoom, and pan the 3D view to examine your toolpath from any angle.",
+            "<strong>Layer Visualization</strong> - See how your toolpath will be executed layer by layer for 3D printing or milling operations.",
+            "<strong>Error Detection</strong> - Identify potential issues like rapid movements through material or incorrect tool positioning."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "File Management & Formats",
+          "description": "Supported file formats and file handling capabilities:",
+          "list": [
+            "<strong>GGcode Files (.ggcode)</strong> - Native format for GGcode source files with syntax highlighting and full feature support.",
+            "<strong>Text Files (.txt)</strong> - Plain text files can be opened and edited, then saved as .ggcode files.",
+            "<strong>G-code Output (.gcode)</strong> - Standard G-code format compatible with most CNC machines and 3D printers.",
+            "<strong>Drag & Drop Support</strong> - Drag files directly onto the editor to open them quickly.",
+            "<strong>Auto-save Recovery</strong> - Browser automatically saves your work every 30 seconds for data protection.",
+            "<strong>File Memory</strong> - Application remembers the last opened file location for convenience."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Complete Workflow Guide",
+          "description": "Step-by-step process for creating GGcode programs:",
+          "list": [
+            "<strong>1. Plan Your Program</strong> - Decide what you want to create (shape, pattern, toolpath) and sketch out the basic structure.",
+            "<strong>2. Configure Your Machine</strong> - Click the Configurator button to set up your machine parameters (feed rates, tool settings, work area).",
+            "<strong>3. Write Your Code</strong> - Use the editor to write your GGcode program. Start with simple examples and build complexity gradually.",
+            "<strong>4. Test Small Sections</strong> - Compile small parts of your code first to catch errors early and understand the output.",
+            "<strong>5. Compile Full Program</strong> - Click the Compile button to generate the complete G-code for your program.",
+            "<strong>6. Preview in 3D</strong> - Use the Visualizer button to preview your toolpath in 3D before finalizing.",
+            "<strong>7. Review the Output</strong> - Check the generated G-code in the right panel for accuracy and completeness.",
+            "<strong>8. Save Your Work</strong> - Save both your GGcode source file and the generated G-code output file.",
+            "<strong>9. Transfer to Machine</strong> - Copy the G-code to your machine control software or SD card for execution."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Keyboard Shortcuts Reference",
+          "description": "Essential shortcuts for efficient workflow:",
+          "list": [
+            "<strong>Ctrl+S</strong> - Save GGcode file (same as Save button)",
+            "<strong>Ctrl+O</strong> - Open GGcode file (same as Open button)",
+            "<strong>Ctrl+Enter</strong> - Compile GGcode (same as Compile button)",
+            "<strong>Ctrl+C</strong> - Copy selected text to clipboard",
+            "<strong>Ctrl+V</strong> - Paste text from clipboard",
+            "<strong>Ctrl+X</strong> - Cut selected text",
+            "<strong>Ctrl+Z</strong> - Undo last action",
+            "<strong>Ctrl+Y</strong> - Redo last undone action",
+            "<strong>Ctrl+F</strong> - Find text in editor",
+            "<strong>Ctrl+H</strong> - Find and replace text",
+            "<strong>Ctrl+Space</strong> - Trigger auto-completion",
+            "<strong>Ctrl+Plus/Minus</strong> - Zoom in/out of editor",
+            "<strong>Ctrl+Home</strong> - Go to beginning of file",
+            "<strong>Ctrl+End</strong> - Go to end of file",
+            "<strong>Alt+Click</strong> - Create multiple cursors for simultaneous editing"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Best Practices & Tips",
+          "description": "Proven strategies for effective GGcode development:",
+          "list": [
+            "<strong>Start with Examples</strong> - Use the Examples button to load pre-built programs and study their structure before writing your own.",
+            "<strong>Use Comments Liberally</strong> - Add comments to explain complex logic, especially for mathematical calculations and geometric patterns.",
+            "<strong>Test Incrementally</strong> - Compile and test small sections of your code as you write it, rather than waiting until the end.",
+            "<strong>Save Frequently</strong> - While auto-save works every 30 seconds, manually save important work using Ctrl+S or the Save button.",
+            "<strong>Use the Configurator</strong> - Properly configure your machine settings for accurate G-code generation and safe operation.",
+            "<strong>Check the Help System</strong> - Use the search function to quickly find information about functions, syntax, and features.",
+            "<strong>Validate Your Output</strong> - Always review the generated G-code before sending it to your machine to ensure it's correct.",
+            "<strong>Backup Your Files</strong> - Keep copies of both your GGcode source files and generated G-code files for future reference and modifications."
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Troubleshooting Common Issues",
+          "description": "Solutions for frequently encountered problems:",
+          "list": [
+            "<strong>Compilation Errors</strong> - Check the error highlighting in the editor. Common issues include missing semicolons, undefined variables, or syntax errors.",
+            "<strong>Slow Performance</strong> - Disable auto-compile if typing becomes slow, especially with large files or complex calculations.",
+            "<strong>Lost Work</strong> - Check browser storage for auto-saved content. Use the Clear Memory button only when necessary.",
+            "<strong>File Loading Issues</strong> - Ensure files are saved with .ggcode extension or are plain text files. Check file permissions.",
+            "<strong>G-code Output Problems</strong> - Verify machine configuration settings, especially feed rates and tool parameters.",
+            "<strong>Help System Issues</strong> - Try refreshing the page if help content doesn't load properly. Check your internet connection for language loading."
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "Basic Syntax",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "Variables",
+          "description": "Use <code>let</code> to declare variables. No semicolons required!",
+          "code": "let radius = 10\nlet center_x = 0\nlet feed_rate = 150"
+        },
+        {
+          "type": "subsection",
+          "title": "G-code Commands",
+          "description": "Standard G-code commands with variable interpolation and modal behavior",
+          "code": "G0 X10 Y5        // Rapid move to position\nG1 X20 Y15 F100  // Linear move with feed rate\nX30 Y25          // Continues G1 linear move (modal)\nG1 X[center_x] Y[center_y] F[feed_rate]  // Using variables"
+        },
+        {
+          "type": "subsection",
+          "title": "Comments",
+          "description": "Use <code>//</code> for single-line or <code>/* */</code> for multi-line",
+          "code": "// This is a single-line comment\n/* This is a\n   multi-line comment */"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "Mathematical Functions",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode provides a comprehensive library of mathematical functions for complex calculations and geometric operations."
+        },
+        {
+          "type": "subsection",
+          "title": "Basic Math Functions",
+          "description": "<code>abs(x)</code> - Absolute value | <code>mod(a, b)</code> - Modulo (remainder) | <code>floor(x)</code> - Round down | <code>ceil(x)</code> - Round up",
+          "additionalInfo": "<code>round(x)</code> - Round to nearest | <code>min(a, b)</code> - Minimum value | <code>max(a, b)</code> - Maximum value | <code>clamp(x, min, max)</code> - Constrain value",
+          "code": "let abs_val = abs(-15)      // Returns 15\nlet mod_val = mod(17, 5)    // Returns 2\nlet floor_val = floor(3.7)  // Returns 3\nlet clamp_val = clamp(15, 0, 10)  // Returns 10"
+        },
+        {
+          "type": "subsection",
+          "title": "Trigonometric Functions",
+          "description": "<code>sin(x)</code> - Sine | <code>cos(x)</code> - Cosine | <code>tan(x)</code> - Tangent",
+          "additionalInfo": "<code>asin(x)</code> - Arcsine | <code>acos(x)</code> - Arccosine | <code>atan(x)</code> - Arctangent | <code>atan2(y, x)</code> - Arctangent of y/x",
+          "code": "let angle = 45 * DEG_TO_RAD\nlet x = radius * cos(angle)\nlet y = radius * sin(angle)\nlet angle_from_atan = atan2(y, x)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "Control Structures",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode provides powerful control structures for creating complex toolpaths and conditional operations."
+        },
+        {
+          "type": "subsection",
+          "title": "For Loops",
+          "description": "<strong>Basic For Loop:</strong> Use <code>for variable = start..end</code> syntax",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "While Loops",
+          "description": "<strong>Basic While Loop:</strong> Use <code>while (condition)</code> syntax",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "Special Features",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode includes several special features that make programming more convenient."
+        },
+        {
+          "type": "subsection",
+          "title": "G-code Modal Behavior",
+          "description": "<strong>Modal G-code:</strong> Once you specify a G command (G0, G1, G2, G3), it continues to apply to subsequent lines until a new G command is specified. This follows standard G-code modal behavior.",
+          "code": "G1 X[10] Y[20] F[100]  // Linear move\nX[30] Y[40]             // Continues G1\nX[50] Y[60]             // Still G1\nG0 X[0] Y[0]            // New rapid move command\nX[10] Y[10]             // Continues G0 rapid move"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "Arrays",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Arrays in GGcode allow you to store and manipulate collections of values, making it easy to work with complex data structures and coordinate points."
+        },
+        {
+          "type": "subsection",
+          "title": "Array Literals",
+          "description": "<strong>Single-dimensional Arrays:</strong> Create arrays with initial values",
+          "code": "let points = [10, 20, 30, 40, 50]\nlet first = points[0]    // Access first element\nlet last = points[4]     // Access last element"
+        },
+        {
+          "type": "subsection",
+          "title": "Multi-dimensional Arrays",
+          "description": "<strong>Multi-dimensional Arrays:</strong> Create nested arrays for grids and matrices",
+          "code": "let grid = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]\nlet value = grid[1][2]   // Access element at row 1, column 2 (returns 5)"
+        },
+        {
+          "type": "subsection",
+          "title": "3D Arrays",
+          "description": "<strong>3D Arrays:</strong> Create complex data structures",
+          "code": "let matrix = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]\nlet value = matrix[0][1][0]  // Access nested element (returns 3)"
+        },
+        {
+          "type": "subsection",
+          "title": "Array Operations",
+          "description": "<strong>Array Assignment:</strong> Modify array elements",
+          "code": "let maze = [[1, 2], [3, 4]]\nmaze[1][0] = 0  // Change element at position [1][0] to 0"
+        },
+        {
+          "type": "subsection",
+          "title": "Dynamic Arrays",
+          "description": "<strong>Dynamic Arrays:</strong> Build arrays programmatically",
+          "code": "let points = []\nlet count = 0\npoints[count] = [10, 20]  // Add point at index 0\ncount = count + 1\npoints[count] = [30, 40]  // Add point at index 1\n\nlet pt = points[0]        // Get first point\nlet x = pt[0]             // Get x coordinate\nlet y = pt[1]             // Get y coordinate"
+        },
+        {
+          "type": "subsection",
+          "title": "Array Iteration",
+          "description": "<strong>Array Iteration:</strong> Loop through array elements",
+          "code": "let values = [10, 20, 30, 40, 50]\nfor i = 0..<5 {\n    G1 X[values[i]] Y[i*10] F100\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "Operators",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode provides a comprehensive set of operators for mathematical calculations, comparisons, and logical operations."
+        },
+        {
+          "type": "subsection",
+          "title": "Comparison Operators",
+          "description": "<code>==</code> - Equal to | <code>!=</code> - Not equal to | <code><</code> - Less than | <code><=</code> - Less than or equal",
+          "additionalInfo": "<code>></code> - Greater than | <code>>=</code> - Greater than or equal",
+          "code": "let a = 10\nlet b = 5\nlet eq_test = a == 10    // Returns true\nlet ne_test = a != b     // Returns true\nlet lt_test = b < a      // Returns true\nlet le_test = b <= a     // Returns true"
+        },
+        {
+          "type": "subsection",
+          "title": "Logical Operators",
+          "description": "<code>&&</code> - Logical AND | <code>||</code> - Logical OR | <code>!</code> - Logical NOT",
+          "code": "let and_test = (a > b) && (a == 10)  // Returns true\nlet or_test = (a < b) || (a != 5)     // Returns true\nlet not_test = !(a < b)               // Returns true"
+        },
+        {
+          "type": "subsection",
+          "title": "Arithmetic Operators",
+          "description": "<code>+</code> - Addition | <code>-</code> - Subtraction | <code>*</code> - Multiplication | <code>/</code> - Division",
+          "code": "let sum = a + b        // Returns 15\nlet diff = a - b       // Returns 5\nlet product = a * b    // Returns 50\nlet quotient = a / b   // Returns 2"
+        },
+        {
+          "type": "subsection",
+          "title": "Bitwise Operators",
+          "description": "<code>&</code> - Bitwise AND",
+          "code": "let bit_test = 5 & 3  // Returns 1 (binary: 101 & 011 = 001)"
+        },
+        {
+          "type": "subsection",
+          "title": "Unary Operators",
+          "description": "<code>-</code> - Negation | <code>!</code> - Logical NOT",
+          "code": "let negative = -5      // Returns -5\nlet logical_not = !0   // Returns true\nlet double_not = !!1   // Returns true"
+        },
+        {
+          "type": "subsection",
+          "title": "Important Notes",
+          "description": "<strong>Modulo:</strong> Use the <code>mod(a, b)</code> function, not the <code>%</code> operator",
+          "code": "let remainder = mod(17, 5)  // Returns 2 (correct)\n// let remainder = 17 % 5  // This will cause an error!"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "Constants",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode provides several built-in mathematical constants for common calculations."
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - Euler's number (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - Degrees to radians conversion | <code>RAD_TO_DEG</code> - Radians to degrees conversion"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "Documentation Features",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "Note Blocks",
+          "description": "Use <code>note { }</code> blocks for file documentation and headers",
+          "code": "note {\n  This is a documentation block\n  Can contain multiple lines\n  Useful for file headers and descriptions\n  Author: Your Name\n  Version: 1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Comments",
+          "description": "Use <code>//</code> for single-line comments or <code>/* */</code> for multi-line comments",
+          "code": "// This is a single-line comment\nlet radius = 10  // Inline comment\n\n/* This is a multi-line comment\n   Can span multiple lines\n   Useful for detailed explanations */"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "Best Practices",
+      "content": [
+        {
+          "type": "list",
+          "title": "Programming Guidelines",
+          "items": [
+            "<strong>Use exclusive ranges</strong> for array iteration: <code>for i = 0..<10</code> instead of <code>for i = 0..10</code>",
+            "<strong>Declare variables</strong> before using them in complex expressions",
+            "<strong>Use functions</strong> to organize complex operations",
+            "<strong>Add comments</strong> to explain complex logic",
+            "<strong>Use note blocks</strong> for file documentation",
+            "<strong>Test small sections</strong> before building complex programs"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -546,6 +546,15 @@ function addCopyButtons() {
 // Add copy buttons when help modal is shown
 function showHelp() {
   showModal('helpModal');
+  
+  // Get saved language preference or default to English
+  const savedLanguage = localStorage.getItem('ggcode_selected_language') || 'en';
+  currentLanguage = savedLanguage;
+  
+  // Load help content when modal opens
+  loadHelpContent(savedLanguage);
+  // Setup language selector
+  setupLanguageSelector();
   // Add copy buttons after modal is shown
   setTimeout(addCopyButtons, 100);
   // Setup help search
@@ -559,7 +568,131 @@ function showHelp() {
   }, 200);
 }
 
-// Help search functionality
+// Help content loading and search functionality
+let helpData = null;
+let currentLanguage = 'en';
+
+async function loadHelpContent(language = 'en') {
+  const helpContent = document.getElementById('helpContent');
+  if (!helpContent) return;
+
+  try {
+    // Show loading indicator
+    helpContent.innerHTML = '<div class="loading-indicator"><p>Loading help content...</p></div>';
+    
+    const response = await fetch(`/api/help?lang=${language}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      helpData = result.data;
+      currentLanguage = language;
+      renderHelpContent(helpData, language);
+    } else {
+      helpContent.innerHTML = '<div class="error-message"><p>Failed to load help content: ' + (result.error || 'Unknown error') + '</p></div>';
+    }
+  } catch (error) {
+    helpContent.innerHTML = '<div class="error-message"><p>Error loading help content: ' + error.message + '</p></div>';
+  }
+}
+
+function setupLanguageSelector() {
+  // This function is now handled by setupCustomDropdown()
+  // The custom dropdown handles language selection and localStorage persistence
+}
+
+function renderHelpContent(data, language = 'en') {
+  const helpContent = document.getElementById('helpContent');
+  if (!helpContent || !data.sections) return;
+
+  // Add language data attribute for RTL support
+  helpContent.setAttribute('data-lang', language);
+
+  const sections = Object.values(data.sections);
+  let html = '';
+
+  sections.forEach(section => {
+    // Handle both single-language and multi-language structures
+    let sectionData = section;
+    if (section[language]) {
+      // Multi-language structure
+      sectionData = section[language];
+    } else {
+      // Fallback to English if translation not available
+      sectionData = section.en || section;
+    }
+    
+    // Skip sections without content
+    if (!sectionData || !sectionData.content) {
+      console.warn(`Missing content for section ${section.id} in language ${language}`);
+      return;
+    }
+    
+    html += `<div class="help-section-card" data-section="${section.id}">`;
+    html += `<h3 class="help-section-title">${sectionData.title}</h3>`;
+    html += '<div class="help-section-content">';
+    
+    sectionData.content.forEach(item => {
+      if (item.type === 'paragraph') {
+        html += `<p>${item.text}</p>`;
+      } else if (item.type === 'list') {
+        html += '<div class="collapsible-list">';
+        html += '<button class="list-toggle" onclick="toggleList(this)">';
+        html += '<span class="toggle-icon">▼</span> ' + (item.title || '');
+        html += '</button>';
+        html += '<ul class="list-content" style="display: none;">';
+        item.items.forEach(listItem => {
+          html += `<li>${listItem}</li>`;
+        });
+        html += '</ul>';
+        html += '</div>';
+      } else if (item.type === 'subsection') {
+        html += `<h4>${item.title}</h4>`;
+        if (item.description) {
+          html += `<p>${item.description}</p>`;
+        }
+        if (item.additionalInfo) {
+          html += `<p>${item.additionalInfo}</p>`;
+        }
+        if (item.code) {
+          html += `<pre>${item.code}</pre>`;
+        }
+        if (item.list) {
+          html += '<div class="collapsible-list">';
+          html += '<button class="list-toggle" onclick="toggleList(this)">';
+          html += '<span class="toggle-icon">▼</span> ' + item.title;
+          html += '</button>';
+          html += '<ul class="list-content" style="display: none;">';
+          item.list.forEach(listItem => {
+            html += `<li>${listItem}</li>`;
+          });
+          html += '</ul>';
+          html += '</div>';
+        }
+      } else if (item.type === 'code') {
+        html += `<pre>${item.code}</pre>`;
+      }
+    });
+    
+    html += '</div></div>';
+  });
+
+  helpContent.innerHTML = html;
+}
+
+// Function to toggle collapsible lists
+function toggleList(button) {
+  const listContent = button.nextElementSibling;
+  const toggleIcon = button.querySelector('.toggle-icon');
+  
+  if (listContent.style.display === 'none') {
+    listContent.style.display = 'block';
+    toggleIcon.textContent = '▲';
+  } else {
+    listContent.style.display = 'none';
+    toggleIcon.textContent = '▼';
+  }
+}
+
 function setupHelpSearch() {
   const searchInput = document.getElementById('helpSearchInput');
   const searchResults = document.getElementById('helpSearchResults');
@@ -567,16 +700,12 @@ function setupHelpSearch() {
   
   if (!searchInput) return;
   
-  console.log('Setting up help search...');
-  console.log('Help content sections:', helpContent.querySelectorAll('.help-section').length);
-  
   searchInput.addEventListener('input', function() {
     const query = this.value.toLowerCase().trim();
-    console.log('Searching for:', query);
     
     if (query === '') {
       // Show all content
-      const sections = helpContent.querySelectorAll('.help-section');
+      const sections = helpContent.querySelectorAll('.help-section-card');
       sections.forEach(section => {
         section.classList.remove('hidden', 'highlight');
       });
@@ -584,13 +713,13 @@ function setupHelpSearch() {
       return;
     }
     
-    // Simple search: look for any text content that matches
+    // Search through all elements
     const allElements = helpContent.querySelectorAll('h3, h4, p, pre, li, code');
     let matchCount = 0;
     let matchedSections = new Set();
     
     // Reset all sections
-    const sections = helpContent.querySelectorAll('.help-section');
+    const sections = helpContent.querySelectorAll('.help-section-card');
     sections.forEach(section => {
       section.classList.remove('hidden', 'highlight');
     });
@@ -602,7 +731,7 @@ function setupHelpSearch() {
         matchCount++;
         // Find the section containing this element
         let section = element;
-        while (section && !section.classList.contains('help-section')) {
+        while (section && !section.classList.contains('help-section-card')) {
           section = section.parentElement;
         }
         if (section) {
@@ -621,7 +750,7 @@ function setupHelpSearch() {
     
     // Update results count
     if (matchCount > 0) {
-      searchResults.textContent = `Found ${ matchCount } matching element${ matchCount > 1 ? 's' : '' } in ${ matchedSections.size } section${ matchedSections.size > 1 ? 's' : '' } `;
+      searchResults.textContent = `Found ${matchCount} matching element${matchCount > 1 ? 's' : ''} in ${matchedSections.size} section${matchedSections.size > 1 ? 's' : ''}`;
     } else {
       searchResults.textContent = 'No matches found';
     }
@@ -672,4 +801,85 @@ function setupExamplesSearch() {
   searchInput.value = '';
   searchResults.textContent = '';
 }
+
+// Custom dropdown functionality
+function setupCustomDropdown() {
+  const selectSelected = document.getElementById('selectSelected');
+  const selectItems = document.getElementById('selectItems');
+  const selectOptions = document.querySelectorAll('.select-option');
+  
+  if (!selectSelected || !selectItems) return;
+  
+  // Load saved language preference
+  const savedLanguage = localStorage.getItem('ggcode_selected_language') || 'en';
+  
+  // Set initial selection based on saved preference
+  const initialOption = document.querySelector(`[data-value="${savedLanguage}"]`);
+  if (initialOption) {
+    const flag = initialOption.getAttribute('data-flag');
+    const languageName = initialOption.querySelector('.language-name').textContent;
+    
+    // Update selected display
+    selectSelected.querySelector('.flag-icon').className = `flag-icon flag-${flag}`;
+    selectSelected.querySelector('.language-name').textContent = languageName;
+    
+    // Update selected state
+    selectOptions.forEach(opt => opt.classList.remove('selected'));
+    initialOption.classList.add('selected');
+    
+    // Load content in saved language
+    loadHelpContent(savedLanguage);
+  }
+  
+  // Toggle dropdown
+  selectSelected.addEventListener('click', function(e) {
+    e.stopPropagation();
+    selectItems.classList.toggle('select-hide');
+    selectSelected.classList.toggle('active');
+  });
+  
+  // Handle option selection
+  selectOptions.forEach(option => {
+    option.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const value = this.getAttribute('data-value');
+      const flag = this.getAttribute('data-flag');
+      const languageName = this.querySelector('.language-name').textContent;
+      
+      // Save language preference to localStorage
+      localStorage.setItem('ggcode_selected_language', value);
+      
+      // Update selected display
+      selectSelected.querySelector('.flag-icon').className = `flag-icon flag-${flag}`;
+      selectSelected.querySelector('.language-name').textContent = languageName;
+      
+      // Update selected state
+      selectOptions.forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+      
+      // Close dropdown
+      selectItems.classList.add('select-hide');
+      selectSelected.classList.remove('active');
+      
+      // Trigger language change
+      loadHelpContent(value);
+    });
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function() {
+    selectItems.classList.add('select-hide');
+    selectSelected.classList.remove('active');
+  });
+  
+  // Prevent dropdown from closing when clicking inside
+  selectItems.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+}
+
+// Initialize custom dropdown when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  setupCustomDropdown();
+});
 </script>

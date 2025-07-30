@@ -270,14 +270,14 @@ body {
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 3000;
 }
 
 .modal-content {
   background: #252526;
   border: 1px solid #3c3c3c;
   border-radius: 6px;
-  max-width: 600px;
+  max-width: 50vw;
   max-height: 80vh;
   width: 90%;
   overflow: hidden;
@@ -332,24 +332,275 @@ pre {
 }
 
 .help-section {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.help-section.hidden {
+.help-section-card {
+  background: #2d2d30;
+  border: 1px solid #3c3c3c;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.help-section-card:hover {
+  background: #3c3c3c;
+  border-color: #007acc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 204, 0.15);
+}
+
+.help-section-card.highlight {
+  background: rgba(0, 122, 204, 0.1);
+  border-color: #007acc;
+  border-left: 4px solid #007acc;
+  box-shadow: 0 0 12px rgba(0, 122, 204, 0.25);
+}
+
+.help-section-card.hidden {
   display: none;
 }
 
-.help-section.highlight {
-  background: rgba(0, 122, 204, 0.15);
-  border-left: 3px solid #007acc;
-  padding-left: 12px;
-  margin-left: -12px;
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(0, 122, 204, 0.2);
+.help-section-card.hidden {
+  display: none !important;
 }
 
-.help-section.hidden {
-  display: none !important;
+.help-section-title {
+  color: #007acc;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #3c3c3c;
+}
+
+.help-section-content {
+  color: #cccccc;
+  line-height: 1.6;
+}
+
+.help-section-content h4 {
+  color: #007acc;
+  font-weight: 500;
+  margin: 20px 0 8px 0;
+  font-size: 16px;
+}
+
+.help-section-content p {
+  margin: 12px 0;
+}
+
+.help-section-content ul {
+  margin: 12px 0;
+  padding-left: 20px;
+}
+
+.help-section-content li {
+  margin: 6px 0;
+}
+
+/* Additional improvements for card design */
+.help-section-card:first-child {
+  margin-top: 0;
+}
+
+.help-section-card:last-child {
+  margin-bottom: 0;
+}
+
+/* Improve spacing between subsections */
+.help-section-content h4:first-of-type {
+  margin-top: 0;
+}
+
+/* Better visual separation for code blocks */
+.help-section-content pre {
+  margin: 16px 0;
+  border-left: 3px solid #007acc;
+}
+
+/* Improve list styling */
+.help-section-content ul {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.help-section-content li {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* Loading and error states */
+.loading-indicator {
+  text-align: center;
+  padding: 40px 20px;
+  color: #cccccc;
+}
+
+.loading-indicator p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.error-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 6px;
+  margin: 20px 0;
+}
+
+.error-message p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Language selector */
+.language-selector {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.language-select {
+  background: #2d2d30;
+  border: 1px solid #3c3c3c;
+  border-radius: 4px;
+  color: #cccccc;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Android Emoji', 'EmojiSymbols', 'EmojiOne Mozilla', 'Twemoji Mozilla', 'Segoe UI Symbol', Arial, sans-serif;
+}
+
+/* RTL Support for Arabic and Hebrew */
+[data-lang="ar"] .help-content,
+[data-lang="ar"] .help-section-content,
+[data-lang="ar"] .help-section-card,
+[data-lang="he"] .help-content,
+[data-lang="he"] .help-section-content,
+[data-lang="he"] .help-section-card {
+  direction: rtl;
+  text-align: right;
+}
+
+[data-lang="ar"] .help-section-title,
+[data-lang="he"] .help-section-title {
+  text-align: right;
+}
+
+[data-lang="ar"] .help-section-content p,
+[data-lang="ar"] .help-section-content li,
+[data-lang="he"] .help-section-content p,
+[data-lang="he"] .help-section-content li {
+  text-align: right;
+}
+
+[data-lang="ar"] pre,
+[data-lang="he"] pre {
+  direction: ltr;
+  text-align: left;
+}
+
+.language-select:hover {
+  border-color: #007acc;
+  background: #3c3c3c;
+}
+
+.language-select:focus {
+  outline: none;
+  border-color: #007acc;
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+.language-select option {
+  background: #2d2d30;
+  color: #cccccc;
+}
+
+/* Custom Select Dropdown */
+.custom-select {
+  position: relative;
+  display: inline-block;
+  min-width: 200px;
+}
+
+.select-selected {
+  background-color: #2d2d30;
+  border: 1px solid #3c3c3c;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #cccccc;
+  transition: border-color 0.2s;
+}
+
+.select-selected:hover {
+  border-color: #007acc;
+  background: #3c3c3c;
+}
+
+.select-arrow {
+  margin-left: auto;
+  font-size: 12px;
+  color: #666;
+  transition: transform 0.2s;
+}
+
+.select-selected.active .select-arrow {
+  transform: rotate(180deg);
+}
+
+.select-items {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #2d2d30;
+  border: 1px solid #3c3c3c;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.select-hide {
+  display: none;
+}
+
+.select-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #cccccc;
+  transition: background-color 0.2s;
+}
+
+.select-option:hover {
+  background-color: #3c3c3c;
+}
+
+.select-option.selected {
+  background-color: #007acc;
+  color: #ffffff;
+}
+
+.language-name {
+  flex: 1;
 }
 
 .modal-title {
@@ -392,21 +643,26 @@ pre {
   margin-bottom: 10px;
 }
 
-.help-content code {
+.help-section-content code {
   background: #1e1e1e;
   padding: 2px 6px;
   border-radius: 3px;
-
   color: #d4d4d4;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
 }
 
-.help-content pre {
+.help-section-content pre {
   background: #1e1e1e;
-  padding: 12px;
-  border-radius: 4px;
+  padding: 16px;
+  border-radius: 6px;
   overflow-x: auto;
-  margin: 10px 0;
+  margin: 12px 0;
   position: relative;
+  border: 1px solid #3c3c3c;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .copy-button {
@@ -472,4 +728,94 @@ pre {
   border-radius: 3px;
   max-height: 60px;
   overflow: hidden;
+}
+
+/* Collapsible list styling */
+.collapsible-list {
+  margin: 10px 0;
+}
+
+.list-toggle {
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.list-toggle:hover {
+  background: #005a9e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-icon {
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.list-content {
+  margin-top: 10px;
+  padding-left: 20px;
+  border-left: 2px solid #007acc;
+  background: rgba(0, 122, 204, 0.05);
+  border-radius: 0 4px 4px 0;
+  padding: 10px 15px;
+  margin-left: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.list-content li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.list-content li:last-child {
+  margin-bottom: 0;
+}
+
+/* Special styling for App Usage section */
+.help-section-card[data-section="appUsage"] .list-toggle {
+  background: #4CAF50;
+}
+
+.help-section-card[data-section="appUsage"] .list-toggle:hover {
+  background: #45a049;
+}
+
+.help-section-card[data-section="appUsage"] .list-content {
+  border-left-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.05);
+}
+
+/* Compact spacing for App Usage section */
+.help-section-card[data-section="appUsage"] .help-section-content h4 {
+  margin: 16px 0 6px 0;
+  font-size: 15px;
+}
+
+.help-section-card[data-section="appUsage"] .help-section-content p {
+  margin: 8px 0;
+  font-size: 14px;
 }

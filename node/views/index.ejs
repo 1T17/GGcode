@@ -5,8 +5,10 @@
   <meta charset="UTF-8">
   <title>GGcode Compiler</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/flags.css">
 
 </head>
+
 <body>
 
 
@@ -31,21 +33,24 @@
 
           <!-- Compile -->
           <button type="submit" title="Compile GGcode">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#d38a2c" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 16h16V0H0zm2-2V2h12v12zm4-3 5-3-5-3z" fill-rule="evenodd" />
             </svg>
             </svg>
-            Compile
+            <div style="color: #d38a2c;">Compile</div>
           </button>
           <div class="separator"></div>
 
           <!-- Configurator -->
           <button type="button" onclick="showConfigurator()" title="Open Configurator" id="configuratorBtn">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+
+
+            <svg width="14" height="14" fill="#2c90d3" viewBox="1 1 23 23" xmlns="http://www.w3.org/2000/svg">
               <path
-                d="M8 1a1 1 0 0 1 1 1v1.07a5.97 5.97 0 0 1 1.36.36l.76-.76a1 1 0 1 1 1.41 1.41l-.76.76c.14.44.24.9.29 1.37H14a1 1 0 1 1 0 2h-1.07a5.97 5.97 0 0 1-.36 1.36l.76.76a1 1 0 1 1-1.41 1.41l-.76-.76a5.97 5.97 0 0 1-1.37.29V14a1 1 0 1 1-2 0v-1.07a5.97 5.97 0 0 1-1.36-.36l-.76.76a1 1 0 1 1-1.41-1.41l.76-.76a5.97 5.97 0 0 1-.29-1.37H2a1 1 0 1 1 0-2h1.07a5.97 5.97 0 0 1 .36-1.36l-.76-.76a1 1 0 1 1 1.41-1.41l.76.76c.44-.14.9-.24 1.37-.29V2a1 1 0 0 1 1-1zm0 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+                d="M20.1 9.221c-1.81 0-2.55-1.28-1.65-2.85.52-.91.21-2.07-.7-2.59l-1.73-.99c-.79-.47-1.81-.19-2.28.6l-.11.19c-.9 1.57-2.38 1.57-3.29 0l-.11-.19a1.64 1.64 0 0 0-2.26-.6l-1.73.99c-.91.52-1.22 1.69-.7 2.6.91 1.56.17 2.84-1.64 2.84-1.04 0-1.9.85-1.9 1.9v1.76c0 1.04.85 1.9 1.9 1.9 1.81 0 2.55 1.28 1.64 2.85-.52.91-.21 2.07.7 2.59l1.73.99c.79.47 1.81.19 2.28-.6l.11-.19c.9-1.57 2.38-1.57 3.29 0l.11.19c.47.79 1.49 1.07 2.28.6l1.73-.99c.91-.52 1.22-1.69.7-2.59-.91-1.57-.17-2.85 1.64-2.85 1.04 0 1.9-.85 1.9-1.9v-1.76a1.92 1.92 0 0 0-1.91-1.9m-8.1 6.03c-1.79 0-3.25-1.46-3.25-3.25s1.46-3.25 3.25-3.25 3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25" />
             </svg>
-            Configurator
+
+            <div style="color: #2c90d3;">Configurator</div>
           </button>
 
 
@@ -64,21 +69,21 @@
 
           <!-- Examples -->
           <button type="button" onclick="showExamples()" title="Load example files">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#d32cc5" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path d="m0 10 8 4 8-4v2l-8 4-8-4zm0-4 8 4 8-4v2l-8 4-8-4zm8-6 8 4-8 4-8-4z" fill-rule="evenodd" />
             </svg>
             </svg>
-            Examples
+            <div style="color: #d32cc5;">Examples</div>
           </button>
 
           <div class="separator"></div>
 
           <!-- Save -->
           <button type="button" onclick="saveGGcode()" title="Save GGcode input to file">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#3ad32c" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path d="M11 14v-4H5v4H3V8h10v6zh3V2H4v4h8V2h-2v2H6V2H2v12h3zM0 0h16v16H0z" fill-rule="evenodd" />
             </svg>
-            Save
+            <div style="color: #3ad32c;">Save</div>
           </button>
         </div>
       </div>
@@ -98,22 +103,23 @@
 
           <!-- Visualizer -->
           <button type="button" onclick="showGcodeViewer()" title="Open 3D G-code visualizer">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#d3b42c" viewBox="820 800 150 180" xmlns="http://www.w3.org/2000/svg">
               <path
-                d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm-1-9h2v4h-2zm0 6h2v2h-2z"
-                fill-rule="evenodd" />
+                d="M992.633 885.563c-9.229-13.025-43.469-55.521-96.634-55.521-53.167 0-87.404 42.496-96.631 55.52-4.49 6.339-4.491 14.533-.001 20.877 9.228 13.024 43.471 55.52 96.632 55.52 53.176 0 87.406-42.495 96.63-55.518 4.494-6.339 4.494-14.534.004-20.878m-139.105-19.592a45.2 45.2 0 0 1 7.564-13.338 19.47 19.47 0 0 1 9.397-6.301c7.865-2.413 16.378-3.863 25.509-3.863s17.645 1.45 25.508 3.863a19.54 19.54 0 0 1 9.397 6.3 45.1 45.1 0 0 1 7.564 13.339 45 45 0 0 1 2.626 15.204c0 24.864-20.229 45.093-45.096 45.093s-45.096-20.229-45.096-45.093a45 45 0 0 1 2.627-15.204m128.962 33.285c-8.354 11.794-39.279 50.276-86.491 50.276-47.2 0-78.136-38.483-86.491-50.274-1.423-2.01-1.423-4.506 0-6.512 4.573-6.456 15.922-20.899 32.989-32.658-.224.563-.461 1.122-.667 1.692a57.4 57.4 0 0 0-3.353 19.395c0 31.716 25.805 57.519 57.522 57.519 31.718 0 57.522-25.803 57.522-57.519a57.4 57.4 0 0 0-3.354-19.396c-.205-.569-.443-1.128-.666-1.691 17.066 11.759 28.417 26.204 32.99 32.658 1.423 2.008 1.423 4.501-.001 6.51" />
+              <path
+                d="M896.204 912.338c17.025 0 30.825-13.801 30.825-30.825 0-17.022-13.8-30.825-30.825-30.825a30.7 30.7 0 0 0-13.521 3.121c6.785.541 12.12 6.201 12.12 13.123 0 7.276-5.899 13.178-13.18 13.178-6.919 0-12.581-5.338-13.123-12.115a30.7 30.7 0 0 0-3.12 13.519c-.001 17.023 13.802 30.824 30.824 30.824" />
             </svg>
-            Visualizer
+            <div style="color: #d3b42c;">Visualizer</div>
           </button>
 
           <div class="separator"></div>
 
           <!-- Export -->
           <button type="button" onclick="saveOutput()" title="Save output G-code to file">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#3ad32c" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path d="M14 3.5 8.5 9 7 7.5 12.5 2H10V0h6v6h-2zM6 0v2H2v12h12v-4h2v6H0V0z" fill-rule="evenodd" />
             </svg>
-            Export
+            <div style="color: #3ad32c;">Export</div>
           </button>
         </div>
 
@@ -121,31 +127,36 @@
 
           <!-- Help -->
           <button type="button" onclick="showHelp()" title="Show help and documentation">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+
+            <svg width="14" height="14" fill="#2cd3b7" viewBox="10 10 420 420" xmlns="http://www.w3.org/2000/svg">
               <path
-                d="M0 8c0-4.418 3.59-8 8-8 4.418 0 8 3.59 8 8 0 4.418-3.59 8-8 8-4.418 0-8-3.59-8-8m2 0c0 3.307 2.686 6 6 6 3.307 0 6-2.686 6-6 0-3.307-2.686-6-6-6-3.307 0-6 2.686-6 6m2 0c0-2.21 1.795-4 4-4 2.21 0 4 1.795 4 4 0 2.21-1.795 4-4 4-2.21 0-4-1.795-4-4m2 0c0 1.112.895 2 2 2 1.112 0 2-.895 2-2 0-1.112-.895-2-2-2-1.112 0-2 .895-2 2"
-                fill-rule="evenodd" />
+                d="M213.333 0c117.82 0 213.334 95.512 213.334 213.333 0 117.82-95.513 213.334-213.334 213.334C95.513 426.667 0 331.154 0 213.333S95.513 0 213.333 0m0 282.667c-14.729 0-26.668 11.938-26.668 26.666S198.605 336 213.332 336 240 324.061 240 309.333s-11.94-26.666-26.667-26.666m-3.56-189.332c-20.765 0-38.218 5.657-52.338 16.94-16.732 13.516-25.091 33.476-25.091 59.898h45.362v-.304c0-10.081 2.123-18.35 6.36-24.8 5.845-8.67 15.327-13.01 28.435-13.01 8.067 0 14.933 2.118 20.57 6.346 7.054 5.858 10.593 14.725 10.593 26.624 0 7.463-1.824 14.114-5.45 19.966-3.025 5.242-7.864 10.38-14.528 15.425-14.114 9.679-23.292 19.26-27.52 28.743-3.631 7.864-5.455 20.367-5.455 37.504h42.665c0-11.296 1.501-19.76 4.54-25.41 2.416-4.638 7.463-9.575 15.127-14.822 13.315-9.885 22.785-19.064 28.436-27.534 6.853-10.08 10.288-21.881 10.288-35.397 0-28.01-11.392-47.878-34.195-59.58-13.706-7.056-29.638-10.59-47.799-10.59" />
             </svg>
-            Help
+
+
+
+            <div style="color: #2cd3b7;">Help</div>
           </button>
 
           <!-- Clear -->
           <button type="button" onclick="clearMemory()" title="Clear saved content and settings">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#d32c2c" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M0 14.545 1.455 16 8 9.455 14.545 16 16 14.545 9.455 8 16 1.455 14.545 0 8 6.545 1.455 0 0 1.455 6.545 8z"
                 fill-rule="evenodd" />
             </svg>
-            Clear
+
+            <div style="color: #d32c2c;">Clear</div>
           </button>
 
-          <div class="separator"></div>
-
-          <!-- Auto Compile -->
+          <!-- <div class="separator"></div>
+           Auto Compile
           <div class="toggle-container">
             <input type="checkbox" id="autoCompileCheckbox" />
             <label for="autoCompileCheckbox">Auto</label>
-          </div>
+          </div> -->
+
+
         </div>
       </div>
     </div>
@@ -172,7 +183,7 @@
 
 
       <div id="configuratorContent" style="overflow-y:auto; height:calc(100vh - 60px);">
-      <!-- configurator Content here -->
+        <!-- configurator Content here -->
       </div>
 
 
@@ -182,20 +193,20 @@
 
           <!-- Save & Compile -->
           <button type="button" title="Save & Compile GGcode" onclick="configuratorSaveAndCompile()">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#3ad32c" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path d="M11 14v-4H5v4H3V8h10v6zh3V2H4v4h8V2h-2v2H6V2H2v12h3zM0 0h16v16H0z" fill-rule="evenodd" />
             </svg>
-            Save
+            <div style="color: #3ad32c;">Save</div>
           </button>
 
           <div class="separator"></div>
-          
+
           <!-- Compile -->
           <button type="button" title="Compile GGcode" onclick="configuratorCompileOnly()">
-            <svg width="14" height="14" fill="#ffffff" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="14" height="14" fill="#d38a2c" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path d="M0 16h16V0H0zm2-2V2h12v12zm4-3 5-3-5-3z" fill-rule="evenodd" />
             </svg>
-            Compile
+            <div style="color: #d38a2c;">Compile</div>
           </button>
 
         </div>
@@ -214,7 +225,7 @@
     <!-- Monaco loader -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
     <%- include('app.ejs') %>
-    <%- include('view.ejs') %>
+      <%- include('view.ejs') %>
 
 
 
@@ -276,15 +287,65 @@
 
           function renderConfiguratorForm(configVars) {
             if (!Array.isArray(configVars) || configVars.length === 0) {
-              return '<div style="color:#aaa; padding:2em;">No configurable variables found in GGcode.</div>';
+              return `<div style="color:#aaa; padding:2em;">
+                <div style="font-size:1.1em; font-weight:600; color:#ff0000; margin-bottom:10px;">No configurable variables found in GGcode.</div>
+                <div style="margin-top:10px; color:#ccc; font-size:0.98em;">
+                  <p>
+                    <strong>How to add Configurator support:</strong>
+                  </p>
+                  <ul style="margin-left:1.2em; padding-left:0;">
+                    <li>
+                      Add <code>/// @number min max</code> after a <code>let</code> variable to create a number input.<br>
+                      Example: <code>let width = 10 /// @number 1 100 // Part width in mm</code>
+                    </li>
+                    <li>
+                      Add <code>/// @check</code> for a checkbox (boolean).<br>
+                      Example: <code>let enabled = 1 /// @check // Enable feature</code>
+                    </li>
+                    <li>
+                      Add <code>/// @selction 1,2,3</code> for a dropdown with options.<br>
+                      Example: <code>let mode = 2 /// @selction 1,2,3 // Select mode</code>
+                    </li>
+                    <li>
+                      Add <code>/// @text rows [max N]</code> for a text input or textarea.<br>
+                      Example: <code>let notes = "" /// @text 3 max 120 // Notes for operator</code>
+                    </li>
+                    <li>
+                      To add a field title/description, append <code>// Title here</code> at the end of the line.
+                    </li>
+                  </ul>
+                  <div style="margin-top:8px; color:#aaa; font-size:0.93em;">
+                    Example:<br>
+                    <code>let speed = 1200 /// @number 500 3000 // Spindle speed (RPM)</code>
+                  </div>
+                  <div style="margin-top:14px; color:#b0b0b0; font-size:0.97em;">
+                    <strong>How to use the Configurator:</strong><br>
+                    When you add variables with configurator tags, they will appear here for easy editing.<br>
+                  </div>
+                </div>
+              </div>`;
             }
             let html = `
-    <div style="background: #23272e; border-radius: 12px; box-shadow: 0 2px 16px #0002; padding: 20px 20px 8px 20px; max-width: 420px; margin: 0 auto;">
-      <div style="font-size: 1.1em; font-weight: 600; color: #fff; margin-bottom: 16px; letter-spacing: 0.3px;">Configurator</div>
+    <div style="background:#23272e; box-shadow:0 2px 16px #0002; padding:18px 18px 8px 18px; max-width:38vw; margin:0 auto;">
+      <div style="font-size:1.1em; font-weight:600; color:#fff; margin-bottom:10px;">Configurator</div>
+      <div style="color:#ccc; font-size:0.98em; margin-bottom:12px;">
+        <ul style="margin:0 0 0 1.2em; padding:0; list-style:disc;">
+          <li>Edit variables below before compiling.</li>
+          <li>Numbers: range-limited. Checks: on/off. Select: preset options. Text: custom input.</li>
+        </ul>
+        <div style="margin-top:6px; color:#aaa; font-size:0.93em;">
+          <div>
+            <strong>Press <span style="color:#fff;">Save</span></strong> to save your changes and apply them to the GGcode source.<br>
+            Or just press <strong><span style="color:#fff;">Compile</span></strong> to test the results only, without updating your main GGcode.
+          </div>
+        </div>
+      </div>
+
+
     <form id="configuratorForm" style="display:flex; flex-direction:column; gap:16px;">`;
-              for (const v of configVars) {
-    html += `<div style="display:flex; align-items:center; gap:8px; padding:4px 0;">`;
-    html += `<label style="color:#e0e0e0; font-weight:500; font-size:0.9em; min-width:80px; text-align:right;">${v.name}:</label>`;
+            for (const v of configVars) {
+              html += `<div style="display:flex; align-items:center; gap:8px; padding:4px 0;">`;
+              html += `<label style="color:#e0e0e0; font-weight:500; font-size:0.9em; min-width:80px; text-align:right;">${v.name}:</label>`;
               if (v.type === 'number') {
                 let numberInputHtml = `<input type="number" title="${v.description}" name="${v.name}" value="${v.defaultValue}" min="${v.params.min ?? ''}" max="${v.params.max ?? ''}" style="margin-left:0; width:140px; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'; if(this.value !== '' && !isNaN(this.value)) { this.value = Math.max(this.min, Math.min(this.max, this.value)); }">`;
                 let minMaxHtml = '';
@@ -292,29 +353,23 @@
                   minMaxHtml = ` <span style="color:#ffb347; font-size:0.85em; margin-left:6px;">[${v.params.min}-${v.params.max}]</span>`;
                 }
                 html += `<div style="display:flex; align-items:center; gap:6px; flex:1;">${numberInputHtml}${minMaxHtml}</div>`;
-                  } else if (v.type === 'check') {
-      html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><input title="${v.description}" type="checkbox" name="${v.name}" ${v.defaultValue ? 'checked' : ''} style="margin-left:0; width:18px; height:18px; accent-color:#0074D9;"></div>`;
-    } else if (v.type === 'selection') {
-      html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><select title="${v.description}" name="${v.name}" style="margin-left:0; width:160px; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
+              } else if (v.type === 'check') {
+                html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><input title="${v.description}" type="checkbox" name="${v.name}" ${v.defaultValue ? 'checked' : ''} style="margin-left:0; width:18px; height:18px; accent-color:#0074D9;"></div>`;
+              } else if (v.type === 'selection') {
+                html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><select title="${v.description}" name="${v.name}" style="margin-left:0; width:160px; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
                 for (const opt of v.params.options || []) {
                   html += `<option value="${opt}"${opt == v.defaultValue ? ' selected' : ''}>${opt}</option>`;
                 }
-                      html += `</select></div>`;
-    } else if (v.type === 'text') {
-      if (v.params.rows && v.params.rows > 1) {
-        html += `<div style="display:flex; align-items:flex-start; gap:6px; flex:1;"><textarea title="${v.description}" name="${v.name}" rows="${v.params.rows}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:160px; max-width:100%; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none; resize:vertical;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">${v.defaultValue}</textarea></div>`;
-      } else {
-        html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><input type="text" title="${v.description}" name="${v.name}" value="${v.defaultValue}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:160px; max-width:100%; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
-        if (v.params.max) html += ` <span style="color:#888; font-size:0.85em;">[max ${v.params.max}]</span>`;
-        html += `</div>`;
-      }
+                html += `</select></div>`;
+              } else if (v.type === 'text') {
+                if (v.params.rows && v.params.rows > 1) {
+                  html += `<div style="display:flex; align-items:flex-start; gap:6px; flex:1;"><textarea title="${v.description}" name="${v.name}" rows="${v.params.rows}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:160px; max-width:100%; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none; resize:vertical;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">${v.defaultValue}</textarea></div>`;
+                } else {
+                  html += `<div style="display:flex; align-items:center; gap:6px; flex:1;"><input type="text" title="${v.description}" name="${v.name}" value="${v.defaultValue}" maxlength="${v.params.max ?? ''}" style="margin-left:0; width:100%; min-width:160px; max-width:100%; padding:6px 8px; border-radius:4px; border:1px solid #444; background:#181b20; color:#fff; font-size:0.9em; transition:border 0.2s; outline:none;" onfocus="this.style.borderColor='#0074D9'" onblur="this.style.borderColor='#444'">`;
+                  if (v.params.max) html += ` <span style="color:#888; font-size:0.85em;">[max ${v.params.max}]</span>`;
+                  html += `</div>`;
+                }
               }
-
-
-              // if (v.description) {
-              //   html += `<div style=\"color:#b0b0b0; font-size:0.85em; margin:1px 0 0 1px; opacity:0.8;\">${v.description}</div>`;
-              // }
-
 
               html += `</div>`;
             }
@@ -531,4 +586,5 @@
 
 
 </body>
+
 </html>

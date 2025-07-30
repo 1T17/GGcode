@@ -1,0 +1,383 @@
+{
+  "language": "tr",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "GGcode Nedir?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode, CNC makineleri, 3D yazıcılar ve bilgisayar kontrollü diğer üretim ekipmanları için G kodu oluşturmak üzere özel olarak tasarlanmış yüksek seviyeli bir programlama dilidir. Temel programlamanın basitliğini güçlü matematiksel fonksiyonlarla birleştirerek, karmaşık takım yolları ve geometrik desenler oluşturmayı kolaylaştırır."
+        },
+        {
+          "type": "list",
+          "title": "Ana Özellikler:",
+          "items": [
+            "Noktalı virgül gerektirmeyen basit ve okunabilir sözdizimi",
+            "Kapsamlı matematiksel fonksiyon kütüphanesi",
+            "Karmaşık veri yapıları için dizi desteği",
+            "Parametreler ve dönüş değerleri ile fonksiyon tanımları",
+            "Kontrol yapıları (döngüler, koşullar)",
+            "Doğrudan G kodu üretimi",
+            "Kolaylık için örtük özellikler"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "Uygulama Kullanım Kılavuzu",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bu uygulama, sezgisel bir arayüz ve gelişmiş araçlarla GGcode kodunu oluşturmanıza, düzenlemenize ve görselleştirmenize olanak tanır."
+        },
+        {
+          "type": "subsection",
+          "title": "Ana Arayüz",
+          "description": "Uygulama şunları içerir:",
+          "list": [
+            "<strong>Kod Editörü</strong> - Sözdizimi vurgulaması ile GGcode kodunuzu yazın ve düzenleyin",
+            "<strong>3D Görselleştirici</strong> - Takım yolunun gerçek zamanlı önizlemesi",
+            "<strong>Yapılandırıcı</strong> - Yapılandırma parametrelerini ayarlamak için modal",
+            "<strong>Yardım Sistemi</strong> - Tam dokümantasyon ve örnekler",
+            "<strong>Dosya Yönetimi</strong> - GGcode dosyalarını yükleme, kaydetme ve dışa aktarma"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Editör Kontrolleri",
+          "description": "Kod editörü işlevleri:",
+          "list": [
+            "<strong>Sözdizimi Vurgulaması</strong> - Komutlar, değişkenler ve işlevler için renkler",
+            "<strong>Otomatik Tamamlama</strong> - İşlevler ve komutlar için öneriler",
+            "<strong>Satır Numaraları</strong> - Navigasyon için görsel referans",
+            "<strong>Arama ve Değiştirme</strong> - Metni hızlıca bulun ve değiştirin",
+            "<strong>Geri Al/Yinele</strong> - Ctrl+Z/Ctrl+Y ile değişiklik kontrolü"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Yardım Sistemi",
+          "description": "Dokümantasyona erişim:",
+          "list": [
+            "<strong>Yardım Butonu</strong> - Örneklerle tam dokümantasyonu açar",
+            "<strong>Yardım Arama</strong> - Belirli bilgileri hızlıca bulun",
+            "<strong>İnteraktif Örnekler</strong> - Kopyalayıp kullanabileceğiniz örnek kod",
+            "<strong>Çok Dilli</strong> - Dokümantasyon birkaç dilde mevcut"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "İş Akışı",
+          "description": "Önerilen süreç:",
+          "list": [
+            "<strong>1. Kod Yazma</strong> - GGcode programınızı oluşturmak için editörü kullanın",
+            "<strong>2. Parametre Yapılandırma</strong> - Gerekirse yapılandırıcı ile değerleri ayarlayın",
+            "<strong>3. Önizleme</strong> - Yolu doğrulamak için 3D görselleştiriciyi kullanın",
+            "<strong>4. Derleme</strong> - Final G kodunu oluşturun",
+            "<strong>5. Dışa Aktarma</strong> - Makineniz için dosyayı kaydedin veya indirin"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Klavye Kısayolları",
+          "description": "Hızlı komutlar:",
+          "list": [
+            "<strong>Ctrl+S</strong> - Dosyayı kaydet",
+            "<strong>Ctrl+O</strong> - Dosya aç",
+            "<strong>Ctrl+Z</strong> - Geri al",
+            "<strong>Ctrl+Y</strong> - Yinele",
+            "<strong>Ctrl+F</strong> - Kodda ara",
+            "<strong>F1</strong> - Yardımı aç"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Kullanım İpuçları",
+          "description": "En iyi uygulamalar:",
+          "list": [
+            "<strong>Sık Kaydet</strong> - İş kaybını önleyin",
+            "<strong>Küçük Kod Test Et</strong> - Büyük programlardan önce işlevleri doğrulayın",
+            "<strong>Yorumlar Kullan</strong> - Gelecekteki referans için kodunuzu belgelendirin",
+            "<strong>Önizlemeyi Kontrol Et</strong> - Yolun doğru olduğundan emin olun"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Satır İçi Yapılandırma",
+          "description": "Değişken bildirimlerinize yapılandırma yönergeleri ekleyin:",
+          "code": "let radius = 10 /// @number 5 50 // Dairenin yarıçapı mm cinsinden\nlet enabled = 1 /// @check // Özelliği etkinleştir\nlet mode = 2 /// @selection 1, 2, 3 // Mod seç\nlet notes = \"\" /// @text 3 max 120 // Operatör notları"
+        },
+        {
+          "type": "subsection",
+          "title": "Yapılandırma Yönergeleri Referansı",
+          "description": "Mevcut yönerge türleri:",
+          "list": [
+            "<strong>@number min max</strong> - Aralık doğrulaması ile sayısal giriş",
+            "<strong>@check</strong> - Onay kutusu girişi (boole)",
+            "<strong>@selection options</strong> - Önceden tanımlanmış seçeneklerle açılır menü",
+            "<strong>@text rows [max N]</strong> - Metin girişi veya metin alanı"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "Kodda Yapılandırma Değerlerini Kullanma",
+          "description": "GGcode'unuzda değişken adlarını doğrudan kullanın:",
+          "code": "let radius = 10 /// @number 5 50 // Dairenin yarıçapı\nlet feed_rate = 150 /// @number 50 500 // İlerleme hızı\nlet enabled = 1 /// @check // Özelliği etkinleştir\n\n// Kodunuzda kullanın\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // Bir şeyler yap\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Tam Yapılandırma Örneği",
+          "description": "Tüm yönerge türlerini gösteren örnek:",
+          "code": "let radius = 10 /// @number 5 50 // Dairenin yarıçapı\nlet center_x = 0 /// @number -100 100 // Merkez X\nlet feed_rate = 150 /// @number 50 500 // İlerleme hızı\nlet draw_circle = 1 /// @check // Daire çiz\nlet pattern = 1 /// @selection 1, 2, 3 // Desen türü\nlet notes = \"\" /// @text 3 max 120 // Notlar\n\n// Kodda kullanın\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Nasıl Çalışır",
+          "description": "Teknik detaylar:",
+          "list": [
+            "<strong>Ayrıştırma</strong> - <code>let variable = value /// @directive parameters // description</code> arar",
+            "<strong>Form Oluşturma</strong> - Ayrıştırılmış değişkenlerden dinamik HTML formu oluşturur",
+            "<strong>Doğrulama</strong> - Sayısal aralıklar, onay kutusu dönüşümü, seçenek doğrulaması",
+            "<strong>Gerçek Zamanlı Güncellemeler</strong> - Değişiklikler derleme öncesinde GGcode kaynak kodunu anında günceller"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "En İyi Uygulamalar",
+          "description": "Etkili yapılandırma için ipuçları:",
+          "list": [
+            "<strong>Güvenli Başla</strong> - Muhafazakar değerlerle başlayın, sonra optimize edin",
+            "<strong>Küçük Test Et</strong> - Önce küçük parçalarda yapılandırmaları test edin",
+            "<strong>Yapılandırmaları Belgelendirin</strong> - Farklı malzemeler için notlar tutun",
+            "<strong>Güvenlik Önce</strong> - Her zaman çalışma alanı sınırlarını kontrol edin"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "Sözdizimi",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode basit ve sezgisel bir sözdizimi kullanır."
+        },
+        {
+          "type": "subsection",
+          "title": "Değişken Tanımlama",
+          "description": "Değişken tanımlamak için let anahtar kelimesini kullanın",
+          "code": "let radius = 10\nlet angle = 45 * DEG_TO_RAD\nlet message = \"Hello World\""
+        },
+        {
+          "type": "subsection",
+          "title": "G-kodu Komutları",
+          "description": "Standart G-kodu komutlarını kullanın",
+          "code": "G0 X0 Y0 Z0    // Hızlı hareket\nG1 X10 Y10 F100  // Doğrusal hareket\nG2 X20 Y0 R10    // Saat yönünde yay\nG3 X0 Y0 R10     // Saat yönünün tersine yay"
+        },
+        {
+          "type": "subsection",
+          "title": "Yorumlar",
+          "description": "Tek satır ve çok satırlı yorum desteği",
+          "code": "// Bu tek satırlık bir yorumdur\nlet x = 10  // Satır içi yorum\n\n/* Bu çok satırlı\n   bir yorumdur */"
+        },
+        {
+          "type": "subsection",
+          "title": "G-kodu Modal Davranışı",
+          "description": "G-kodu komutları modal'dır - bir sonraki komuta kadar geçerlidir",
+          "code": "G1 F100        // İlerleme hızını ayarla\nX10 Y10        // G1 geçerli\nX20 Y20        // G1 hala geçerli\nG0 X0 Y0       // Yeni G0 komutu"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "Fonksiyonlar",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode hesaplamalar için matematiksel fonksiyonları destekler."
+        },
+        {
+          "type": "list",
+          "items": [
+            "<code>abs(x)</code> - Mutlak değer",
+            "<code>mod(x, y)</code> - Modülo (kalan)",
+            "<code>sin(x)</code>, <code>cos(x)</code> - Trigonometrik fonksiyonlar",
+            "<code>sqrt(x)</code> - Karekök",
+            "<code>pow(x, y)</code> - Üs alma",
+            "<code>lerp(a, b, t)</code> - Doğrusal interpolasyon",
+            "<code>map(x, a, b, c, d)</code> - Aralık dönüşümü",
+            "<code>distance(x1, y1, x2, y2)</code> - İki nokta arası mesafe",
+            "<code>log(x)</code>, <code>exp(x)</code> - Logaritma ve üstel",
+            "<code>noise(x)</code> - Perlin gürültüsü",
+            "<code>sign(x)</code> - Sayının işareti",
+            "<code>deg(x)</code>, <code>rad(x)</code> - Açı dönüşümleri"
+          ]
+        },
+        {
+          "type": "code",
+          "code": "let angle = sin(45 * DEG_TO_RAD)\nlet dist = distance(0, 0, 10, 10)\nlet mapped = map(5, 0, 10, 0, 100)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "Kontrol Yapıları",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode karmaşık takım yolları ve koşullu işlemler oluşturmak için güçlü kontrol yapıları sağlar."
+        },
+        {
+          "type": "subsection",
+          "title": "For Döngüleri",
+          "description": "<strong>Temel For döngüsü:</strong> <code>for variable = start..end</code> sözdizimini kullanın",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "While Döngüleri",
+          "description": "<strong>Temel While döngüsü:</strong> <code>while (condition)</code> sözdizimini kullanın",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "Diziler",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode veri depolamak için tek boyutlu, iki boyutlu ve üç boyutlu dizileri destekler."
+        },
+        {
+          "type": "subsection",
+          "title": "Tek Boyutlu Diziler",
+          "description": "Tek boyutlu diziler oluşturma ve kullanma",
+          "code": "let points = [1, 2, 3, 4, 5]\nlet radius = points[0]  // Elemana erişim\npoints[2] = 10         // Eleman değiştirme"
+        },
+        {
+          "type": "subsection",
+          "title": "İki Boyutlu Diziler",
+          "description": "İki boyutlu diziler oluşturma ve kullanma",
+          "code": "let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nlet value = matrix[1][2]  // Elemana erişim\nmatrix[0][1] = 10        // Eleman değiştirme"
+        },
+        {
+          "type": "subsection",
+          "title": "Dinamik Diziler",
+          "description": "Döngüler kullanarak diziler oluşturma",
+          "code": "let coords = []\nfor i = 0..<10 {\n  coords[i] = i * 10\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "Operatörler",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode standart karşılaştırma operatörleri, mantıksal ve matematiksel operatörleri destekler."
+        },
+        {
+          "type": "subsection",
+          "title": "Karşılaştırma Operatörleri",
+          "description": "Değerleri karşılaştırma",
+          "code": "==  // Eşit\n!=  // Eşit değil\n<   // Küçük\n<=  // Küçük veya eşit\n>   // Büyük\n>=  // Büyük veya eşit"
+        },
+        {
+          "type": "subsection",
+          "title": "Mantıksal Operatörler",
+          "description": "Mantıksal işlemler",
+          "code": "&&  // VE (AND)\n||  // VEYA (OR)\n!   // DEĞİL (NOT)"
+        },
+        {
+          "type": "subsection",
+          "title": "Matematiksel Operatörler",
+          "description": "Temel matematiksel işlemler",
+          "code": "+   // Toplama\n-   // Çıkarma\n*   // Çarpma\n/   // Bölme\n&   // Bit AND"
+        },
+        {
+          "type": "subsection",
+          "title": "Tekli Operatörler",
+          "description": "Tek işlenenli operatörler",
+          "code": "-x  // Negatif\n!x  // Mantıksal negatif"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "Sabitler",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode yaygın hesaplamalar için yerleşik matematiksel sabitler sağlar."
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - Euler sayısı (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - Dereceyi radyana çevirme | <code>RAD_TO_DEG</code> - Radyanı dereceye çevirme"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "Belgeleme Özellikleri",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "Not Blokları",
+          "description": "Dosya belgelemesi ve başlıklar için <code>note { }</code> bloklarını kullanın",
+          "code": "note {\n  Bu bir belgeleme bloğudur\n  Birden fazla satır içerebilir\n  Dosya başlıkları ve açıklamalar için kullanışlıdır\n  Yazar: Adınız\n  Sürüm: 1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Yorumlar",
+          "description": "Tek satırlık yorumlar için <code>//</code> veya çok satırlı yorumlar için <code>/* */</code> kullanın",
+          "code": "// Bu tek satırlık bir yorumdur\nlet radius = 10  // Satır içi yorum\n\n/* Bu çok satırlı\n   bir yorumdur\n   detaylı açıklamalar için kullanışlıdır */"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "Özel Özellikler",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode programlamayı daha kolay hale getiren birkaç özel özellik içerir."
+        },
+        {
+          "type": "subsection",
+          "title": "G-kodu Modal Davranışı",
+          "description": "<strong>Modal G-kodu:</strong> Bir G komutu (G0, G1, G2, G3) belirttiğinizde, yeni bir G komutu belirtilene kadar sonraki satırlarda geçerli olmaya devam eder. Bu standart modal G-kodu davranışını takip eder.",
+          "code": "G1 X[10] Y[20] F[100]  // Doğrusal hareket\nX[30] Y[40]             // G1 devam ediyor\nX[50] Y[60]             // Hala G1\nG0 X[0] Y[0]            // Yeni hızlı hareket komutu\nX[10] Y[10]             // Hızlı hareket G0 devam ediyor"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "En İyi Uygulamalar",
+      "content": [
+        {
+          "type": "list",
+          "title": "Programlama Yönergeleri",
+          "items": [
+            "<strong>Dizi yinelemesi için dışlayıcı aralıklar kullanın</strong>: <code>for i = 0..<10</code> yerine <code>for i = 0..10</code>",
+            "<strong>Karmaşık ifadelerde kullanmadan önce değişkenleri tanımlayın</strong>",
+            "<strong>Karmaşık işlemleri düzenlemek için fonksiyonlar kullanın</strong>",
+            "<strong>Karmaşık mantığı açıklamak için yorumlar ekleyin</strong>",
+            "<strong>Dosya belgelemesi için not blokları kullanın</strong>",
+            "<strong>Karmaşık programlar oluşturmadan önce küçük parçaları test edin</strong>"
+          ]
+        }
+      ]
+    }
+  }
+} 

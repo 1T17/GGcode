@@ -1,0 +1,360 @@
+{
+  "language": "zh",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "什么是GGcode？",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode是一种专为生成G-code而设计的编程语言。它结合了现代编程语言的强大功能与G-code的精确控制。"
+        },
+        {
+          "type": "paragraph",
+          "text": "GGcode允许您使用变量、数学表达式、循环和条件语句来创建复杂的G-code程序，同时保持代码的可读性和可维护性。"
+        },
+        {
+          "type": "paragraph",
+          "text": "主要特点包括：变量声明、数学运算、内置函数、数组支持、控制结构、注释和文档功能。"
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "应用程序使用指南",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "此应用程序允许您使用直观的界面和高级工具创建、编辑和可视化GGcode代码。"
+        },
+        {
+          "type": "subsection",
+          "title": "主界面",
+          "description": "应用程序包括：",
+          "list": [
+            "<strong>代码编辑器</strong> - 编写和编辑您的GGcode代码，具有语法高亮",
+            "<strong>3D可视化器</strong> - 工具路径的实时预览",
+            "<strong>配置器</strong> - 用于调整配置参数的模态框",
+            "<strong>帮助系统</strong> - 完整的文档和示例",
+            "<strong>文件管理</strong> - 加载、保存和导出GGcode文件"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "编辑器控件",
+          "description": "代码编辑器功能：",
+          "list": [
+            "<strong>语法高亮</strong> - 命令、变量和函数的颜色",
+            "<strong>自动完成</strong> - 函数和命令的建议",
+            "<strong>行号</strong> - 导航的视觉参考",
+            "<strong>查找和替换</strong> - 快速查找和修改文本",
+            "<strong>撤销/重做</strong> - 使用Ctrl+Z/Ctrl+Y控制更改"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "帮助系统",
+          "description": "访问文档：",
+          "list": [
+            "<strong>帮助按钮</strong> - 打开包含示例的完整文档",
+            "<strong>帮助搜索</strong> - 快速找到特定信息",
+            "<strong>交互式示例</strong> - 您可以复制和使用的示例代码",
+            "<strong>多语言</strong> - 文档提供多种语言版本"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "工作流程",
+          "description": "推荐流程：",
+          "list": [
+            "<strong>1. 编写代码</strong> - 使用编辑器创建您的GGcode程序",
+            "<strong>2. 配置参数</strong> - 如有必要，使用配置器调整值",
+            "<strong>3. 预览</strong> - 使用3D可视化器验证路径",
+            "<strong>4. 编译</strong> - 生成最终的G代码",
+            "<strong>5. 导出</strong> - 保存或下载文件到您的机器"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "键盘快捷键",
+          "description": "快速命令：",
+          "list": [
+            "<strong>Ctrl+S</strong> - 保存文件",
+            "<strong>Ctrl+O</strong> - 打开文件",
+            "<strong>Ctrl+Z</strong> - 撤销",
+            "<strong>Ctrl+Y</strong> - 重做",
+            "<strong>Ctrl+F</strong> - 在代码中搜索",
+            "<strong>F1</strong> - 打开帮助"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "使用技巧",
+          "description": "最佳实践：",
+          "list": [
+            "<strong>经常保存</strong> - 避免丢失工作",
+            "<strong>测试小代码</strong> - 在大程序之前验证函数",
+            "<strong>使用注释</strong> - 为将来的参考记录您的代码",
+            "<strong>检查预览</strong> - 确保路径正确"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "内联配置",
+          "description": "向您的变量声明添加配置指令：",
+          "code": "let radius = 10 /// @number 5 50 // 圆的半径（毫米）\nlet enabled = 1 /// @check // 启用功能\nlet mode = 2 /// @selection 1, 2, 3 // 选择模式\nlet notes = \"\" /// @text 3 max 120 // 操作员备注"
+        },
+        {
+          "type": "subsection",
+          "title": "配置指令参考",
+          "description": "可用的指令类型：",
+          "list": [
+            "<strong>@number min max</strong> - 带范围验证的数字输入",
+            "<strong>@check</strong> - 复选框输入（布尔值）",
+            "<strong>@selection options</strong> - 带预设选项的下拉菜单",
+            "<strong>@text rows [max N]</strong> - 文本输入或文本区域"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "在代码中使用配置值",
+          "description": "直接在您的GGcode中使用变量名：",
+          "code": "let radius = 10 /// @number 5 50 // 圆的半径\nlet feed_rate = 150 /// @number 50 500 // 进给速度\nlet enabled = 1 /// @check // 启用功能\n\n// 在您的代码中使用\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // 做某事\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "完整配置示例",
+          "description": "显示所有指令类型的示例：",
+          "code": "let radius = 10 /// @number 5 50 // 圆的半径\nlet center_x = 0 /// @number -100 100 // 中心X\nlet feed_rate = 150 /// @number 50 500 // 进给速度\nlet draw_circle = 1 /// @check // 绘制圆\nlet pattern = 1 /// @selection 1, 2, 3 // 图案类型\nlet notes = \"\" /// @text 3 max 120 // 备注\n\n// 在代码中使用\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "工作原理",
+          "description": "技术细节：",
+          "list": [
+            "<strong>解析</strong> - 查找 <code>let variable = value /// @directive parameters // description</code>",
+            "<strong>表单生成</strong> - 从解析的变量创建动态HTML表单",
+            "<strong>验证</strong> - 数字范围、复选框转换、选项验证",
+            "<strong>实时更新</strong> - 更改立即在编译前更新GGcode源代码"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "最佳实践",
+          "description": "有效配置的提示：",
+          "list": [
+            "<strong>安全开始</strong> - 从保守值开始，然后优化",
+            "<strong>小测试</strong> - 首先在小零件上测试配置",
+            "<strong>记录配置</strong> - 为不同材料保留笔记",
+            "<strong>安全第一</strong> - 始终检查工作区域限制"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "什么是GGcode？",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode是一种专门为CNC机床、3D打印机和其他计算机控制制造设备生成G代码而设计的高级编程语言。它结合了基础编程的简单性和强大的数学函数，使创建复杂的刀具路径和几何图案变得容易。"
+        },
+        {
+          "type": "list",
+          "title": "主要特点：",
+          "items": [
+            "简单、易读的语法，无需分号",
+            "丰富的数学函数库",
+            "支持数组用于复杂数据结构",
+            "带参数和返回值的函数定义",
+            "控制结构（循环、条件）",
+            "直接生成G代码",
+            "隐式函数便于使用"
+          ]
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "基本语法",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "变量",
+          "description": "使用 <code>let</code> 声明变量。不需要分号！",
+          "code": "let radius = 10\nlet center_x = 0\nlet feed_rate = 150"
+        },
+        {
+          "type": "subsection",
+          "title": "G代码命令",
+          "description": "标准G代码命令，支持变量插值和模态行为",
+          "code": "G0 X10 Y5        // 快速移动到位置\nG1 X20 Y15 F100  // 线性移动，进给速度100\nX30 Y25          // 继续G1线性移动（模态）\nG1 X[center_x] Y[center_y] F[feed_rate]  // 使用变量"
+        },
+        {
+          "type": "subsection",
+          "title": "注释",
+          "description": "使用 <code>//</code> 进行单行注释或 <code>/* */</code> 进行多行注释",
+          "code": "// 这是单行注释\n/* 这是\n   多行注释 */"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "控制结构",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode提供强大的控制结构，用于创建复杂的刀具路径和条件操作。"
+        },
+        {
+          "type": "subsection",
+          "title": "For循环",
+          "description": "<strong>基本For循环：</strong> 使用 <code>for variable = start..end</code> 语法",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "While循环",
+          "description": "<strong>基本While循环：</strong> 使用 <code>while (condition)</code> 语法",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "特殊功能",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode包含几个特殊功能，使编程更加方便。"
+        },
+        {
+          "type": "subsection",
+          "title": "G代码模态行为",
+          "description": "<strong>模态G代码：</strong> 一旦指定G命令（G0、G1、G2、G3），它会继续应用于后续行，直到指定新的G命令。这遵循标准G代码模态行为。",
+          "code": "G1 X[10] Y[20] F[100]  // 线性移动\nX[30] Y[40]             // 继续G1\nX[50] Y[60]             // 仍然是G1\nG0 X[0] Y[0]            // 新的快速移动命令\nX[10] Y[10]             // 继续G0快速移动"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "数组",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode支持一维、二维和三维数组来存储数据。"
+        },
+        {
+          "type": "subsection",
+          "title": "一维数组",
+          "description": "创建和使用一维数组",
+          "code": "let points = [1, 2, 3, 4, 5]\nlet radius = points[0]  // 访问元素\npoints[2] = 10         // 修改元素"
+        },
+        {
+          "type": "subsection",
+          "title": "二维数组",
+          "description": "创建和使用二维数组",
+          "code": "let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nlet value = matrix[1][2]  // 访问元素\nmatrix[0][1] = 10        // 修改元素"
+        },
+        {
+          "type": "subsection",
+          "title": "动态数组",
+          "description": "使用循环创建数组",
+          "code": "let coords = []\nfor i = 0..<10 {\n  coords[i] = i * 10\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "运算符",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode支持标准的比较运算符、逻辑运算符和数学运算符。"
+        },
+        {
+          "type": "subsection",
+          "title": "比较运算符",
+          "description": "比较值",
+          "code": "==  // 等于\n!=  // 不等于\n<   // 小于\n<=  // 小于等于\n>   // 大于\n>=  // 大于等于"
+        },
+        {
+          "type": "subsection",
+          "title": "逻辑运算符",
+          "description": "逻辑运算",
+          "code": "&&  // 与 (AND)\n||  // 或 (OR)\n!   // 非 (NOT)"
+        },
+        {
+          "type": "subsection",
+          "title": "数学运算符",
+          "description": "基本数学运算",
+          "code": "+   // 加法\n-   // 减法\n*   // 乘法\n/   // 除法\n&   // 按位与"
+        },
+        {
+          "type": "subsection",
+          "title": "一元运算符",
+          "description": "单操作数运算符",
+          "code": "-x  // 负号\n!x  // 逻辑非"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "常量",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode提供了几个内置的数学常量用于常见计算。"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - 欧拉数 (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - 度转弧度转换 | <code>RAD_TO_DEG</code> - 弧度转度转换"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "文档功能",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "注释块",
+          "description": "使用 <code>note { }</code> 块进行文件文档和标题",
+          "code": "note {\n  这是文档块\n  可以包含多行\n  用于文件标题和描述\n  作者：您的姓名\n  版本：1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "注释",
+          "description": "使用 <code>//</code> 进行单行注释或 <code>/* */</code> 进行多行注释",
+          "code": "// 这是单行注释\nlet radius = 10  // 内联注释\n\n/* 这是多行注释\n   可以跨越多行\n   用于详细解释 */"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "最佳实践",
+      "content": [
+        {
+          "type": "list",
+          "title": "编程指南",
+          "items": [
+            "<strong>使用独占范围</strong>进行数组迭代：<code>for i = 0..<10</code>而不是<code>for i = 0..10</code>",
+            "<strong>声明变量</strong>在复杂表达式中使用之前",
+            "<strong>使用函数</strong>组织复杂操作",
+            "<strong>添加注释</strong>解释复杂逻辑",
+            "<strong>使用注释块</strong>进行文件文档",
+            "<strong>测试小部分</strong>在构建复杂程序之前"
+          ]
+        }
+      ]
+    }
+  }
+}

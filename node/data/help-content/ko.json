@@ -1,0 +1,395 @@
+{
+  "language": "ko",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "GGcode란 무엇인가요?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 CNC 기계, 3D 프린터 및 기타 컴퓨터 제어 제조 장비용 G코드 생성을 위해 특별히 설계된 고급 프로그래밍 언어입니다. 기본 프로그래밍의 단순성과 강력한 수학 함수를 결합하여 복잡한 도구 경로와 기하학적 패턴을 쉽게 만들 수 있습니다."
+        },
+        {
+          "type": "list",
+          "title": "주요 특징:",
+          "items": [
+            "간단하고 읽기 쉬운 구문, 세미콜론 불필요",
+            "풍부한 수학 함수 라이브러리",
+            "복잡한 데이터 구조를 위한 배열 지원",
+            "매개변수와 반환값을 가진 함수 정의",
+            "제어 구조 (루프, 조건문)",
+            "직접 G코드 생성",
+            "편리한 암시적 함수"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "애플리케이션 사용 가이드",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "이 애플리케이션을 사용하면 직관적인 인터페이스와 고급 도구로 GGcode 코드를 생성, 편집 및 시각화할 수 있습니다."
+        },
+        {
+          "type": "subsection",
+          "title": "메인 인터페이스",
+          "description": "애플리케이션에는 다음이 포함됩니다:",
+          "list": [
+            "<strong>코드 에디터</strong> - 구문 강조와 함께 GGcode 코드 작성 및 편집",
+            "<strong>3D 비주얼라이저</strong> - 도구 경로의 실시간 미리보기",
+            "<strong>구성기</strong> - 구성 매개변수를 조정하는 모달",
+            "<strong>도움말 시스템</strong> - 완전한 문서 및 예제",
+            "<strong>파일 관리</strong> - GGcode 파일 로드, 저장 및 내보내기"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "에디터 컨트롤",
+          "description": "코드 에디터 기능:",
+          "list": [
+            "<strong>구문 강조</strong> - 명령, 변수 및 함수의 색상",
+            "<strong>자동 완성</strong> - 함수 및 명령 제안",
+            "<strong>줄 번호</strong> - 탐색을 위한 시각적 참조",
+            "<strong>찾기 및 바꾸기</strong> - 텍스트를 빠르게 찾고 수정",
+            "<strong>실행 취소/다시 실행</strong> - Ctrl+Z/Ctrl+Y로 변경 사항 제어"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "도움말 시스템",
+          "description": "문서 액세스:",
+          "list": [
+            "<strong>도움말 버튼</strong> - 예제가 포함된 완전한 문서 열기",
+            "<strong>도움말 검색</strong> - 특정 정보를 빠르게 찾기",
+            "<strong>대화형 예제</strong> - 복사하여 사용할 수 있는 샘플 코드",
+            "<strong>다국어</strong> - 여러 언어로 문서 제공"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "워크플로우",
+          "description": "권장 프로세스:",
+          "list": [
+            "<strong>1. 코드 작성</strong> - 에디터를 사용하여 GGcode 프로그램 생성",
+            "<strong>2. 매개변수 구성</strong> - 필요한 경우 구성기로 값 조정",
+            "<strong>3. 미리보기</strong> - 3D 비주얼라이저로 경로 확인",
+            "<strong>4. 컴파일</strong> - 최종 G 코드 생성",
+            "<strong>5. 내보내기</strong> - 기계용 파일 저장 또는 다운로드"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "키보드 단축키",
+          "description": "빠른 명령:",
+          "list": [
+            "<strong>Ctrl+S</strong> - 파일 저장",
+            "<strong>Ctrl+O</strong> - 파일 열기",
+            "<strong>Ctrl+Z</strong> - 실행 취소",
+            "<strong>Ctrl+Y</strong> - 다시 실행",
+            "<strong>Ctrl+F</strong> - 코드에서 검색",
+            "<strong>F1</strong> - 도움말 열기"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "사용 팁",
+          "description": "모범 사례:",
+          "list": [
+            "<strong>자주 저장</strong> - 작업 손실 방지",
+            "<strong>작은 코드 테스트</strong> - 큰 프로그램 전에 함수 확인",
+            "<strong>주석 사용</strong> - 향후 참조를 위해 코드 문서화",
+            "<strong>미리보기 확인</strong> - 경로가 올바른지 확인"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "인라인 구성",
+          "description": "변수 선언에 구성 지시문 추가:",
+          "code": "let radius = 10 /// @number 5 50 // 원의 반지름(mm)\nlet enabled = 1 /// @check // 기능 활성화\nlet mode = 2 /// @selection 1, 2, 3 // 모드 선택\nlet notes = \"\" /// @text 3 max 120 // 운영자 메모"
+        },
+        {
+          "type": "subsection",
+          "title": "구성 지시문 참조",
+          "description": "사용 가능한 지시문 유형:",
+          "list": [
+            "<strong>@number min max</strong> - 범위 검증이 있는 숫자 입력",
+            "<strong>@check</strong> - 체크박스 입력(부울)",
+            "<strong>@selection options</strong> - 사전 설정된 옵션이 있는 드롭다운 메뉴",
+            "<strong>@text rows [max N]</strong> - 텍스트 입력 또는 텍스트 영역"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "코드에서 구성 값 사용",
+          "description": "GGcode에서 변수 이름을 직접 사용:",
+          "code": "let radius = 10 /// @number 5 50 // 원의 반지름\nlet feed_rate = 150 /// @number 50 500 // 이송 속도\nlet enabled = 1 /// @check // 기능 활성화\n\n// 코드에서 사용\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // 무언가 수행\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "완전한 구성 예제",
+          "description": "모든 지시문 유형을 보여주는 예제:",
+          "code": "let radius = 10 /// @number 5 50 // 원의 반지름\nlet center_x = 0 /// @number -100 100 // 중심 X\nlet feed_rate = 150 /// @number 50 500 // 이송 속도\nlet draw_circle = 1 /// @check // 원 그리기\nlet pattern = 1 /// @selection 1, 2, 3 // 패턴 유형\nlet notes = \"\" /// @text 3 max 120 // 메모\n\n// 코드에서 사용\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "작동 방식",
+          "description": "기술적 세부사항:",
+          "list": [
+            "<strong>파싱</strong> - <code>let variable = value /// @directive parameters // description</code> 검색",
+            "<strong>폼 생성</strong> - 파싱된 변수에서 동적 HTML 폼 생성",
+            "<strong>검증</strong> - 숫자 범위, 체크박스 변환, 옵션 검증",
+            "<strong>실시간 업데이트</strong> - 변경사항이 컴파일 전에 GGcode 소스 코드를 즉시 업데이트"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "모범 사례",
+          "description": "효과적인 구성을 위한 팁:",
+          "list": [
+            "<strong>안전하게 시작</strong> - 보수적인 값으로 시작한 후 최적화",
+            "<strong>작게 테스트</strong> - 먼저 작은 부품에서 구성 테스트",
+            "<strong>구성 문서화</strong> - 다양한 재료에 대한 메모 유지",
+            "<strong>안전 우선</strong> - 항상 작업 영역 제한 확인"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "구문",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 간단하고 직관적인 구문을 사용합니다."
+        },
+        {
+          "type": "subsection",
+          "title": "변수 선언",
+          "description": "let 키워드를 사용하여 변수를 선언합니다",
+          "code": "let radius = 10\nlet angle = 45 * DEG_TO_RAD\nlet message = \"Hello World\""
+        },
+        {
+          "type": "subsection",
+          "title": "G-code 명령",
+          "description": "표준 G-code 명령을 사용합니다",
+          "code": "G0 X0 Y0 Z0    // 빠른 이동\nG1 X10 Y10 F100  // 선형 이동\nG2 X20 Y0 R10    // 시계 방향 호\nG3 X0 Y0 R10     // 반시계 방향 호"
+        },
+        {
+          "type": "subsection",
+          "title": "주석",
+          "description": "한 줄 및 여러 줄 주석을 지원합니다",
+          "code": "// 이것은 한 줄 주석입니다\nlet x = 10  // 인라인 주석\n\n/* 이것은\n   여러 줄 주석입니다 */"
+        },
+        {
+          "type": "subsection",
+          "title": "G-code 모달 동작",
+          "description": "G-code 명령은 모달입니다 - 다음 명령까지 적용됩니다",
+          "code": "G1 F100        // 피드레이트 설정\nX10 Y10        // G1이 적용됨\nX20 Y20        // G1이 적용됨\nG0 X0 Y0       // 새로운 G0 명령"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "함수",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 계산을 위한 수학 함수를 지원합니다."
+        },
+        {
+          "type": "list",
+          "items": [
+            "<code>abs(x)</code> - 절댓값",
+            "<code>mod(x, y)</code> - 나머지",
+            "<code>sin(x)</code>, <code>cos(x)</code> - 삼각함수",
+            "<code>sqrt(x)</code> - 제곱근",
+            "<code>pow(x, y)</code> - 거듭제곱",
+            "<code>lerp(a, b, t)</code> - 선형 보간",
+            "<code>map(x, a, b, c, d)</code> - 범위 변환",
+            "<code>distance(x1, y1, x2, y2)</code> - 점 간 거리",
+            "<code>log(x)</code>, <code>exp(x)</code> - 로그와 지수",
+            "<code>noise(x)</code> - 퍼린 노이즈",
+            "<code>sign(x)</code> - 부호",
+            "<code>deg(x)</code>, <code>rad(x)</code> - 각도 변환"
+          ]
+        },
+        {
+          "type": "code",
+          "code": "let angle = sin(45 * DEG_TO_RAD)\nlet dist = distance(0, 0, 10, 10)\nlet mapped = map(5, 0, 10, 0, 100)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "제어 구조",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 복잡한 도구 경로와 조건부 작업을 생성하기 위한 강력한 제어 구조를 제공합니다."
+        },
+        {
+          "type": "subsection",
+          "title": "For 루프",
+          "description": "<strong>기본 For 루프：</strong> <code>for variable = start..end</code> 구문 사용",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "While 루프",
+          "description": "<strong>기본 While 루프：</strong> <code>while (condition)</code> 구문 사용",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "제어 구조",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 프로그램 로직을 생성하기 위한 표준 제어 구조를 지원합니다."
+        },
+        {
+          "type": "subsection",
+          "title": "for 루프",
+          "description": "범위와 배열의 반복",
+          "code": "for i = 0..<10 {\n  // 10번 실행 (0부터 9까지)\n}\n\nfor i = 0..10 {\n  // 11번 실행 (0부터 10까지)\n}\n\nfor item in myArray {\n  // 배열 요소 반복\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "while 루프",
+          "description": "조건이 참인 동안 실행",
+          "code": "let i = 0\nwhile i < 10 {\n  // i < 10인 동안 코드 실행\n  i = i + 1\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "조건문",
+          "description": "조건에 따른 코드 실행",
+          "code": "if x > 10 {\n  // x > 10인 경우 실행\n} else if x > 5 {\n  // x > 5이고 x <= 10인 경우 실행\n} else {\n  // 그 외의 경우 실행\n}"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "배열",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 데이터를 저장하기 위한 1차원, 2차원, 3차원 배열을 지원합니다."
+        },
+        {
+          "type": "subsection",
+          "title": "1차원 배열",
+          "description": "1차원 배열 생성 및 사용",
+          "code": "let points = [1, 2, 3, 4, 5]\nlet radius = points[0]  // 요소 접근\npoints[2] = 10         // 요소 변경"
+        },
+        {
+          "type": "subsection",
+          "title": "2차원 배열",
+          "description": "2차원 배열 생성 및 사용",
+          "code": "let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nlet value = matrix[1][2]  // 요소 접근\nmatrix[0][1] = 10        // 요소 변경"
+        },
+        {
+          "type": "subsection",
+          "title": "동적 배열",
+          "description": "루프를 사용한 배열 생성",
+          "code": "let coords = []\nfor i = 0..<10 {\n  coords[i] = i * 10\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "연산자",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 표준 비교 연산자, 논리 연산자, 수학 연산자를 지원합니다."
+        },
+        {
+          "type": "subsection",
+          "title": "비교 연산자",
+          "description": "값 비교",
+          "code": "==  // 같음\n!=  // 다름\n<   // 작음\n<=  // 작거나 같음\n>   // 큼\n>=  // 크거나 같음"
+        },
+        {
+          "type": "subsection",
+          "title": "논리 연산자",
+          "description": "논리 연산",
+          "code": "&&  // 그리고 (AND)\n||  // 또는 (OR)\n!   // 아님 (NOT)"
+        },
+        {
+          "type": "subsection",
+          "title": "수학 연산자",
+          "description": "기본 수학 연산",
+          "code": "+   // 덧셈\n-   // 뺄셈\n*   // 곱셈\n/   // 나눗셈\n&   // 비트 AND"
+        },
+        {
+          "type": "subsection",
+          "title": "단항 연산자",
+          "description": "단일 피연산자 연산자",
+          "code": "-x  // 음수\n!x  // 논리 부정"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "상수",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode는 일반적인 계산을 위한 여러 내장 수학 상수를 제공합니다."
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - 오일러 수 (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - 도를 라디안으로 변환 | <code>RAD_TO_DEG</code> - 라디안을 도로 변환"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "문서화 기능",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "노트 블록",
+          "description": "파일 문서화와 헤더에 <code>note { }</code> 블록 사용",
+          "code": "note {\n  이것은 문서 블록입니다\n  여러 줄을 포함할 수 있습니다\n  파일 헤더와 설명에 유용\n  작성자: 당신의 이름\n  버전: 1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "주석",
+          "description": "한 줄 주석에 <code>//</code>, 여러 줄 주석에 <code>/* */</code> 사용",
+          "code": "// 이것은 한 줄 주석입니다\nlet radius = 10  // 인라인 주석\n\n/* 이것은 여러 줄 주석입니다\n   여러 줄에 걸칠 수 있습니다\n   자세한 설명에 유용 */"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "모범 사례",
+      "content": [
+        {
+          "type": "list",
+          "title": "프로그래밍 가이드라인",
+          "items": [
+            "<strong>배열 반복에 배타적 범위 사용</strong>: <code>for i = 0..<10</code> 대신 <code>for i = 0..10</code>",
+            "<strong>복잡한 표현식에서 사용하기 전에 변수 선언</strong>",
+            "<strong>복잡한 작업을 정리하기 위해 함수 사용</strong>",
+            "<strong>복잡한 로직을 설명하기 위해 주석 추가</strong>",
+            "<strong>파일 문서화를 위해 노트 블록 사용</strong>",
+            "<strong>복잡한 프로그램을 구축하기 전에 작은 섹션 테스트</strong>"
+          ]
+        }
+      ]
+    }
+  }
+}

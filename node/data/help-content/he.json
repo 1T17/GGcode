@@ -1,0 +1,383 @@
+{
+  "language": "he",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "מה זה GGcode?",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode היא שפת תכנות ברמה גבוהה שתוכננה במיוחד ליצירת קוד G עבור מכונות CNC, מדפסות תלת-ממד וציוד ייצור אחר הנשלט על ידי מחשב. היא משלבת את הפשטות של תכנות בסיסי עם פונקציות מתמטיות חזקות, מה שהופך אותה לקלה ליצירת נתיבי כלים מורכבים ודפוסים גיאומטריים."
+        },
+        {
+          "type": "list",
+          "title": "תכונות עיקריות:",
+          "items": [
+            "תחביר פשוט וקריא ללא נקודה-פסיק",
+            "ספריית פונקציות מתמטיות נרחבת",
+            "תמיכה במערכים למבני נתונים מורכבים",
+            "הגדרות פונקציות עם פרמטרים וערכי החזרה",
+            "מבני בקרה (לולאות, תנאים)",
+            "יצירת קוד G ישירה",
+            "תכונות מרומזות לנוחות"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "מדריך שימוש באפליקציה",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "אפליקציה זו מאפשרת לך ליצור, לערוך ולהמחיש קוד GGcode עם ממשק אינטואיטיבי וכלים מתקדמים."
+        },
+        {
+          "type": "subsection",
+          "title": "ממשק ראשי",
+          "description": "האפליקציה כוללת:",
+          "list": [
+            "<strong>עורך קוד</strong> - כתוב וערוך את קוד ה-GGcode שלך עם הדגשת תחביר",
+            "<strong>ממחיש תלת-מימדי</strong> - תצוגה מקדימה בזמן אמת של מסלול הכלי",
+            "<strong>מגדיר</strong> - חלון מודאלי להתאמת פרמטרי הגדרה",
+            "<strong>מערכת עזרה</strong> - תיעוד מלא ודוגמאות",
+            "<strong>ניהול קבצים</strong> - טעינה, שמירה וייצוא קבצי GGcode"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "בקרות העורך",
+          "description": "פונקציות עורך הקוד:",
+          "list": [
+            "<strong>הדגשת תחביר</strong> - צבעים לפקודות, משתנים ופונקציות",
+            "<strong>השלמה אוטומטית</strong> - הצעות לפונקציות ופקודות",
+            "<strong>מספרי שורות</strong> - התייחסות חזותית לניווט",
+            "<strong>חיפוש והחלפה</strong> - מצא ושנה טקסט במהירות",
+            "<strong>בטל/בצע מחדש</strong> - שליטה בשינויים עם Ctrl+Z/Ctrl+Y"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "מערכת עזרה",
+          "description": "גישה לתיעוד:",
+          "list": [
+            "<strong>כפתור עזרה</strong> - פותח תיעוד מלא עם דוגמאות",
+            "<strong>חיפוש בעזרה</strong> - מצא מידע ספציפי במהירות",
+            "<strong>דוגמאות אינטראקטיביות</strong> - קוד דוגמה שתוכל להעתיק ולהשתמש בו",
+            "<strong>רב-לשוני</strong> - תיעוד זמין במספר שפות"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "זרימת עבודה",
+          "description": "תהליך מומלץ:",
+          "list": [
+            "<strong>1. כתיבת קוד</strong> - השתמש בעורך ליצירת תוכנית GGcode שלך",
+            "<strong>2. הגדרת פרמטרים</strong> - התאם ערכים באמצעות המגדיר במידת הצורך",
+            "<strong>3. תצוגה מקדימה</strong> - השתמש בממחיש התלת-מימדי לאימות המסלול",
+            "<strong>4. קומפילציה</strong> - צור את קוד ה-G הסופי",
+            "<strong>5. ייצוא</strong> - שמור או הורד את הקובץ למכונה שלך"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "קיצורי מקלדת",
+          "description": "פקודות מהירות:",
+          "list": [
+            "<strong>Ctrl+S</strong> - שמור קובץ",
+            "<strong>Ctrl+O</strong> - פתח קובץ",
+            "<strong>Ctrl+Z</strong> - בטל",
+            "<strong>Ctrl+Y</strong> - בצע מחדש",
+            "<strong>Ctrl+F</strong> - חפש בקוד",
+            "<strong>F1</strong> - פתח עזרה"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "טיפים לשימוש",
+          "description": "שיטות עבודה מומלצות:",
+          "list": [
+            "<strong>שמור לעתים קרובות</strong> - הימנע מאובדן עבודה",
+            "<strong>בדוק קוד קטן</strong> - ודא פונקציות לפני תוכניות גדולות",
+            "<strong>השתמש בהערות</strong> - תיעד את הקוד שלך להתייחסות עתידית",
+            "<strong>בדוק תצוגה מקדימה</strong> - ודא שהמסלול נכון"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "הגדרה מובנית",
+          "description": "הוסף הנחיות הגדרה להצהרות המשתנים שלך:",
+          "code": "let radius = 10 /// @number 5 50 // רדיוס המעגל במ\"מ\nlet enabled = 1 /// @check // הפעל תכונה\nlet mode = 2 /// @selection 1, 2, 3 // בחר מצב\nlet notes = \"\" /// @text 3 max 120 // הערות למפעיל"
+        },
+        {
+          "type": "subsection",
+          "title": "התייחסות הנחיות הגדרה",
+          "description": "סוגי הנחיות זמינים:",
+          "list": [
+            "<strong>@number min max</strong> - קלט מספרי עם אימות טווח",
+            "<strong>@check</strong> - קלט תיבת סימון (בוליאני)",
+            "<strong>@selection options</strong> - תפריט נפתח עם אפשרויות מוגדרות מראש",
+            "<strong>@text rows [max N]</strong> - קלט טקסט או אזור טקסט"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "שימוש בערכי הגדרה בקוד",
+          "description": "השתמש בשמות משתנים ישירות ב-GGcode שלך:",
+          "code": "let radius = 10 /// @number 5 50 // רדיוס המעגל\nlet feed_rate = 150 /// @number 50 500 // מהירות הזנה\nlet enabled = 1 /// @check // הפעל תכונה\n\n// השתמש בקוד שלך\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // עשה משהו\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "דוגמה להגדרה מלאה",
+          "description": "דוגמה המציגה את כל סוגי ההנחיות:",
+          "code": "let radius = 10 /// @number 5 50 // רדיוס המעגל\nlet center_x = 0 /// @number -100 100 // מרכז X\nlet feed_rate = 150 /// @number 50 500 // מהירות הזנה\nlet draw_circle = 1 /// @check // צייר מעגל\nlet pattern = 1 /// @selection 1, 2, 3 // סוג דפוס\nlet notes = \"\" /// @text 3 max 120 // הערות\n\n// השתמש בקוד\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "איך זה עובד",
+          "description": "פרטים טכניים:",
+          "list": [
+            "<strong>ניתוח</strong> - מחפש <code>let variable = value /// @directive parameters // description</code>",
+            "<strong>יצירת טופס</strong> - יוצר טופס HTML דינמי מהמשתנים המנותחים",
+            "<strong>אימות</strong> - טווחים מספריים, המרת תיבות סימון, אימות אפשרויות",
+            "<strong>עדכונים בזמן אמת</strong> - שינויים מעדכנים מיד את קוד המקור GGcode לפני הקומפילציה"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "שיטות עבודה מומלצות",
+          "description": "טיפים להגדרה יעילה:",
+          "list": [
+            "<strong>התחל בבטחה</strong> - התחל עם ערכים שמרניים, ואז אופטימיזציה",
+            "<strong>בדוק קטן</strong> - בדוק הגדרות על חלקים קטנים תחילה",
+            "<strong>תעד הגדרות</strong> - שמור הערות לחומרים שונים",
+            "<strong>בטיחות קודמת</strong> - ודא תמיד גבולות אזור העבודה"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "תחביר",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode משתמשת בתחביר פשוט ואינטואיטיבי."
+        },
+        {
+          "type": "subsection",
+          "title": "הצהרת משתנים",
+          "description": "השתמש במילת המפתח let להצהרת משתנים",
+          "code": "let radius = 10\nlet angle = 45 * DEG_TO_RAD\nlet message = \"Hello World\""
+        },
+        {
+          "type": "subsection",
+          "title": "פקודות G-code",
+          "description": "השתמש בפקודות G-code סטנדרטיות",
+          "code": "G0 X0 Y0 Z0    // תנועה מהירה\nG1 X10 Y10 F100  // תנועה ליניארית\nG2 X20 Y0 R10    // קשת בכיוון השעון\nG3 X0 Y0 R10     // קשת נגד כיוון השעון"
+        },
+        {
+          "type": "subsection",
+          "title": "הערות",
+          "description": "תמיכה בהערות שורה אחת ורבות שורות",
+          "code": "// זו הערת שורה אחת\nlet x = 10  // הערה מוטמעת\n\n/* זו הערה\n   של מספר שורות */"
+        },
+        {
+          "type": "subsection",
+          "title": "התנהגות G-code מודלית",
+          "description": "פקודות G-code הן מודליות - חלות עד הפקודה הבאה",
+          "code": "G1 F100        // הגדרת קצב הזנה\nX10 Y10        // G1 חל\nX20 Y20        // G1 עדיין חל\nG0 X0 Y0       // פקודת G0 חדשה"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "פונקציות",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode תומכת בפונקציות מתמטיות לחישובים."
+        },
+        {
+          "type": "list",
+          "items": [
+            "<code>abs(x)</code> - ערך מוחלט",
+            "<code>mod(x, y)</code> - שארית חלוקה",
+            "<code>sin(x)</code>, <code>cos(x)</code> - פונקציות טריגונומטריות",
+            "<code>sqrt(x)</code> - שורש ריבועי",
+            "<code>pow(x, y)</code> - העלאה בחזקה",
+            "<code>lerp(a, b, t)</code> - אינטרפולציה ליניארית",
+            "<code>map(x, a, b, c, d)</code> - המרת טווח",
+            "<code>distance(x1, y1, x2, y2)</code> - מרחק בין נקודות",
+            "<code>log(x)</code>, <code>exp(x)</code> - לוגריתם ואקספוננט",
+            "<code>noise(x)</code> - רעש פרלין",
+            "<code>sign(x)</code> - סימן המספר",
+            "<code>deg(x)</code>, <code>rad(x)</code> - המרת זוויות"
+          ]
+        },
+        {
+          "type": "code",
+          "code": "let angle = sin(45 * DEG_TO_RAD)\nlet dist = distance(0, 0, 10, 10)\nlet mapped = map(5, 0, 10, 0, 100)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "מבני בקרה",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode מספקת מבני בקרה חזקים ליצירת נתיבי כלים מורכבים ופעולות מותנות."
+        },
+        {
+          "type": "subsection",
+          "title": "לולאות For",
+          "description": "<strong>לולאת For בסיסית:</strong> השתמש בתחביר <code>for variable = start..end</code>",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "לולאות While",
+          "description": "<strong>לולאת While בסיסית:</strong> השתמש בתחביר <code>while (condition)</code>",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "מערכים",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode תומכת במערכים חד-ממדיים, דו-ממדיים ותלת-ממדיים לאחסון נתונים."
+        },
+        {
+          "type": "subsection",
+          "title": "מערכים חד-ממדיים",
+          "description": "יצירה ושימוש במערכים חד-ממדיים",
+          "code": "let points = [1, 2, 3, 4, 5]\nlet radius = points[0]  // גישה לאלמנט\npoints[2] = 10         // שינוי אלמנט"
+        },
+        {
+          "type": "subsection",
+          "title": "מערכים דו-ממדיים",
+          "description": "יצירה ושימוש במערכים דו-ממדיים",
+          "code": "let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nlet value = matrix[1][2]  // גישה לאלמנט\nmatrix[0][1] = 10        // שינוי אלמנט"
+        },
+        {
+          "type": "subsection",
+          "title": "מערכים דינמיים",
+          "description": "יצירת מערכים באמצעות לולאות",
+          "code": "let coords = []\nfor i = 0..<10 {\n  coords[i] = i * 10\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "אופרטורים",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode תומכת באופרטורי השוואה סטנדרטיים, אופרטורים לוגיים ומתמטיים."
+        },
+        {
+          "type": "subsection",
+          "title": "אופרטורי השוואה",
+          "description": "השוואת ערכים",
+          "code": "==  // שווה\n!=  // לא שווה\n<   // קטן מ\n<=  // קטן מ או שווה\n>   // גדול מ\n>=  // גדול מ או שווה"
+        },
+        {
+          "type": "subsection",
+          "title": "אופרטורים לוגיים",
+          "description": "פעולות לוגיות",
+          "code": "&&  // וגם (AND)\n||  // או (OR)\n!   // לא (NOT)"
+        },
+        {
+          "type": "subsection",
+          "title": "אופרטורים מתמטיים",
+          "description": "פעולות מתמטיות בסיסיות",
+          "code": "+   // חיבור\n-   // חיסור\n*   // כפל\n/   // חלוקה\n&   // AND ביט"
+        },
+        {
+          "type": "subsection",
+          "title": "אופרטורים חד-מקומיים",
+          "description": "אופרטורים עם אופרנד אחד",
+          "code": "-x  // שלילה\n!x  // שלילה לוגית"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "קבועים",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode מספקת מספר קבועים מתמטיים מובנים לחישובים נפוצים."
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - מספר אוילר (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - המרת מעלות לרדיאנים | <code>RAD_TO_DEG</code> - המרת רדיאנים למעלות"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "תכונות תיעוד",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "בלוקי הערה",
+          "description": "השתמש בבלוקים <code>note { }</code> לתיעוד קבצים וכותרות",
+          "code": "note {\n  זה בלוק תיעוד\n  יכול להכיל מספר שורות\n  שימושי לכותרות קבצים ותיאורים\n  מחבר: השם שלך\n  גרסה: 1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "הערות",
+          "description": "השתמש ב-<code>//</code> להערות שורה אחת או <code>/* */</code> להערות מספר שורות",
+          "code": "// זו הערת שורה אחת\nlet radius = 10  // הערה מוטמעת\n\n/* זו הערה\n   של מספר שורות\n   שימושית להסברים מפורטים */"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "תכונות מיוחדות",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcode כוללת מספר תכונות מיוחדות שהופכות את התכנות לנוח יותר."
+        },
+        {
+          "type": "subsection",
+          "title": "התנהגות G-code מודלית",
+          "description": "<strong>G-code מודלי:</strong> ברגע שאתה מציין פקודת G (G0, G1, G2, G3), היא ממשיכה לחול על השורות הבאות עד שפקודת G חדשה מצוינת. זה עוקב אחר התנהגות G-code מודלית סטנדרטית.",
+          "code": "G1 X[10] Y[20] F[100]  // תנועה ליניארית\nX[30] Y[40]             // ממשיך G1\nX[50] Y[60]             // עדיין G1\nG0 X[0] Y[0]            // פקודת תנועה מהירה חדשה\nX[10] Y[10]             // ממשיך תנועה מהירה G0"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "שיטות עבודה מומלצות",
+      "content": [
+        {
+          "type": "list",
+          "title": "הנחיות תכנות",
+          "items": [
+            "<strong>השתמש בטווחים בלעדיים</strong> לאיטרציה של מערכים: <code>for i = 0..<10</code> במקום <code>for i = 0..10</code>",
+            "<strong>הצהר משתנים</strong> לפני השימוש בהם בביטויים מורכבים",
+            "<strong>השתמש בפונקציות</strong> לארגון פעולות מורכבות",
+            "<strong>הוסף הערות</strong> להסבר לוגיקה מורכבת",
+            "<strong>השתמש בבלוקי הערה</strong> לתיעוד קבצים",
+            "<strong>בדוק חלקים קטנים</strong> לפני בניית תוכניות מורכבות"
+          ]
+        }
+      ]
+    }
+  }
+} 

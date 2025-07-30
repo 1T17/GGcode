@@ -1,0 +1,385 @@
+{
+  "language": "ja",
+  "sections": {
+    "overview": {
+      "id": "overview",
+      "title": "GGcodeとは？",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcodeは、CNC工作機械、3Dプリンター、その他のコンピューター制御製造機器用のGコード生成に特化して設計された高級プログラミング言語です。基本的なプログラミングのシンプルさと強力な数学関数を組み合わせ、複雑な工具経路や幾何学的パターンの作成を容易にします。"
+        },
+        {
+          "type": "list",
+          "title": "主な特徴：",
+          "items": [
+            "シンプルで読みやすい構文、セミコロン不要",
+            "豊富な数学関数ライブラリ",
+            "複雑なデータ構造のための配列サポート",
+            "パラメータと戻り値を持つ関数定義",
+            "制御構造（ループ、条件分岐）",
+            "直接Gコード生成",
+            "便利な暗黙的関数"
+          ]
+        }
+      ]
+    },
+    "appUsage": {
+      "id": "appUsage",
+      "title": "アプリケーション使用ガイド",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "このアプリケーションでは、直感的なインターフェースと高度なツールを使用してGGcodeコードを作成、編集、視覚化できます。"
+        },
+        {
+          "type": "subsection",
+          "title": "メインインターフェース",
+          "description": "アプリケーションには以下が含まれます：",
+          "list": [
+            "<strong>コードエディター</strong> - シンタックスハイライト付きでGGcodeコードを記述・編集",
+            "<strong>3Dビジュアライザー</strong> - ツールパスのリアルタイムプレビュー",
+            "<strong>コンフィギュレーター</strong> - 設定パラメータを調整するモーダル",
+            "<strong>ヘルプシステム</strong> - 完全なドキュメントと例",
+            "<strong>ファイル管理</strong> - GGcodeファイルの読み込み、保存、エクスポート"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "エディターコントロール",
+          "description": "コードエディターの機能：",
+          "list": [
+            "<strong>シンタックスハイライト</strong> - コマンド、変数、関数の色分け",
+            "<strong>オートコンプリート</strong> - 関数とコマンドの提案",
+            "<strong>行番号</strong> - ナビゲーションの視覚的参照",
+            "<strong>検索と置換</strong> - テキストを素早く検索・変更",
+            "<strong>元に戻す/やり直し</strong> - Ctrl+Z/Ctrl+Yで変更を制御"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "ヘルプシステム",
+          "description": "ドキュメントへのアクセス：",
+          "list": [
+            "<strong>ヘルプボタン</strong> - 例付きの完全なドキュメントを開く",
+            "<strong>ヘルプ検索</strong> - 特定の情報を素早く見つける",
+            "<strong>インタラクティブな例</strong> - コピーして使用できるサンプルコード",
+            "<strong>多言語</strong> - 複数の言語でドキュメントを利用可能"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "ワークフロー",
+          "description": "推奨プロセス：",
+          "list": [
+            "<strong>1. コード記述</strong> - エディターを使用してGGcodeプログラムを作成",
+            "<strong>2. パラメータ設定</strong> - 必要に応じてコンフィギュレーターで値を調整",
+            "<strong>3. プレビュー</strong> - 3Dビジュアライザーでパスを確認",
+            "<strong>4. コンパイル</strong> - 最終的なGコードを生成",
+            "<strong>5. エクスポート</strong> - マシン用にファイルを保存またはダウンロード"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "キーボードショートカット",
+          "description": "クイックコマンド：",
+          "list": [
+            "<strong>Ctrl+S</strong> - ファイル保存",
+            "<strong>Ctrl+O</strong> - ファイルを開く",
+            "<strong>Ctrl+Z</strong> - 元に戻す",
+            "<strong>Ctrl+Y</strong> - やり直し",
+            "<strong>Ctrl+F</strong> - コード内検索",
+            "<strong>F1</strong> - ヘルプを開く"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "使用のヒント",
+          "description": "ベストプラクティス：",
+          "list": [
+            "<strong>頻繁に保存</strong> - 作業の損失を避ける",
+            "<strong>小さなコードをテスト</strong> - 大きなプログラムの前に機能を確認",
+            "<strong>コメントを使用</strong> - 将来の参照のためにコードを文書化",
+            "<strong>プレビューを確認</strong> - パスが正しいことを確認"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "インライン設定",
+          "description": "変数宣言に設定ディレクティブを追加：",
+          "code": "let radius = 10 /// @number 5 50 // 円の半径（mm）\nlet enabled = 1 /// @check // 機能を有効化\nlet mode = 2 /// @selection 1, 2, 3 // モードを選択\nlet notes = \"\" /// @text 3 max 120 // オペレーター用メモ"
+        },
+        {
+          "type": "subsection",
+          "title": "設定ディレクティブリファレンス",
+          "description": "利用可能なディレクティブタイプ：",
+          "list": [
+            "<strong>@number min max</strong> - 範囲検証付き数値入力",
+            "<strong>@check</strong> - チェックボックス入力（ブール値）",
+            "<strong>@selection options</strong> - プリセットオプション付きドロップダウンメニュー",
+            "<strong>@text rows [max N]</strong> - テキスト入力またはテキストエリア"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "コードで設定値を使用",
+          "description": "GGcodeで変数名を直接使用：",
+          "code": "let radius = 10 /// @number 5 50 // 円の半径\nlet feed_rate = 150 /// @number 50 500 // 送り速度\nlet enabled = 1 /// @check // 機能を有効化\n\n// コードで使用\nG1 X[radius] Y0 F[feed_rate]\nif (enabled) {\n  // 何かをする\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "完全な設定例",
+          "description": "すべてのディレクティブタイプを示す例：",
+          "code": "let radius = 10 /// @number 5 50 // 円の半径\nlet center_x = 0 /// @number -100 100 // 中心X\nlet feed_rate = 150 /// @number 50 500 // 送り速度\nlet draw_circle = 1 /// @check // 円を描画\nlet pattern = 1 /// @selection 1, 2, 3 // パターンタイプ\nlet notes = \"\" /// @text 3 max 120 // メモ\n\n// コードで使用\nG0 X[center_x] Y[center_y]\nif (draw_circle) {\n  G1 X[radius] Y0 F[feed_rate]\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "動作方法",
+          "description": "技術的詳細：",
+          "list": [
+            "<strong>パース</strong> - <code>let variable = value /// @directive parameters // description</code>を検索",
+            "<strong>フォーム生成</strong> - パースされた変数から動的HTMLフォームを作成",
+            "<strong>検証</strong> - 数値範囲、チェックボックス変換、オプション検証",
+            "<strong>リアルタイム更新</strong> - 変更はコンパイル前にGGcodeソースコードを即座に更新"
+          ]
+        },
+        {
+          "type": "subsection",
+          "title": "ベストプラクティス",
+          "description": "効果的な設定のヒント：",
+          "list": [
+            "<strong>安全に開始</strong> - 保守的な値から開始し、その後最適化",
+            "<strong>小さくテスト</strong> - 最初に小さな部品で設定をテスト",
+            "<strong>設定を文書化</strong> - 異なる材料のメモを保持",
+            "<strong>安全第一</strong> - 常に作業領域の制限を確認"
+          ]
+        }
+      ]
+    },
+    "syntax": {
+      "id": "syntax",
+      "title": "基本構文",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "変数",
+          "description": "<code>let</code> を使用して変数を宣言します。セミコロンは不要です！",
+          "code": "let radius = 10\nlet center_x = 0\nlet feed_rate = 150"
+        },
+        {
+          "type": "subsection",
+          "title": "Gコードコマンド",
+          "description": "変数補間とモーダル動作をサポートする標準Gコードコマンド",
+          "code": "G0 X10 Y5        // 位置への高速移動\nG1 X20 Y15 F100  // フィード速度100での直線移動\nX30 Y25          // G1直線移動を継続（モーダル）\nG1 X[center_x] Y[center_y] F[feed_rate]  // 変数の使用"
+        },
+        {
+          "type": "subsection",
+          "title": "コメント",
+          "description": "<code>//</code> で単行コメント、<code>/* */</code> で複数行コメント",
+          "code": "// これは単行コメント\n/* これは\n   複数行コメント */"
+        }
+      ]
+    },
+    "functions": {
+      "id": "functions",
+      "title": "関数",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcodeは計算のための数学関数をサポートしています。"
+        },
+        {
+          "type": "list",
+          "items": [
+            "<code>abs(x)</code> - 絶対値",
+            "<code>mod(x, y)</code> - 剰余",
+            "<code>sin(x)</code>, <code>cos(x)</code> - 三角関数",
+            "<code>sqrt(x)</code> - 平方根",
+            "<code>pow(x, y)</code> - 累乗",
+            "<code>lerp(a, b, t)</code> - 線形補間",
+            "<code>map(x, a, b, c, d)</code> - 範囲変換",
+            "<code>distance(x1, y1, x2, y2)</code> - 点間距離",
+            "<code>log(x)</code>, <code>exp(x)</code> - 対数と指数",
+            "<code>noise(x)</code> - パーリンノイズ",
+            "<code>sign(x)</code> - 符号",
+            "<code>deg(x)</code>, <code>rad(x)</code> - 角度変換"
+          ]
+        },
+        {
+          "type": "code",
+          "code": "let angle = sin(45 * DEG_TO_RAD)\nlet dist = distance(0, 0, 10, 10)\nlet mapped = map(5, 0, 10, 0, 100)"
+        }
+      ]
+    },
+    "control": {
+      "id": "control",
+      "title": "制御構造",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcodeは複雑なツールパスと条件付き操作を作成するための強力な制御構造を提供します。"
+        },
+        {
+          "type": "subsection",
+          "title": "Forループ",
+          "description": "<strong>基本的なForループ：</strong> <code>for variable = start..end</code> 構文を使用",
+          "code": "for i = 0..10 {\n    G1 X[i] Y[i] F100\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "Whileループ",
+          "description": "<strong>基本的なWhileループ：</strong> <code>while (condition)</code> 構文を使用",
+          "code": "let i = 0\nwhile (i < 10) {\n    G1 X[i] Y[i] F100\n    i = i + 1\n}"
+        }
+      ]
+    },
+    "features": {
+      "id": "features",
+      "title": "制御構造",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcodeはプログラムロジックを作成するための標準的な制御構造をサポートしています。"
+        },
+        {
+          "type": "subsection",
+          "title": "forループ",
+          "description": "範囲と配列の反復",
+          "code": "for i = 0..<10 {\n  // 10回実行（0から9）\n}\n\nfor i = 0..10 {\n  // 11回実行（0から10）\n}\n\nfor item in myArray {\n  // 配列要素の反復\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "whileループ",
+          "description": "条件が真の間実行",
+          "code": "let i = 0\nwhile i < 10 {\n  // i < 10の間コードが実行される\n  i = i + 1\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "条件文",
+          "description": "条件に基づくコード実行",
+          "code": "if x > 10 {\n  // x > 10の場合実行\n} else if x > 5 {\n  // x > 5かつx <= 10の場合実行\n} else {\n  // その他の場合実行\n}"
+        }
+      ]
+    },
+    "arrays": {
+      "id": "arrays",
+      "title": "配列",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcodeはデータを格納するための1次元、2次元、3次元配列をサポートしています。"
+        },
+        {
+          "type": "subsection",
+          "title": "1次元配列",
+          "description": "1次元配列の作成と使用",
+          "code": "let points = [1, 2, 3, 4, 5]\nlet radius = points[0]  // 要素へのアクセス\npoints[2] = 10         // 要素の変更"
+        },
+        {
+          "type": "subsection",
+          "title": "2次元配列",
+          "description": "2次元配列の作成と使用",
+          "code": "let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nlet value = matrix[1][2]  // 要素へのアクセス\nmatrix[0][1] = 10        // 要素の変更"
+        },
+        {
+          "type": "subsection",
+          "title": "動的配列",
+          "description": "ループを使用した配列の作成",
+          "code": "let coords = []\nfor i = 0..<10 {\n  coords[i] = i * 10\n}"
+        }
+      ]
+    },
+    "operators": {
+      "id": "operators",
+      "title": "演算子",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcodeは標準的な比較演算子、論理演算子、数学演算子をサポートしています。"
+        },
+        {
+          "type": "subsection",
+          "title": "比較演算子",
+          "description": "値の比較",
+          "code": "==  // 等しい\n!=  // 等しくない\n<   // より小さい\n<=  // 以下\n>   // より大きい\n>=  // 以上"
+        },
+        {
+          "type": "subsection",
+          "title": "論理演算子",
+          "description": "論理演算",
+          "code": "&&  // かつ (AND)\n||  // または (OR)\n!   // 否定 (NOT)"
+        },
+        {
+          "type": "subsection",
+          "title": "数学演算子",
+          "description": "基本的な数学演算",
+          "code": "+   // 加算\n-   // 減算\n*   // 乗算\n/   // 除算\n&   // ビットAND"
+        },
+        {
+          "type": "subsection",
+          "title": "単項演算子",
+          "description": "単一オペランド演算子",
+          "code": "-x  // 負号\n!x  // 論理否定"
+        }
+      ]
+    },
+    "constants": {
+      "id": "constants",
+      "title": "定数",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "GGcodeは一般的な計算のためのいくつかの組み込み数学定数を提供します。"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>PI</code> - π (3.14159...) | <code>TAU</code> - 2π (6.28318...) | <code>EU</code> - オイラー数 (2.71828...)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<code>DEG_TO_RAD</code> - 度からラジアンへの変換 | <code>RAD_TO_DEG</code> - ラジアンから度への変換"
+        },
+        {
+          "type": "code",
+          "code": "let pi_val = PI                    // 3.14159...\nlet tau_val = TAU                  // 6.28318...\nlet eu_val = EU                    // 2.71828...\nlet deg_to_rad_val = DEG_TO_RAD    // π/180\nlet rad_to_deg_val = RAD_TO_DEG    // 180/π"
+        }
+      ]
+    },
+    "documentation": {
+      "id": "documentation",
+      "title": "ドキュメント機能",
+      "content": [
+        {
+          "type": "subsection",
+          "title": "ノートブロック",
+          "description": "ファイルドキュメントとヘッダーに <code>note { }</code> ブロックを使用",
+          "code": "note {\n  これはドキュメントブロックです\n  複数行を含むことができます\n  ファイルヘッダーと説明に便利\n  作者：あなたの名前\n  バージョン：1.0\n}"
+        },
+        {
+          "type": "subsection",
+          "title": "コメント",
+          "description": "単行コメントに <code>//</code>、複数行コメントに <code>/* */</code> を使用",
+          "code": "// これは単行コメントです\nlet radius = 10  // インラインコメント\n\n/* これは複数行コメントです\n   複数行にまたがることができます\n   詳細な説明に便利 */"
+        }
+      ]
+    },
+    "bestPractices": {
+      "id": "bestPractices",
+      "title": "ベストプラクティス",
+      "content": [
+        {
+          "type": "list",
+          "title": "プログラミングガイドライン",
+          "items": [
+            "<strong>配列反復には排他的範囲を使用</strong>: <code>for i = 0..<10</code> の代わりに <code>for i = 0..10</code>",
+            "<strong>複雑な式で使用する前に変数を宣言</strong>",
+            "<strong>複雑な操作を整理するために関数を使用</strong>",
+            "<strong>複雑なロジックを説明するためにコメントを追加</strong>",
+            "<strong>ファイル文書化のためにノートブロックを使用</strong>",
+            "<strong>複雑なプログラムを構築する前に小さなセクションをテスト</strong>"
+          ]
+        }
+      ]
+    }
+  }
+}

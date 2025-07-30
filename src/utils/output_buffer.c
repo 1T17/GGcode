@@ -64,18 +64,22 @@ void prepend_to_output_buffer(const char* prefix) {
 }
 
 
+
 void emit_gcode_preamble(const char* default_filename) {
-    char id_line[64];
+    char id_line[64] = "";  // Initialize to empty string
     if (var_exists("id")) {
         const Value *id_val = get_var("id");
         if (id_val && id_val->type == VAL_NUMBER) {
-            snprintf(id_line, sizeof(id_line), "%.0f", id_val->number);
+            snprintf(id_line, sizeof(id_line), "(%.0f)", id_val->number);
         } else {
-            snprintf(id_line, sizeof(id_line), "000");
+            snprintf(id_line, sizeof(id_line), "(000000)");
         }
     } else {
-        snprintf(id_line, sizeof(id_line), "000");
+        snprintf(id_line, sizeof(id_line), "(000000)");
     }
+
+
+
 
     // Set RUNTIME_TIME
     char time_line[64];

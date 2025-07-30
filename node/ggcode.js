@@ -133,6 +133,80 @@ app.get('/api/examples/:filename', (req, res) => {
   }
 });
 
+// Help API endpoints
+app.get('/api/help', (req, res) => {
+  try {
+    const language = req.query.lang || 'en'; // Default to English
+    const metadataPath = path.join(__dirname, 'data', 'help-content', 'metadata.json');
+    const langFilePath = path.join(__dirname, 'data', 'help-content', `${language}.json`);
+    
+    // Check if metadata exists
+    if (!fs.existsSync(metadataPath)) {
+      return res.json({ success: false, error: 'Help metadata not found' });
+    }
+    
+    // Check if language file exists
+    if (!fs.existsSync(langFilePath)) {
+      return res.json({ success: false, error: `Language '${language}' not found` });
+    }
+    
+    // Load metadata and language data
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    const langData = JSON.parse(fs.readFileSync(langFilePath, 'utf8'));
+    
+    // Construct response in the expected format
+    const helpData = {
+      metadata: {
+        version: metadata.version,
+        lastUpdated: metadata.lastUpdated,
+        supportedLanguages: metadata.supportedLanguages.map(lang => lang.code),
+        defaultLanguage: metadata.defaultLanguage
+      },
+      sections: langData.sections
+    };
+    
+    res.json({ success: true, data: helpData, language: language });
+  } catch (error) {
+    res.json({ success: false, error: 'Failed to load help content: ' + error.message });
+  }
+});
+
+app.get('/api/help/languages', (req, res) => {
+  try {
+    const metadataPath = path.join(__dirname, 'data', 'help-content', 'metadata.json');
+    
+    if (!fs.existsSync(metadataPath)) {
+      return res.json({ success: false, error: 'Help metadata not found' });
+    }
+    
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    
+    res.json({ 
+      success: true, 
+      languages: metadata.supportedLanguages,
+      defaultLanguage: metadata.defaultLanguage
+    });
+  } catch (error) {
+    res.json({ success: false, error: 'Failed to load languages: ' + error.message });
+  }
+});
+
+app.get('/help', (req, res) => {
+  try {
+    const language = req.query.lang || 'en';
+    const langFilePath = path.join(__dirname, 'data', 'help-content', `${language}.json`);
+    
+    if (!fs.existsSync(langFilePath)) {
+      return res.status(404).send(`Language '${language}' not found`);
+    }
+    
+    const langData = JSON.parse(fs.readFileSync(langFilePath, 'utf8'));
+    res.render('help-template', { sections: langData.sections, language: language });
+  } catch (error) {
+    res.status(500).send('Failed to load help content: ' + error.message);
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
 console.log(`

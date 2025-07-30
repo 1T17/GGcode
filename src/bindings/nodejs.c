@@ -50,7 +50,7 @@ const char* compile_ggcode_from_string(const char* source_code) {
     emit_gcode_preamble(ggcode_file_name);
     const char* output = strdup(get_output_buffer());
     long output_size = get_output_length();
-    fprintf(stderr, "[GGCODE FFI] Allocated output at %p (%ld bytes)\n", (void*)output, output_size);
+    //fprintf(stderr, "[GGCODE FFI] Allocated output at %p (%ld bytes)\n", (void*)output, output_size);
     if (has_errors()) {
         report_error("[NodeJS] Compilation failed or errors detected");
         print_errors();
@@ -63,7 +63,7 @@ const char* compile_ggcode_from_string(const char* source_code) {
     }
     clock_t end_time = clock();
     double elapsed = ((double)(end_time - start_time)) / CLOCKS_PER_SEC * 1000.0;
-    fprintf(stderr, "GGcode: Compiled %zu bytes \u2192 %ld bytes in %.2fms\n", input_len, output_size, elapsed);
+   fprintf(stderr, "GGcode: Compiled %zu bytes \u2192 %ld bytes in %.2fms\n", input_len, output_size, elapsed);
     reset_runtime_state();
     free_ast(root);
     free_output_buffer();
@@ -72,7 +72,7 @@ const char* compile_ggcode_from_string(const char* source_code) {
 
 // Add this at the end of the file for FFI memory management
 void free_ggcode_string(char* ptr) {
-    fprintf(stderr, "[GGCODE FFI] Freeing output at %p\n", (void*)ptr);
+   //fprintf(stderr, "[GGCODE FFI] Freeing output at %p\n", (void*)ptr);
     free(ptr);
 }
 
