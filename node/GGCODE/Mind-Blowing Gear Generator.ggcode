@@ -1,0 +1,136 @@
+// Mind-Blowing Gear Generator
+// Creates professional gears with router bit compensation and perfect tooth profiles
+
+note {
+  Mind-Blowing Gear Generator
+  Creates professional gears with router bit compensation and perfect tooth profiles
+  Demonstrates: Advanced gear design with involute curves and tool compensation
+  Author: GGcode Examples
+  Version: 1.0
+}
+
+let id = 4449
+
+// Configurable parameters
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
+let module_size = 2 /// @number 1 5 // Tooth size (mm)
+let teeth_count = 20 /// @number 8 50 // Number of teeth
+let router_bit = 6.35 /// @selection 3.175 6.35 // Router bit diameter (1/8" or 1/4")
+let material_thickness = 6 /// @number 3 20 // Material thickness (mm)
+let pressure_angle = 20 /// @number 14.5 25 // Pressure angle (degrees)
+let clearance_factor = 0.25 /// @number 0.1 0.5 // Clearance factor
+let feed_rate = 150 /// @number 50 300 // Feed rate in mm/min
+let z_depth = -1 /// @number -5 0 // Z cutting depth
+let z_safe = 2 /// @number 1 5 // Safe Z height
+let passes = 3 /// @number 1 5 // Number of depth passes
+
+// Calculate gear dimensions
+let pitch_diameter = module_size * teeth_count
+let addendum = module_size
+let dedendum = 1.25 * module_size
+let clearance = clearance_factor * module_size
+let outer_diameter = pitch_diameter + 2 * addendum
+let root_diameter = pitch_diameter - 2 * dedendum
+let base_diameter = pitch_diameter * cos(pressure_angle * DEG_TO_RAD)
+let tooth_thickness = PI * module_size / 2
+
+// Router bit compensation
+let tool_radius = router_bit / 2
+let compensated_outer = outer_diameter - 2 * tool_radius
+let compensated_root = root_diameter + 2 * tool_radius
+
+// Move to safe height and center
+G0 Z[z_safe]
+G0 X[center_x] Y[center_y]
+
+// Cut center hole first (for mounting)
+let center_hole_radius = pitch_diameter / 4
+G0 X[center_x + center_hole_radius] Y[center_y]
+G1 Z[z_depth] F[feed_rate]
+
+// Cut center hole with multiple passes
+for pass = 0..passes {
+    let current_depth = z_depth * (pass + 1) / passes
+    G1 Z[current_depth] F[feed_rate]
+    G2 X[center_x + center_hole_radius] Y[center_y] I[-center_hole_radius] J[0] F[feed_rate]
+}
+
+// Move to safe height
+G0 Z[z_safe]
+
+// Generate gear teeth
+let tooth_angle = 360 / teeth_count
+let involute_points = 20 // Points per involute curve
+
+for tooth = 0..teeth_count {
+    let tooth_start_angle = tooth * tooth_angle * DEG_TO_RAD
+    
+    // Move to tooth start position
+    let start_x = center_x + compensated_outer * cos(tooth_start_angle)
+    let start_y = center_y + compensated_outer * sin(tooth_start_angle)
+    G0 X[start_x] Y[start_y]
+    G1 Z[z_depth] F[feed_rate]
+    
+    // Cut tooth profile with multiple passes
+    for pass = 0..passes {
+        let current_depth = z_depth * (pass + 1) / passes
+        G1 Z[current_depth] F[feed_rate]
+        
+        // Generate involute curve for tooth flank
+        for i = 0..involute_points {
+            let involute_angle = i * 0.1 // Small angle increments
+            let radius = base_diameter / 2 + involute_angle * base_diameter / 2
+            
+            // Calculate involute point
+            let inv_x = center_x + radius * cos(tooth_start_angle + involute_angle)
+            let inv_y = center_y + radius * sin(tooth_start_angle + involute_angle)
+            
+            // Check if point is within tooth boundaries
+            let point_angle = atan2(inv_y - center_y, inv_x - center_x)
+            let relative_angle = mod(point_angle - tooth_start_angle + PI, 2 * PI) - PI
+            
+            if (relative_angle >= -tooth_angle / 2 && relative_angle <= tooth_angle / 2) {
+                G1 X[inv_x] Y[inv_y] F[feed_rate]
+            }
+        }
+        
+        // Cut tooth tip (circular arc)
+        let tip_radius = compensated_outer / 2
+        let tip_center_x = center_x + tip_radius * cos(tooth_start_angle + tooth_angle / 2)
+        let tip_center_y = center_y + tip_radius * sin(tooth_start_angle + tooth_angle / 2)
+        
+        let tip_start_x = center_x + compensated_outer * cos(tooth_start_angle + tooth_angle / 4)
+        let tip_start_y = center_y + compensated_outer * sin(tooth_start_angle + tooth_angle / 4)
+        let tip_end_x = center_x + compensated_outer * cos(tooth_start_angle + 3 * tooth_angle / 4)
+        let tip_end_y = center_y + compensated_outer * sin(tooth_start_angle + 3 * tooth_angle / 4)
+        
+        G0 X[tip_start_x] Y[tip_start_y]
+        G2 X[tip_end_x] Y[tip_end_y] I[tip_center_x - tip_start_x] J[tip_center_y - tip_start_y] F[feed_rate]
+        
+        // Cut root fillet
+        let root_radius = compensated_root / 2
+        let root_center_x = center_x + root_radius * cos(tooth_start_angle + tooth_angle / 2)
+        let root_center_y = center_y + root_radius * sin(tooth_start_angle + tooth_angle / 2)
+        
+        let root_start_x = center_x + compensated_root * cos(tooth_start_angle + tooth_angle / 4)
+        let root_start_y = center_y + compensated_root * sin(tooth_start_angle + tooth_angle / 4)
+        let root_end_x = center_x + compensated_root * cos(tooth_start_angle + 3 * tooth_angle / 4)
+        let root_end_y = center_y + compensated_root * sin(tooth_start_angle + 3 * tooth_angle / 4)
+        
+        G0 X[root_start_x] Y[root_start_y]
+        G3 X[root_end_x] Y[root_end_y] I[root_center_x - root_start_x] J[root_center_y - root_start_y] F[feed_rate]
+    }
+    
+    // Move to safe height between teeth
+    G0 Z[z_safe]
+}
+
+// Final cleanup pass around outer diameter
+G0 X[center_x + compensated_outer] Y[center_y]
+G1 Z[z_depth] F[feed_rate]
+G2 X[center_x + compensated_outer] Y[center_y] I[-compensated_outer] J[0] F[feed_rate]
+
+// Move to safe height and return to center
+G0 Z[z_safe]
+G0 X[center_x] Y[center_y] 

@@ -213,7 +213,7 @@ static void emit_gcode_stmt(ASTNode *node)
 
     // Check if current G-code matches the last remembered one (modal behavior)
     if (strcmp(node->gcode_stmt.code, last_code) == 0)
-    {
+        {
         // Same G-code as last time - don't output it (modal behavior)
         // Just keep the last_code as is
     }

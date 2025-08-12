@@ -12,9 +12,8 @@ node_modules/
 function.html
 function.txt
 Doxyfile
-r.sh
-g.sh
 *.gcode
+
 *.sh
 
 # Executable files

@@ -1,0 +1,55 @@
+// Basic Arc Commands Example (G2/G3)
+// Demonstrates: G2 (clockwise arc), G3 (counter-clockwise arc)
+// Uses: I, J center offsets and R radius methods
+
+note {
+  Basic Arc Commands Example
+  Demonstrates: G2 (clockwise arc), G3 (counter-clockwise arc)
+  Uses: I, J center offsets and R radius methods
+  Author: GGcode Examples
+  Version: 1.0
+}
+
+let id = 4444
+
+// Configurable parameters
+let center_x = 0 /// @number -50 50 // Center X coordinate
+let center_y = 0 /// @number -50 50 // Center Y coordinate
+let radius = 20 /// @number 10 40 // Arc radius
+let feed_rate = 150 /// @number 50 300 // Feed rate in mm/min
+let z_depth = -1 /// @number -5 0 // Z cutting depth
+let z_safe = 2 /// @number 1 5 // Safe Z height
+
+// Move to safe height and starting position
+G0 Z[z_safe]
+G0 X[center_x] Y[center_y]
+
+// Move to starting point of first arc
+let start_x = center_x + radius
+let start_y = center_y
+G0 X[start_x] Y[start_y]
+G1 Z[z_depth] F[feed_rate]
+
+// Draw a clockwise arc (G2) using I,J center offset method
+// G2 X[end_x] Y[end_y] I[center_offset_x] J[center_offset_y]
+let end_x = center_x
+let end_y = center_y + radius
+let i_offset = -radius  // X offset from start to center
+let j_offset = 0        // Y offset from start to center
+
+G2 X[end_x] Y[end_y] I[i_offset] J[j_offset] F[feed_rate]
+
+// Draw a counter-clockwise arc (G3) using R radius method
+// G3 X[end_x] Y[end_y] R[radius]
+let end_x2 = center_x - radius
+let end_y2 = center_y
+G3 X[end_x2] Y[end_y2] R[radius] F[feed_rate]
+
+// Draw another clockwise arc back to start
+let end_x3 = start_x
+let end_y3 = start_y
+G2 X[end_x3] Y[end_y3] R[radius] F[feed_rate]
+
+// Move to safe height and return to center
+G0 Z[z_safe]
+G0 X[center_x] Y[center_y] 
