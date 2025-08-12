@@ -89,8 +89,8 @@ for i = 1..3 {
 
 **Output G-code:**
 ```gcode
-; Creating linear pattern
-; Feed rate: 300 mm/min
+(Creating linear pattern)
+(Feed rate: 300 mm/min)
 G1 X10 Y0 F300
 G1 X20 Y0 F300
 G1 X30 Y0 F300
