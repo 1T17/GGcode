@@ -1,5 +1,6 @@
 #include "config.h"
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 #include "../runtime/runtime_state.h"
 
@@ -19,6 +20,7 @@ static const char* input_file = NULL;
 // Internal static variables
 static int line_number = DEFAULT_LINE_NUMBER;
 static int enable_n_lines = DEFAULT_ENABLE_N_LINES;
+static int decimal_places = 3;  // Default decimal places for G-code coordinates
 
 // Initialize runtime state
 void init_runtime() {
@@ -60,4 +62,31 @@ void reset_line_number() {
 
 int get_enable_n_lines() {
     return enable_n_lines;
+}
+
+// Configuration variable support
+void set_decimal_places(int places) {
+    if (places >= 0 && places <= 6) {
+        decimal_places = places;
+    }
+}
+
+int get_decimal_places(void) {
+    return decimal_places;
+}
+
+void set_enable_n_lines_from_var(int enable) {
+    enable_n_lines = (enable != 0);
+}
+
+void reset_config_state(void) {
+    decimal_places = 3;  // Reset to default
+    enable_n_lines = DEFAULT_ENABLE_N_LINES;
+    line_number = DEFAULT_LINE_NUMBER;
+}
+
+const char* get_decimal_format(void) {
+    static char format[8];
+    snprintf(format, sizeof(format), "%%.%df", decimal_places);
+    return format;
 }

@@ -133,7 +133,7 @@ static void emit_note_stmt(ASTNode *node)
                     Value *val = get_var(varname);
                     if (val && val->type == VAL_NUMBER)
                     {
-                        out += sprintf(out, "%.3f", val->number);
+                        out += sprintf(out, get_decimal_format(), val->number);
                     }
                     else
                     {
@@ -245,7 +245,10 @@ static void emit_gcode_stmt(ASTNode *node)
             }
         }
 
-        snprintf(segment, sizeof(segment), " %s%.3f", node->gcode_stmt.args[i].key, val);
+        snprintf(segment, sizeof(segment), " %s", node->gcode_stmt.args[i].key);
+        char value_str[16];
+        snprintf(value_str, sizeof(value_str), get_decimal_format(), val);
+        strncat(segment, value_str, sizeof(segment) - strlen(segment) - 1);
 
         size_t len = strlen(line);
         strncat(line, segment, sizeof(line) - len - 1);

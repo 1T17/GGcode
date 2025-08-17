@@ -72,4 +72,8 @@ void reset_runtime_state(void); // test/reset
 void reset_parser_state(void);
 
 ASTNode *parse_script_from_string(const char *source);
+
+// Configuration variable detection
+void check_config_variable(const char* name, Value* val);
+
 #endif // EVALUATOR_H

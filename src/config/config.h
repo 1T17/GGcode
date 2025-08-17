@@ -34,4 +34,11 @@ void increment_line_number(void);
 void reset_line_number(void);
 int get_enable_n_lines(void);
 
+// Configuration variable support
+void set_decimal_places(int places);
+int get_decimal_places(void);
+void set_enable_n_lines_from_var(int enable);
+const char* get_decimal_format(void);
+void reset_config_state(void);
+
 #endif // CONFIG_H

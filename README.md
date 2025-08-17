@@ -53,6 +53,16 @@ Transform your CNC programming from static G-code to dynamic, parametric toolpat
 - Internal tree generation with recursion tracking  
 - Exported as collapsible HTML tree with auto-loop detection
 
+**📄 Professional G-code Output**  
+- Industry-standard formatting with consistent decimal places
+- Automatic line numbering with proper modal behavior
+- Configurable precision and formatting options
+
+**🎛️ Dynamic Formatting Control**  
+- `decimalpoint` variable controls coordinate precision (0-6 decimal places)
+- `nline` variable enables/disables line numbering
+- Real-time formatting changes within programs
+
 **📄 Parametric G-code Generation**  
 - Emit raw `G0`, `G1`, `M3`, etc. from script logic  
 - Generate toolpaths dynamically using math and variables
@@ -90,11 +100,73 @@ for i = 1..3 {
 **Output G-code:**
 ```gcode
 (Creating linear pattern)
-(Feed rate: 300 mm/min)
-G1 X10 Y0 F300
-G1 X20 Y0 F300
-G1 X30 Y0 F300
+(Feed rate: 300.000 mm/min)
+N10 G1 X10.000 Y0.000 F300.000
+N15  X20.000 Y0.000
+N20  X30.000 Y0.000
 ```
+
+---
+
+## 🎯 Professional G-code Formatting
+
+GGcode generates professional, industry-standard G-code with consistent formatting and proper modal behavior.
+
+### ✨ **Automatic Formatting Features**
+
+**🔢 Consistent Decimal Places**
+- All coordinates display with 3 decimal places by default: `X1.000`, `Y2.000`, `Z3.000`
+- Feed rates formatted consistently: `F150.000`, `F300.000`
+- Eliminates inconsistent output like `X1`, `Y2.5`, `F150`
+
+**📝 Professional Line Numbering**
+- Automatic line numbering: `N10`, `N15`, `N20`...
+- Starts at N10, increments by 5
+- Proper modal behavior - repeated G-codes omitted
+
+**⚙️ Modal G-code Behavior**
+- Efficient output - repeated commands automatically omitted
+- `G1 X10 Y20` followed by `X30 Y40` (G1 not repeated)
+- Industry-standard CNC programming practice
+
+### 🎛️ **Configuration Variables**
+
+Control formatting dynamically within your GGcode programs:
+
+```ggcode
+// Set decimal precision (0-6 decimal places)
+let decimalpoint = 2  // X1.00 instead of X1.000
+
+// Control line numbering
+let nline = 0  // Disable: G1 X1.00 Y2.00
+let nline = 1  // Enable:  N10 G1 X1.00 Y2.00
+
+// Use in your program
+G0 X[10] Y[20] Z[5] F[300]
+```
+
+**Configuration Examples:**
+
+| Setting | Output Example |
+|---------|----------------|
+| `decimalpoint = 1` | `N10 G0 X1.0 Y2.0 F150.0` |
+| `decimalpoint = 2` | `N10 G0 X1.00 Y2.00 F150.00` |
+| `decimalpoint = 3` | `N10 G0 X1.000 Y2.000 F150.000` *(default)* |
+| `decimalpoint = 4` | `N10 G0 X1.0000 Y2.0000 F150.0000` |
+
+| Setting | Output Example |
+|---------|----------------|
+| `nline = 0` | `G0 X1.000 Y2.000` *(no line numbers)* |
+| `nline = 1` | `N10 G0 X1.000 Y2.000` *(with line numbers)* *(default)* |
+
+### 🔧 **Default Settings**
+
+When no configuration variables are specified:
+- **Decimal Places**: 3 (`X1.000`)
+- **Line Numbering**: Enabled (`N10`, `N15`, `N20`...)
+- **Modal Behavior**: Enabled (efficient G-code output)
+
+All existing GGcode files work unchanged with professional formatting applied automatically.
 
 ---
 
@@ -269,7 +341,13 @@ The Node.js web application provides a complete development environment:
 | `[]` | Arrays (1D/2D) | `let points = [1, 2, 3]`, `grid[y][x] = 5` |
 | `[expr]` | Variable interpolation | `G1 X[x+10] Y[y*2]` |
 
-**Note**: GGcode currently supports numeric values and arrays. String literals are not supported.
+### Configuration Variables
+| Variable | Description | Example | Default |
+|----------|-------------|---------|---------|
+| `decimalpoint` | Control decimal places (0-6) | `let decimalpoint = 2` | `3` |
+| `nline` | Enable/disable line numbering | `let nline = 0` | `1` |
+
+**Note**: GGcode supports numeric values and arrays. String literals are not supported.
 
 ### Control Flow
 | Syntax | Description | Example |
@@ -305,6 +383,25 @@ The Node.js web application provides a complete development environment:
 ---
 
 ## 🎨 Advanced Examples
+
+### G-code Formatting Control
+```ggcode
+let id = 12345
+
+// High precision for finishing operations
+let decimalpoint = 4
+let nline = 1
+
+note {Finishing pass - Program [id]}
+G1 X[10.12345] Y[20.6789] F[150]  // Output: N10 G1 X10.1235 Y20.6789 F150.0000
+
+// Lower precision for roughing
+let decimalpoint = 1
+let nline = 0
+
+note {Roughing pass}
+G0 X[100] Y[200] F[500]  // Output: G0 X100.0 Y200.0 F500.0
+```
 
 ### Parametric Gear Generation
 ```ggcode
@@ -359,6 +456,8 @@ G1 Z[depth] F300
 
 ## 🎯 Use Cases
 
+- **Professional G-code Output**: Generate industry-standard G-code with consistent formatting
+- **Precision Control**: Adjust decimal precision for different machining requirements (roughing vs finishing)
 - **Parametric Parts**: Create families of similar parts with variable dimensions
 - **Pattern Generation**: Complex geometric patterns impossible with manual G-code
 - **Batch Processing**: Generate multiple variations from a single template

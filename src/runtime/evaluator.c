@@ -11,6 +11,20 @@
 #include "generator/emitter.h"
 // Parser moved to runtime state - no more global parser
 
+// Configuration variable detection
+void check_config_variable(const char* name, Value* val) {
+    if (!name || !val || val->type != VAL_NUMBER) {
+        return;
+    }
+    
+    if (strcmp(name, "nline") == 0) {
+        set_enable_n_lines_from_var((int)val->number);
+    }
+    else if (strcmp(name, "decimalpoint") == 0) {
+        set_decimal_places((int)val->number);
+    }
+}
+
 #define MAX_VARIABLES 1024
 #define MAX_FUNCTIONS 64
 
@@ -1024,6 +1038,9 @@ void declare_var(const char *name, Value *val)
     rt->variables[rt->var_count].val = copy;
     rt->variables[rt->var_count].scope_level = rt->current_scope_level;
     rt->var_count++;
+    
+    // Check for configuration variables
+    check_config_variable(name, val);
 }
 
 
@@ -1178,6 +1195,9 @@ void set_var(const char *name, Value *val)
         if (rt->variables[i].name && strcmp(rt->variables[i].name, name) == 0) {
             free_value(rt->variables[i].val);     // Free old value
             rt->variables[i].val = copy; // Assign new copy
+            
+            // Check for configuration variables
+            check_config_variable(name, val);
             return;
         }
     }

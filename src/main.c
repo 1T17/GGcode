@@ -66,6 +66,8 @@ void compile_file(const char* input_path, const char* output_path) {
     init_runtime();
     Runtime* runtime = get_runtime();
 
+    // Reset configuration state for clean compilation
+    reset_config_state();
 
     GGCODE_INPUT_FILENAME = input_path;
     long input_size_bytes = 0;
