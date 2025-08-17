@@ -133,7 +133,7 @@ static void emit_note_stmt(ASTNode *node)
                     Value *val = get_var(varname);
                     if (val && val->type == VAL_NUMBER)
                     {
-                        out += sprintf(out, "%.6g", val->number);
+                        out += sprintf(out, "%.3f", val->number);
                     }
                     else
                     {
@@ -245,7 +245,7 @@ static void emit_gcode_stmt(ASTNode *node)
             }
         }
 
-        snprintf(segment, sizeof(segment), " %s%.6g", node->gcode_stmt.args[i].key, val);
+        snprintf(segment, sizeof(segment), " %s%.3f", node->gcode_stmt.args[i].key, val);
 
         size_t len = strlen(line);
         strncat(line, segment, sizeof(line) - len - 1);

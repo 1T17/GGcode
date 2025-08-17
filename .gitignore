@@ -1,7 +1,7 @@
 # Compiled object files
 *.o
 *.obj
-
+.kiro
 win/
 winbin/
 Unity/
