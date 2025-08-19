@@ -9,10 +9,10 @@ note {
   Version: 1.0
 }
 
-let id = 4453
-
-
-
+// ── G-code File Variables ──
+let id = 4453            // File ID
+let nline = 1            // Line numbering: 1 = enabled, 0 = disabled
+let decimalpoint = 3     // Number of decimal places (range: 0–6)
 
 
 // === Configurable Parameters ===

@@ -4,6 +4,226 @@
   let autoCompile = false;
   let autoCompileTimeout = null;
   let lastOpenedFilename = '';
+  
+  // G-code annotation system
+  let millDictionary = {};
+  let millAnnotations = {};
+  let annotationsLoaded = false;
+
+  // Load G-code dictionaries
+  async function loadGcodeDictionaries() {
+    try {
+      const [dictResponse, annotResponse] = await Promise.all([
+        fetch('/mill-dictionary.json'),
+        fetch('/mill-annotations.json')
+      ]);
+      
+      if (dictResponse.ok && annotResponse.ok) {
+        millDictionary = await dictResponse.json();
+        millAnnotations = await annotResponse.json();
+        annotationsLoaded = true;
+        console.log('G-code dictionaries loaded successfully');
+      } else {
+        console.error('Failed to load G-code dictionaries');
+      }
+    } catch (error) {
+      console.error('Error loading G-code dictionaries:', error);
+    }
+  }
+
+  // Track modal G-code state (remembers last G command)
+  let lastGCommand = null;
+
+  // Parse G-code line to extract multiple commands and parameters
+  function parseGcodeLine(line) {
+    if (!line || typeof line !== 'string') return null;
+    
+    // Remove comments and trim
+    const cleanLine = line.split('//')[0].split('(')[0].trim();
+    if (!cleanLine) return null;
+    
+    // Extract ALL commands (G, M codes) from the line
+    const commandMatches = cleanLine.matchAll(/([GM])(\d+)/gi);
+    const commands = [];
+    const commandsUsed = new Set();
+    
+    for (const match of commandMatches) {
+      const cmd = (match[1] + match[2]).toUpperCase();
+      commands.push(cmd);
+      commandsUsed.add(match[0].toUpperCase());
+    }
+    
+    // Update last G command if this line has any G commands
+    const gCommands = commands.filter(cmd => cmd.startsWith('G'));
+    if (gCommands.length > 0) {
+      // Use the last G command in the line
+      lastGCommand = gCommands[gCommands.length - 1];
+    }
+    
+    // Handle modal behavior - if no commands but has motion coordinates, use last G command
+    let primaryCommand = null;
+    if (commands.length > 0) {
+      // Use the first command as primary, or last G command if available
+      primaryCommand = gCommands.length > 0 ? gCommands[gCommands.length - 1] : commands[0];
+    } else if (cleanLine.match(/[XYZ]/i)) {
+      primaryCommand = lastGCommand;
+    }
+    
+    // Extract all parameters (letter followed by number/value, including negative)
+    const paramMatches = cleanLine.matchAll(/([A-Z])([+-]?\d*\.?\d+)/gi);
+    const parameters = {};
+    
+    for (const match of paramMatches) {
+      const letter = match[1].toUpperCase();
+      const value = match[2];
+      const fullMatch = match[0].toUpperCase();
+      
+      // Skip if this is part of a command (like G1, M3)
+      if (!commandsUsed.has(fullMatch)) {
+        parameters[letter] = value;
+      }
+    }
+    
+    const result = {
+      original: line,
+      commands: commands, // Array of all commands
+      primaryCommand: primaryCommand, // Main command for descriptions
+      parameters: parameters,
+      cleanLine: cleanLine,
+      isModal: commands.length === 0 && primaryCommand, // true if using modal behavior
+      hasParams: Object.keys(parameters).length > 0,
+      hasMultipleCommands: commands.length > 1
+    };
+    
+    // Optional debug logging for development
+    // console.log('Parsed line:', result);
+    
+    return result;
+  }
+
+  // Generate enhanced annotation for G-code line
+  function generateAnnotation(lineNumber, lineContent) {
+    if (!annotationsLoaded) {
+      return `<div class="annotation-loading">Loading G-code dictionaries...</div>`;
+    }
+    
+        const parsed = parseGcodeLine(lineContent);
+    if (!parsed) {
+      return `<div class="annotation-simple">
+        <strong>Line ${lineNumber}:</strong> ${lineContent || '(empty line)'}
+        <br><em>No G-code content detected</em>
+      </div>`;
+    }
+    
+    if (!parsed.primaryCommand && !parsed.hasParams && parsed.commands.length === 0) {
+      return `<div class="annotation-simple">
+        <strong>Line ${lineNumber}:</strong> ${lineContent}
+        <br><em>No G-code command or parameters detected</em>
+      </div>`;
+    }
+
+    let annotation = '';
+    
+    // Build annotation header
+    annotation += `<div class="annotation-header">`;
+    annotation += `<strong>Line ${lineNumber}:</strong> `;
+    
+    if (parsed.commands.length > 0) {
+      if (parsed.hasMultipleCommands) {
+        annotation += `Multiple Commands (${parsed.commands.length})`;
+        if (parsed.isModal) {
+          annotation += ` <span class="modal-indicator">(Modal)</span>`;
+        }
+      } else {
+        // Single command
+        const cmd = parsed.commands[0];
+        let cmdDesc = '';
+        if (millDictionary[cmd]) {
+          if (typeof millDictionary[cmd] === 'string') {
+            cmdDesc = millDictionary[cmd];
+          } else if (millDictionary[cmd].desc) {
+            cmdDesc = millDictionary[cmd].desc;
+          }
+        } else if (millAnnotations[cmd]) {
+          cmdDesc = millAnnotations[cmd];
+        }
+        annotation += `${cmd} - ${cmdDesc || 'Unknown command'}`;
+        if (parsed.isModal) {
+          annotation += ` <span class="modal-indicator">(Modal)</span>`;
+        }
+      }
+    } else {
+      annotation += `Parameters only`;
+      if (parsed.hasParams) {
+        annotation += ` <span class="modal-indicator">(Awaiting modal command)</span>`;
+      }
+    }
+    annotation += `</div>`;
+    
+    // Add command details for multiple commands
+    if (parsed.hasMultipleCommands) {
+      annotation += `<div class="annotation-commands">`;
+      for (const cmd of parsed.commands) {
+        let cmdDesc = '';
+        if (millDictionary[cmd]) {
+          if (typeof millDictionary[cmd] === 'string') {
+            cmdDesc = millDictionary[cmd];
+          } else if (millDictionary[cmd].desc) {
+            cmdDesc = millDictionary[cmd].desc;
+          }
+        } else if (millAnnotations[cmd]) {
+          cmdDesc = millAnnotations[cmd];
+        }
+        annotation += `<div class="annotation-command">`;
+        annotation += `<span class="command-name">${cmd}:</span> `;
+        annotation += `<span class="command-desc">${cmdDesc || 'Unknown command'}</span>`;
+        annotation += `</div>`;
+      }
+      annotation += `</div>`;
+    }
+    
+    // Add parameter details
+    if (Object.keys(parsed.parameters).length > 0) {
+      annotation += `<div class="annotation-params">`;
+      
+      for (const [param, value] of Object.entries(parsed.parameters)) {
+        let paramDesc = `${param}-Axis Motion`; // Default description
+        
+        // Get parameter description from dictionary, trying primary command first
+        if (parsed.primaryCommand && millDictionary[parsed.primaryCommand] && millDictionary[parsed.primaryCommand].sub && millDictionary[parsed.primaryCommand].sub[param]) {
+          paramDesc = millDictionary[parsed.primaryCommand].sub[param];
+        } else if (millDictionary[param]) {
+          paramDesc = typeof millDictionary[param] === 'string' ? millDictionary[param] : millDictionary[param].desc || paramDesc;
+        }
+        
+        annotation += `<div class="annotation-param">`;
+        annotation += `<span class="param-name">${paramDesc}:</span> `;
+        annotation += `<span class="param-value">${value}</span>`;
+        annotation += `</div>`;
+      }
+      
+      annotation += `</div>`;
+    }
+    
+    // Add raw line for reference
+    annotation += `<div class="annotation-raw">`;
+    annotation += `<em>Raw: ${lineContent}</em>`;
+    annotation += `</div>`;
+    
+    return annotation;
+  }
+
+  // Update annotations div
+  function updateAnnotations(lineNumber, lineContent) {
+    const annotationsDiv = document.getElementById('annotations');
+    if (!annotationsDiv) return;
+    
+    // Optional debug logging for development
+    // console.log('Updating annotations for line:', lineNumber, 'Content:', lineContent);
+    
+    const annotation = generateAnnotation(lineNumber, lineContent);
+    annotationsDiv.innerHTML = annotation;
+  }
 
   // Load saved filename on page load
   document.addEventListener('DOMContentLoaded', function () {
@@ -11,6 +231,8 @@
     if (savedFilename) {
       lastOpenedFilename = savedFilename;
     }
+    // Load G-code dictionaries
+    loadGcodeDictionaries();
   });
 
   // Save content periodically and on page unload
@@ -210,6 +432,14 @@ let initialOutput = `<%- typeof output !== 'undefined' && output ? output.replac
     minimap: { enabled: true }
   });
   window.outputEditor = outputEditor;
+  
+  // Add cursor position change listener for annotations
+  outputEditor.onDidChangeCursorPosition(function(e) {
+    const lineNumber = e.position.lineNumber;
+    const lineContent = outputEditor.getModel().getLineContent(lineNumber);
+    updateAnnotations(lineNumber, lineContent);
+  });
+  
   monacoReady = true;
 
   // Auto-compile logic
@@ -330,6 +560,13 @@ async function submitGGcode(event) {
     if (result.success) {
       if (outputEditor) {
         outputEditor.setValue(result.output);
+        // Reset modal state when new G-code is loaded
+        lastGCommand = null;
+        // Trigger annotation for first line if content exists
+        if (result.output.trim()) {
+          const firstLineContent = outputEditor.getModel().getLineContent(1);
+          updateAnnotations(1, firstLineContent);
+        }
       }
       // Save content after successful compilation
       saveContent();

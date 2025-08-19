@@ -389,7 +389,7 @@ The Node.js web application provides a complete development environment:
 let id = 12345
 
 // High precision for finishing operations
-let decimalpoint = 4
+let decimalpoint = 3
 let nline = 1
 
 note {Finishing pass - Program [id]}

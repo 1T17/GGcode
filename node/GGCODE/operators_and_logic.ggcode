@@ -1,6 +1,12 @@
 // Operators and Logic Example
 // This example demonstrates all available operators and logical expressions
 
+// ── G-code File Variables ──
+let id = 4453            // File ID
+let nline = 1            // Line numbering: 1 = enabled, 0 = disabled
+let decimalpoint = 3     // Number of decimal places (range: 0–6)
+
+
 let center_x = 0 /// @number -50 50 // Center X coordinate
 let center_y = 0 /// @number -50 50 // Center Y coordinate
 

@@ -1,0 +1,893 @@
+{
+    "G00": {
+        "desc": "Rapid Motion Positioning",
+        "sub": {
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion",
+            "B": "B-Axis Motion",
+            "C": "C-Axis Motion",
+            "E": "Block Rapid Rate (%)"
+        }
+    },
+    "G0":  {
+        "desc": "Rapid Motion Positioning",
+        "sub": {
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion",
+            "B": "B-Axis Motion",
+            "C": "C-Axis Motion",
+            "E": "Block Rapid Rate (%)"
+        }
+    },
+    "G01": {
+        "desc": "Linear Interpolation Motion",
+        "sub": {
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion",
+            "B": "B-Axis Motion",
+            "C": "C-Axis Motion",
+            ",R": "Radius of the arc",
+            ",C": "Chamfer Distance"
+        }
+    },
+    "G1": {
+        "desc": "Linear Interpolation Motion",
+        "sub": {
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion",
+            "B": "B-Axis Motion",
+            "C": "C-Axis Motion",
+            ",R": "Radius of the arc",
+            ",C": "Chamfer Distance"
+        }
+    },
+    "G02": {
+        "desc": "Circular Interpolation Motion CW",
+        "sub": {
+            "I": "Distance along X to center of circle",
+            "J": "Distance along Y to center of circle",
+            "K": "Distance along Z to center of circle",
+            "R": "Radius of circle",
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion"
+        }
+    },
+    "G2": {
+        "desc": "Circular Interpolation Motion CW",
+        "sub": {
+            "I": "Distance along X to center of circle",
+            "J": "Distance along Y to center of circle",
+            "K": "Distance along Z to center of circle",
+            "R": "Radius of circle",
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion"
+        }
+    },
+    "G03": {
+        "desc": "Circular Interpolation Motion CCW",
+        "sub": {
+            "I": "Distance along X to center of circle",
+            "J": "Distance along Y to center of circle",
+            "K": "Distance along Z to center of circle",
+            "R": "Radius of circle",
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion"
+        }
+    },
+    "G3": {
+        "desc": "Circular Interpolation Motion CCW",
+        "sub": {
+            "I": "Distance along X to center of circle",
+            "J": "Distance along Y to center of circle",
+            "K": "Distance along Z to center of circle",
+            "R": "Radius of circle",
+            "X": "X-Axis Motion",
+            "Y": "Y-Axis Motion",
+            "Z": "Z-Axis Motion",
+            "A": "A-Axis Motion"
+        }
+    },
+    "G04": {
+        "desc": "Dwell",
+        "sub": {
+            "P": "Dwell time"
+        }
+    },
+    "G4": {
+        "desc": "Dwell",
+        "sub": {
+            "P": "Dwell time"
+        }
+    },
+    "G09": "Exact Stop",
+    "G9":  "Exact Stop",
+    "G10": {
+        "desc": "Set Offsets",
+        "sub": {
+            "L": "Offset category",
+            "P": "Specific offset",
+            "R": "Offset value or increment for length and diameter",
+            "X": "X-Axis Zero Location",
+            "Y": "Y-Axis Zero Location",
+            "Z": "Z-Axis Zero Location",
+            "A": "A-Axis Zero Location",
+            "B": "B-Axis Zero Location",
+            "C": "C-Axis Zero Location"
+        }
+    },
+    "G12": {
+        "desc": "Circular Pocket Milling CW",
+        "sub": {
+            "D": "Tool radius or diameter selection",
+            "F": "Feedrate",
+            "I": "Radius of first circle (or finish if no K)",
+            "K": "Radius of finished circle",
+            "L": "Loop count",
+            "Q": "Radius increment",
+            "Z": "Depth of cut or increment"
+        }
+    },
+    "G13": {
+        "desc": "Circular Pocket Milling CCW",
+        "sub": {
+            "D": "Tool radius or diameter selection",
+            "F": "Feedrate",
+            "I": "Radius of first circle (or finish if no K)",
+            "K": "Radius of finished circle",
+            "L": "Loop count",
+            "Q": "Radius increment",
+            "Z": "Depth of cut or increment"
+        }
+    },
+    "G17": "XY Plane Selection",
+    "G18": "XZ Plane Selection",
+    "G19": "YZ Plane Selection",
+    "G20": "Select Inches",
+    "G21": "Select Metric",
+    "G28": "Return To Machine Zero Point",
+    "G29": "Return From Reference Point",
+    "G31": {
+        "desc": "Feed Until Skip",
+        "sub": {
+            "F": "Feedrate",
+            "X": "X-Axis absolute motion command",
+            "Y": "Y-Axis absolute motion command",
+            "Z": "Z-Axis absolute motion command",
+            "A": "A-Axis absolute motion command",
+            "B": "B-Axis absolute motion command",
+            "C": "C-Axis absolute motion command"
+        }
+    },
+    "G35": {
+        "desc": "Automatic Tool Diameter Measurement",
+        "sub": {
+            "F": "Feedrate",
+            "D": "Tool diameter",
+            "X": "X-Axis command",
+            "Y": "Y-Axis command"
+        }
+    },
+    "G36": {
+        "desc": "Automatic Work Offset Measurement",
+        "sub": {
+            "F": "Feedrate",
+            "I": "Offset distance along X-Axis",
+            "J": "Offset distance along Y-Axis",
+            "K": "Offset distance along Z-Axis",
+            "X": "X-Axis motion command",
+            "Y": "Y-Axis motion command",
+            "Z": "Z-Axis motion command"
+        }
+    },
+    "G37": {
+        "desc": "Automatic Tool Offset Measurement",
+        "sub": {
+            "F": "Feedrate",
+            "H": "Tool offset number",
+            "Z": "Required Z-Axis offset"
+        }
+    },
+    "G40": "Cutter Compensation Cancel",
+    "G41": "2D Cutter Compensation Left",
+    "G42": "2D Cutter Compensation Right",
+    "G43": "Tool Length Compensation + (Add)",
+    "G44": "Tool Length Compensation - (Subtract)",
+    "G47": {
+        "desc": "Text Engraving",
+        "sub": {
+            "D": "Smoothness level",
+            "E": "Plunge feed rate",
+            "F": "Engraving feed rate",
+            "I": "Angle of rotation",
+            "K": "Max corner rounding value",
+            "J": "Height of text",
+            "P": "Type of Engraving",
+            "R": "Return Plane",
+            "X": "X start of engraving",
+            "Y": "Y start of engraving",
+            "Z": "Z start of engraving"
+        }
+    },
+    "G49": "G43/G44/G143 Cancel",
+    "G50": "Cancel Scaling",
+    "G51": {
+        "desc": "Scaling",
+        "sub": {
+            "X": "Center of scaling for X-Axis",
+            "Y": "Center of scaling for Y-Axis",
+            "Z": "Center of scaling for Z-Axis",
+            "P": "Scaling factor"
+        }
+    },
+    "G52": "Set Work Coordinate System",
+    "G53": "Non-Modal Machine Coordinate Selection",
+    "G54": "Select Work Coordinate System #1",
+    "G55": "Select Work Coordinate System #2",
+    "G56": "Select Work Coordinate System #3",
+    "G57": "Select Work Coordinate System #4",
+    "G58": "Select Work Coordinate System #5",
+    "G59": "Select Work Coordinate System #6",
+    "G60": "Uni-Directional Positioning",
+    "G61": "Exact Stop Mode",
+    "G64": "G61 Cancel",
+    "G65": "Macro Subprogram Call Option",
+    "G68": {
+        "desc": "Rotation",
+        "sub": {
+            "X": "Center of rotation coordinates",
+            "Y": "Center of rotation coordinates",
+            "Z": "Center of rotation coordinates",
+            "R": "Angle of rotation"
+        }
+    },
+    "G69": "Cancel G68 Rotation",
+    "G70": {
+        "desc": "Bolt Hole Circle",
+        "sub": {
+            "I": "Radius",
+            "J": "Starting angle",
+            "L": "Number of holes spaced around circle"
+        }
+    },
+    "G71": {
+        "desc": "Bolt Hole Arc",
+        "sub": {
+            "I": "Radius",
+            "J": "Starting angle",
+            "K": "Angular spacing of holes",
+            "L": "Number of holes"
+        }
+    },
+    "G72": {
+        "desc": "Bolt Holes Along an Angle",
+        "sub": {
+            "I": "Distance between holes",
+            "J": "Angle of line",
+            "L": "Number of holes"
+        }
+    },
+    "G73": {
+        "desc": "High-Speed Peck Drilling Canned Cycle",
+        "sub": {
+            "F": "Feedrate",
+            "I": "First peck depth",
+            "J": "Amount to reduce pecking depth for pass",
+            "K": "Minimum peck depth",
+            "L": "Number of loops",
+            "P": "Pause at the bottom of hole",
+            "Q": "Peck depth",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G74": {
+        "desc": "Reverse Tap Canned Cycle",
+        "sub": {
+            "F": "Feedrate",
+            "J": "Retract Multiple",
+            "L": "Number of loops",
+            "Q": "Peck depth",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G76": {
+        "desc": "Fine Boring Canned Cycle",
+        "sub": {
+            "F": "Feedrate",
+            "I": "Shift along X-Axis",
+            "J": "Shift along Y-Axis",
+            "L": "Number of holes",
+            "P": "Pause at the bottom of hole",
+            "Q": "Shift value",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G77": {
+        "desc": "Back Bore Canned Cycle",
+        "sub": {
+            "F": "Feedrate",
+            "I": "Shift along X-Axis",
+            "J": "Shift along Y-Axis",
+            "L": "Number of holes",
+            "Q": "Shift value",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G80": {
+        "desc": "Canned Cycle Cancel",
+        "sub": {
+            "E": "Chip-clean RPM",
+            "F": "Feedrate",
+            "L": "Number of holes",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G81": {
+        "desc": "Drill Canned Cycle",
+        "sub": {
+            "E": "Chip-clean RPM",
+            "F": "Feedrate",
+            "L": "Number of holes",
+            "P": "Dwell time at bottom of hole",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G82": {
+        "desc": "Spot Drill Canned Cycle",
+        "sub": {
+            "E": "Chip-clean RPM",
+            "F": "Feedrate",
+            "L": "Number of holes",
+            "P": "Dwell time at bottom of hole",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G83": {
+        "desc": "Normal Peck Drilling Canned Cycle",
+        "sub": {
+            "E": "Chip-clean RPM",
+            "F": "Feedrate",
+            "I": "Size of first peck depth",
+            "J": "Amount to reduce peck depth each pass",
+            "K": "Minimum depth of peck",
+            "L": "Number of holes",
+            "P": "Dwell time at bottom of hole",
+            "Q": "Pause at end of last peck",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G84": {
+        "desc": "Tapping Canned Cycle",
+        "sub": {
+            "E": "Chip-clean RPM",
+            "F": "Feedrate",
+            "J": "Retract Multiple",
+            "L": "Number of holes",
+            "Q": "Peck Depth",
+            "R": "Position of the R plane",
+            "S": "Spindle speed",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G85": {
+        "desc": "Boring Canned Cycle",
+        "sub": {
+            "F": "Feedrate",
+            "L": "Number of holes",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G86": {
+        "desc": "Bore and Stop Canned Cycle",
+        "sub": {
+            "F": "Feedrate",
+            "L": "Number of holes",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G89": {
+        "desc": "Bore In, Dwell, Bore Out Canned Cycle",
+        "sub": {
+            "F": "Feedrate",
+            "L": "Number of holes",
+            "P": "Dwell time at bottom of hole",
+            "R": "Position of the R plane",
+            "X": "X-Axis location of hole",
+            "Y": "Y-Axis location of hole",
+            "Z": "Position of Z-Axis at bottom of hole"
+        }
+    },
+    "G90": "Absolute Position Command",
+    "G91": "Incremental Position Command",
+    "G92": "Set Work Coordinate Systems Shift Value",
+    "G93": {
+        "desc": "Inverse Time Feed Mode",
+        "sub": {
+            "F": "Feedrate"
+        }
+    },
+    "G94": "Feed Per Minute Mode",
+    "G95": "Feed per Revolution",
+    "G98": "Canned Cycle Initial Point Return",
+    "G99": "Canned Cycle R Plane Return",
+    "G100": {
+        "desc": "Cancel Mirror Image",
+        "sub": {
+            "A": "A-Axis command",
+            "B": "B-Axis command",
+            "C": "C-Axis command",
+            "X": "X-Axis command",
+            "Y": "Y-Axis command",
+            "Z": "Z-Axis command"
+        }
+    },
+    "G101": {
+        "desc": "Enable Mirror Image",
+        "sub": {
+            "A": "A-Axis command",
+            "B": "B-Axis command",
+            "C": "C-Axis command",
+            "X": "X-Axis command",
+            "Y": "Y-Axis command",
+            "Z": "Z-Axis command"
+        }
+    },
+    "G103": "Limit Block Buffering",
+    "G107": {
+        "desc": "Cylindrical Mapping",
+        "sub": {
+            "A": "A-Axis command",
+            "B": "B-Axis command",
+            "C": "C-Axis command",
+            "X": "X-Axis command",
+            "Y": "Y-Axis command",
+            "Z": "Z-Axis command",
+            "Q": "Diameter of the cylindrical surface",
+            "R": "Radius of the rotary axis"
+        }
+    },
+    "G110": "#7 Coordinate System",
+    "G111": "#8 Coordinate System",
+    "G112": "#9 Coordinate System",
+    "G113": "#10 Coordinate System",
+    "G114": "#11 Coordinate System",
+    "G115": "#12 Coordinate System",
+    "G116": "#13 Coordinate System",
+    "G117": "#14 Coordinate System",
+    "G118": "#15 Coordinate System",
+    "G119": "#16 Coordinate System",
+    "G120": "#17 Coordinate System",
+    "G121": "#18 Coordinate System",
+    "G122": "#19 Coordinate System",
+    "G123": "#20 Coordinate System",
+    "G124": "#21 Coordinate System",
+    "G125": "#22 Coordinate System",
+    "G126": "#23 Coordinate System",
+    "G127": "#24 Coordinate System",
+    "G128": "#25 Coordinate System",
+    "G129": "#26 Coordinate System",
+    "G136": {
+        "desc": "Automatic Work Offset Center Measurement",
+        "sub": {
+            "F": "Feedrate",
+            "I": "Offset distance along X-Axis",
+            "J": "Offset distance along Y-Axis",
+            "K": "Offset distance along Z-Axis",
+            "X": "X-Axis command",
+            "Y": "Y-Axis command",
+            "Z": "Z-Axis command"
+        }
+    },
+    "G141": {
+        "desc": "3D+ Cutter Compensation",
+        "sub": {
+            "F": "Feedrate",
+            "X": "X-Axis command",
+            "Y": "Y-Axis command",
+            "Z": "Z-Axis command",
+            "A": "A-Axis command",
+            "B": "B-Axis command",
+            "D": "Cutter Size Selection",
+            "I": "X-Axis cutter compensation",
+            "J": "Y-Axis cutter compensation",
+            "K": "Z-Axis cutter compensation"
+        }
+    },
+    "G143": "5-Axis Tool Length Compensation +",
+    "G150": {
+        "desc": "General Purpose Pocket Milling",
+        "sub": {
+            "D": "Tool radius/diameter offset selection",
+            "F": "Feedrate",
+            "I": "X-Axis cut increment",
+            "J": "Y-Axis cut increment",
+            "K": "Finishing pass amount",
+            "P": "Subprogram number",
+            "Q": "Incremental Z-Axis cut depth",
+            "R": "Position of the R plane",
+            "S": "Spindle speed",
+            "X": "X start position",
+            "Y": "Y start position",
+            "Z": "Final depth of pocket"
+        }
+    },
+    "G154": "Select Work Coordinates P1-P99",
+    "G156": {
+        "desc": "Broaching Canned Cycle",
+        "sub": {
+            "X": "X-Axis absolute location",
+            "Y": "Y-Axis absolute location",
+            "Z": "Z-Axis absolute location",
+            "I": "Size of increment between slice cycles",
+            "K": "Z-Axis size of increment between pecks",
+            "F": "Feedrate",
+            "C": "C-Axis position",
+            "D": "Tool clearance"
+        }
+    },
+    "G167": {
+        "desc": "Modify Setting",
+        "sub": {
+            "P": "Setting number",
+            "Q": "Setting value",
+            "K": "K-Code"
+        }
+    },
+    "G174": {
+        "desc": "CCW Non-Vertical Rigid Tap",
+        "sub": {
+            "F": "Feedrate",
+            "X": "X position at bottom of hole",
+            "Y": "Y position at bottom of hole",
+            "Z": "Z position at bottom of hole",
+            "S": "Spindle speed"
+        }
+    },
+    "G184": {
+        "desc": "CW Non-Vertical Rigid Tap",
+        "sub": {
+            "F": "Feedrate",
+            "X": "X position at bottom of hole",
+            "Y": "Y position at bottom of hole",
+            "Z": "Z position at bottom of hole",
+            "S": "Spindle speed"
+        }
+    },
+    "G187": {
+        "desc": "Setting the Smoothness Level",
+        "sub": {
+            "P": "Smoothness Level",
+            "E": "Max corner rounding value"
+        }
+    },
+    "G234": "Tool Center Point Control (TCPC)",
+    "G253": "G253 Orient Spindle Normal To Feature Coordinate System",
+    "G254": "Dynamic Work Offset (DWO)",
+    "G255": "Cancel Dynamic Work Offset (DWO)",
+    "G266": {
+        "desc": "Visible Axes Linear Rapid % Motion",
+        "sub": {
+            "E": "Rapid rate",
+            "P": "Axis parameter number",
+            "I": "Machine coordinate position command"
+        }
+    },
+    "G268": {
+        "desc": "Enable Feature Coordinate System",
+        "sub": {
+            "Q": "Qnnn",
+            "I": "Rotation of feature coordinate system (X-Axis)",
+            "J": "Rotation of feature coordinate system (Y-Axis)",
+            "K": "Rotation of feature coordinate system (Z-Axis)",
+            "X": "Origin X Coordinate",
+            "Y": "Origin Y Coordinate",
+            "Z": "Origin Z Coordinate"
+        }
+    },
+    "G269": {
+        "desc": "Disable Feature Coordinate System",
+        "sub": {
+            "Q": "Qnnn",
+            "I": "Rotation of feature coordinate system (X-Axis)",
+            "J": "Rotation of feature coordinate system (Y-Axis)",
+            "K": "Rotation of feature coordinate system (Z-Axis)",
+            "X": "Origin X Coordinate",
+            "Y": "Origin Y Coordinate",
+            "Z": "Origin Z Coordinate"
+        }
+    },
+    "M00": "Stop Program",
+    "M0": "Stop Program",
+    "M01": "Optional Program Stop",
+    "M1": "Optional Program Stop",
+    "M02": "Program End",
+    "M2": "Program End",
+    "M03": "Spindle Forward Command",
+    "M3": "Spindle Forward Command",
+    "M04": "Spindle Reverse Command",
+    "M4": "Spindle Reverse Command",
+    "M05": "Spindle Stop Command",
+    "M5": "Spindle Stop Command",
+    "M06": {
+        "desc": "Tool Change",
+        "sub": {
+            "T": "Tool Number"
+        }
+    },
+    "M6": {
+        "desc": "Tool Change",
+        "sub": {
+            "T": "Tool Number"
+        }
+    },
+    "M07": "Shower Coolant On",
+    "M7": "Shower Coolant On",
+    "M08": {
+        "desc": "Coolant On",
+        "sub": {
+            "T": "M08 Pn"
+        }
+    },
+    "M8": {
+        "desc": "Coolant On",
+        "sub": {
+            "T": "M08 Pn"
+        }
+    },
+    "M09": {
+        "desc": "Coolant Off",
+        "sub": {
+            "T": "M09 Pn"
+        }
+    },
+    "M9": {
+        "desc": "Coolant Off",
+        "sub": {
+            "T": "M09 Pn"
+        }
+    },
+    "M10": "Engage 4th Axis Brake",
+    "M11": "Release 4th Axis Brake",
+    "M12": "Engage 5th Axis Brake",
+    "M13": "Release 5th Axis Brake",
+    "M16": {
+        "desc": "Tool Change",
+        "sub": {
+            "T": "Tool Number"
+        }
+    },
+    "M19": {
+        "desc": "Orient Spindle",
+        "sub": {
+            "P": "Number of degrees",
+            "R": "Number of degrees"
+        }
+    },
+    "M21": "Optional User M Function with M-Fin (M21)",
+    "M22": "Optional User M Function with M-Fin (M22)",
+    "M23": "Optional User M Function with M-Fin (M23)",
+    "M24": "Optional User M Function with M-Fin (M24)",
+    "M25": "Optional User M Function with M-Fin (M25)",
+    "M29": {
+        "desc": "Set Output Relay with M-Fin",
+        "sub": {
+            "P": "Discrete output relay"
+        }
+    },
+    "M30": "Program End and Reset",
+    "M31": "Chip Conveyor Forward",
+    "M33": "Chip Conveyor Stop",
+    "M34": {
+        "desc": "Coolant Increment",
+        "sub": {
+            "P": "Move P-Cool spigot away from home"
+        }
+    },
+    "M35": {
+        "desc": "Coolant Decrement",
+        "sub": {
+            "P": "Move P-Cool spigot towards home"
+        }
+    },
+    "M36": "Pallet Part Ready",
+    "M39": "Rotate Tool Turret",
+    "M41": "Low Gear Override",
+    "M42": "High Gear Override",
+    "M46": "Qn Pmm Jump to Line",
+    "M48": "Validate That The Current Program is Appropriate for Loaded Pallet",
+    "M50": {
+        "desc": "Pallet Change Sequence",
+        "sub": {
+            "P": "Pallet number"
+        }
+    },
+    "M51": "Set Optional User M-codes (M51)",
+    "M52": "Set Optional User M-codes (M52)",
+    "M53": "Set Optional User M-codes (M53)",
+    "M54": "Set Optional User M-codes (M54)",
+    "M55": "Set Optional User M-codes (M55)",
+    "M59": {
+        "desc": "Set Output Relay",
+        "sub": {
+            "P": "Discrete output relay number"
+        }
+    },
+    "M61": "Clear Optional User M-codes (M61)",
+    "M62": "Clear Optional User M-codes (M62)",
+    "M63": "Clear Optional User M-codes (M63)",
+    "M64": "Clear Optional User M-codes (M64)",
+    "M65": "Clear Optional User M-codes (M65)",
+    "M69": {
+        "desc": "Clear Output Relay",
+        "sub": {
+            "P": "Discrete output relay number"
+        }
+    },
+    "M70": {
+        "desc": "Workholding Clamp",
+        "sub": {
+            "P": "Vise number",
+            "Q": "Q Code"
+        }
+    },
+    "M71": {
+        "desc": "Workholding Unclamp",
+        "sub": {
+            "P": "Vise number",
+            "Q": "Q Code"
+        }
+    },
+    "M73": "Tool Air Blast (TAB) On",
+    "M74": "Tool Air Blast (TAB) Off",
+    "M75": "Set G35 or G136 Reference Point",
+    "M78": "Alarm if Skip Signal Found",
+    "M79": "Alarm if Skip Signal Not Found",
+    "M80": "Auto Door Open",
+    "M81": "Auto Door Close",
+    "M82": "Tool Unclamp",
+    "M83": "Auto Air Gun On",
+    "M84": "Auto Air Gun Off",
+    "M86": "Tool Clamp",
+    "M88": "Through-Spindle Coolant On",
+    "M89": "Through-Spindle Coolant Off",
+    "M90": "Fixture Clamp Input On",
+    "M91": "Fixture Clamp Input Off",
+    "M95": "Sleep Mode",
+    "M96": {
+        "desc": "Jump If No Input",
+        "sub": {
+            "P": "Program block",
+            "Q": "Discrete input variable",
+            "R": "Mechanism mode"
+        }
+    },
+  "M97": {
+        "desc": "Local Sub-Program Call",
+        "sub": {
+            "P": "Program line number",
+            "L": "Repeats subprogram call"
+        }
+    },
+    "M98": {
+        "desc": "Sub-Program Call",
+        "sub": {
+            "P": "Program line number",
+            "L": "Repeats subprogram call"
+        }
+    },
+    "M99": {
+        "desc": "Sub-Program Return or Loop",
+        "sub": {
+            "P": "Program line number"
+        }
+    },
+    "M104": "Probe Arm Extend",
+    "M105": "Probe Arm Retract",
+    "M109": {
+        "desc": "Interactive User Input",
+        "sub": {
+            "P": "Macro Variable"
+        }
+    },
+    "M116": "Vise Air Chips Blast On",
+    "M117": "Vise Air Chips Blast Off",
+    "M130": "Display Media",
+    "M131": "Cancel Display Media",
+    "M138": "Spindle Speed Variation On",
+    "M139": "Spindle Speed Variation Off",
+    "M158": "Mist Condenser On",
+    "M159": "Mist Condenser Off",
+    "M160": "Cancel Active PulseJet",
+    "M161": {
+        "desc": "PulseJet Continuous Mode",
+        "sub": {
+            "P": "Oil pulse intervals"
+        }
+    },
+    "M162": {
+        "desc": "PulseJet Single Event Mode",
+        "sub": {
+            "P": "How many pulses"
+        }
+    },
+    "M163": {
+        "desc": "PulseJet Modal Mode",
+        "sub": {
+            "P": "Pulse quantity"
+        }
+    },
+    "M180": "Auto Window Open",
+    "M181": "Auto Window Close",
+    "M199": "Pallet / Part Load or Program End",
+    "M300": "M300 - APL/Robot Custom Sequence",
+    "%": "Program start/stop",
+    "A": "A-Axis Motion Command",
+    "B": "B-Axis Motion Command",
+    "C": "C-Axis Motion Command",
+    "D": "Tool diameter / cutter size selection",
+    "E": "Block rapid rate (%) / chip-clean RPM",
+    "F": "Feedrate",
+    "H": "Tool Offset Number",
+    "I": "X-axis arc center offset",
+    "J": "Y-axis arc center offset",
+    "K": "Z-axis arc center offset",
+    "L": "Loop or repeat count",
+    "N": "Line Number",
+    "O": "Program Number",
+    "P": "Dwell Time",
+    "Q": "Peck depth or pause at end of peck",
+    "R": "Arc radius or R-plane position",
+    "S": "Spindle speed (RPM)",
+    "T": "Tool Selection",
+    "U": "Incremental X",
+    "V": "Incremental Y",
+    "W": "Incremental Z",
+    "X": "X-Axis Motion",
+    "Y": "Y-Axis Motion",
+    "Z": "Z-Axis Motion"
+  }

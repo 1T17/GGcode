@@ -1,6 +1,10 @@
 //Spiral Function Grid Test
 
-let id = 99901
+// ── G-code File Variables ──
+let id = 4453            // File ID
+let nline = 1            // Line numbering: 1 = enabled, 0 = disabled
+let decimalpoint = 3     // Number of decimal places (range: 0–6)
+
 note {
   Inverted Spiral Function Grid Test
   File: [ggcode_file_name]

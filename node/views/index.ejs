@@ -6,6 +6,7 @@
   <title>GGcode Compiler</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/flags.css">
+  
 
 </head>
 
@@ -20,6 +21,24 @@
       </div>
       <div class="right-panel">
         <div id="output"></div>
+
+
+        <div id="annotations-container">
+          <div class="ann-toolbar">
+            <div id="ann-toggle" class="ann-toggle" aria-label="Toggle annotations" aria-expanded="true">
+              <!-- chevron (white via currentColor) -->
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div id="annotations"></div>
+        </div>
+        
+
+
+
       </div>
     </div>
 
@@ -224,6 +243,8 @@
 
     <!-- Monaco loader -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+
+
     <%- include('app.ejs') %>
       <%- include('view.ejs') %>
 
@@ -381,9 +402,6 @@
 
 
 
-
-
-
           function validateConfiguratorForm(form) {
             let valid = true;
             const numberInputs = form.querySelectorAll('input[type=number]');
@@ -424,12 +442,6 @@
 
             modal.style.display = 'flex';
           }
-
-
-
-
-
-
 
           function closeConfigurator() {
             document.getElementById('configuratorModal').style.display = 'none';
@@ -580,8 +592,24 @@
 
 
 
+<script>
+  const container = document.getElementById('annotations-container');
+  const panel = document.getElementById('annotations');
+  const toggle = document.getElementById('ann-toggle');
 
+  function setCollapsed(c) {
+    container.classList.toggle('collapsed', c);  // for arrow rotation
+    panel.classList.toggle('is-collapsed', c);   // for 1-line height
+    toggle.setAttribute('aria-expanded', String(!c));
+  }
 
+  toggle.addEventListener('click', () => {
+    setCollapsed(!container.classList.contains('collapsed'));
+  });
+
+  // start expanded
+  setCollapsed(false);
+</script>
 
 
 

@@ -18,6 +18,12 @@ body {
 
 }
 
+
+
+
+
+
+
 .main-content {
   flex: 1 1 0%;
   display: flex;
@@ -44,6 +50,7 @@ body {
 }
 
 .right-panel {
+  margin-left: 1px;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -56,6 +63,228 @@ body {
   width: 100%;
   z-index: 1;
 }
+
+
+
+
+
+
+
+/* G-code Annotations Styling */
+#annotations {
+  padding: 5px;
+  background: #272727ee;
+  /* new line */
+  border-left: 6px solid rgba(49,49,49,0.66); /* same tone as left border */
+  border-top: 1px solid rgba(49,49,49,0.66); /* same tone as left border */
+  color: #d4d4d4;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+
+
+
+
+
+/* collapsed: one line high */
+#annotations.is-collapsed {
+  height: 1.6em;       /* ≈ one line with your 1.4 line-height */
+  max-height: 1.6em;
+  overflow: hidden;     /* hide content */
+  border-top: none;     /* optional: adjust borders if needed */
+}
+
+
+
+
+
+
+.ann-toolbar {
+right: 5px;
+position: absolute;
+
+}
+
+
+
+
+
+
+/* arrow button */
+.ann-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  color: #fff;                    /* makes the SVG white */
+  cursor: pointer;
+}
+
+.ann-toggle svg { transition: transform .15s ease; }
+
+/* rotate arrow when collapsed */
+#annotations-container.collapsed .ann-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* panel default: full size */
+#annotations {
+  max-height: 270px;              /* your full height */
+  overflow-y: auto;
+  padding: 6px 4px 8px 4px;       /* optional */
+}
+
+/* collapsed: ~one line (~20px) */
+#annotations.is-collapsed {
+  border-top: 1px solid rgba(49,49,49,0.66); /* same tone as left border */
+  height: 33px;
+  max-height: 33px;
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.annotation-header {
+  color: #4fc3f7;
+}
+
+.modal-indicator {
+  color: #ff9800;
+  font-size: 11px;
+  font-weight: normal;
+  background: rgba(255, 152, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.annotation-commands {
+  margin: 8px 0;
+}
+
+.annotation-command {
+  margin: 4px 0;
+  padding-left: 10px;
+}
+
+.command-name {
+  color: #4fc3f7;
+  font-weight: bold;
+  min-width: 50px;
+  display: inline-block;
+}
+
+.command-desc {
+  color: #ffcc80;
+}
+
+.annotation-params {
+  margin: 4px 0;
+}
+
+.annotation-param {
+  margin: 4px 0;
+  padding-left: 10px;
+}
+
+.param-name {
+  color: #a8e6cf;
+  font-weight: bold;
+  min-width: 120px;
+  display: inline-block;
+}
+
+.param-value {
+  color: #ffeb3b;
+  font-weight: bold;
+}
+
+.annotation-raw {
+
+  padding-top: 4px;
+  border-top: 1px solid #333;
+  color: #888;
+  font-size: 11px;
+}
+
+#annotations:empty::before {
+  content: "Click on a line in the G-code output to see detailed annotations";
+  color: #666;
+  font-style: italic;
+}
+
+.annotation-loading {
+  color: #ff9800;
+  font-style: italic;
+}
+
+.annotation-simple {
+  color: #999;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #output {
   flex: 1 1 auto;
