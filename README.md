@@ -190,7 +190,7 @@ xcode-select --install
 cd node && npm install
 ```
 
----
+-----
 
 ### 🛠️ Build System
 
