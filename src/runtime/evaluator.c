@@ -101,12 +101,20 @@ void set_parents_recursive(ASTNode *node, ASTNode *parent) {
         case AST_ASSIGN:
             set_parents_recursive(node->assign_stmt.expr, node);
             break;
+        case AST_COMPOUND_ASSIGN:
+            set_parents_recursive(node->compound_assign.expr, node);
+            break;
         case AST_UNARY:
             set_parents_recursive(node->unary_expr.operand, node);
             break;
         case AST_BINARY:
             set_parents_recursive(node->binary_expr.left, node);
             set_parents_recursive(node->binary_expr.right, node);
+            break;
+        case AST_TERNARY:
+            set_parents_recursive(node->ternary_expr.condition, node);
+            set_parents_recursive(node->ternary_expr.true_expr, node);
+            set_parents_recursive(node->ternary_expr.false_expr, node);
             break;
         case AST_IF:
             set_parents_recursive(node->if_stmt.condition, node);
@@ -351,6 +359,8 @@ case AST_VAR:
             }
 
             return make_number_value(left / right);
+        case TOKEN_CARET:
+            return make_number_value(pow(left, right));
         case TOKEN_LESS:
             return make_number_value(left < right ? 1.0 : 0.0);
         case TOKEN_LESS_EQUAL:
@@ -381,6 +391,16 @@ case AST_VAR:
 
         case TOKEN_AMPERSAND:
             return make_number_value((double)((int)left & (int)right));
+        
+        case TOKEN_PIPE:
+            return make_number_value((double)((int)left | (int)right));
+        
+        case TOKEN_LSHIFT:
+            return make_number_value((double)((int)left << (int)right));
+        
+        case TOKEN_RSHIFT:
+            return make_number_value((double)((int)left >> (int)right));
+        
         default:
 
             report_error("[Runtime evaluator] Unknown binary operator: %d", op);
@@ -449,6 +469,24 @@ case AST_VAR:
         return make_number_value(0.0);
     }
 
+    case AST_TERNARY:
+    {
+        const Value *cond = eval_expr(node->ternary_expr.condition);
+        if (cond && cond->type == VAL_NUMBER)
+        {
+            if (cond->number != 0)
+            {
+                return eval_expr(node->ternary_expr.true_expr);
+            }
+            else
+            {
+                return eval_expr(node->ternary_expr.false_expr);
+            }
+        }
+        // If condition is not a number, default to false branch
+        return eval_expr(node->ternary_expr.false_expr);
+    }
+
 case AST_RETURN:
 {
 runtime_has_returned = 1;
@@ -465,6 +503,66 @@ return ret;
     case AST_ASSIGN:
         set_var(node->assign_stmt.name, eval_expr(node->assign_stmt.expr));
         return make_number_value(0.0);
+
+    case AST_COMPOUND_ASSIGN:
+    {
+        // Get current value of the variable
+        Value *current = get_var(node->compound_assign.name);
+        if (!current) {
+            report_error("[eval_expr] Variable '%s' not found for compound assignment", node->compound_assign.name);
+            return make_number_value(0.0);
+        }
+        
+        // Evaluate the right-hand side expression
+        Value *rhs = eval_expr(node->compound_assign.expr);
+        if (!rhs) {
+            report_error("[eval_expr] Failed to evaluate RHS of compound assignment");
+            return make_number_value(0.0);
+        }
+
+        // Perform the compound operation
+        double result = 0.0;
+        switch (node->compound_assign.op) {
+            case TOKEN_PLUS_EQUAL:
+                result = current->number + rhs->number;
+                break;
+            case TOKEN_MINUS_EQUAL:
+                result = current->number - rhs->number;
+                break;
+            case TOKEN_STAR_EQUAL:
+                result = current->number * rhs->number;
+                break;
+            case TOKEN_SLASH_EQUAL:
+                if (rhs->number == 0.0) {
+                    report_error("[eval_expr] Division by zero in /= operation");
+                    return make_number_value(0.0);
+                }
+                result = current->number / rhs->number;
+                break;
+            case TOKEN_CARET_EQUAL:
+                result = pow(current->number, rhs->number);
+                break;
+            case TOKEN_AMPERSAND_EQUAL:
+                result = (double)((int)current->number & (int)rhs->number);
+                break;
+            case TOKEN_PIPE_EQUAL:
+                result = (double)((int)current->number | (int)rhs->number);
+                break;
+            case TOKEN_LSHIFT_EQUAL:
+                result = (double)((int)current->number << (int)rhs->number);
+                break;
+            case TOKEN_RSHIFT_EQUAL:
+                result = (double)((int)current->number >> (int)rhs->number);
+                break;
+            default:
+                report_error("[eval_expr] Unknown compound assignment operator");
+                return make_number_value(0.0);
+        }
+
+        // Set the new value
+        set_var(node->compound_assign.name, make_number_value(result));
+        return make_number_value(0.0);
+    }
 
 
 
@@ -814,6 +912,10 @@ void eval_block(ASTNode *block)
             eval_expr(stmt);
             break;
 
+        case AST_COMPOUND_ASSIGN:
+            eval_expr(stmt);
+            break;
+
         case AST_IF:
             eval_if(stmt);
             break;
@@ -916,7 +1018,6 @@ void eval_for(ASTNode *stmt)
 
     double end = exclusive ? to : (step > 0 ? to + 1e-9 : to - 1e-9);
 
-    enter_scope();
     for (double i = from;
          (step > 0 && i < end) || (step < 0 && i > end);
          i += step)
@@ -924,7 +1025,6 @@ void eval_for(ASTNode *stmt)
         set_var(stmt->for_stmt.var, make_number_value(i));
         eval_block(stmt->for_stmt.body);
     }
-    exit_scope();
 }
 
 

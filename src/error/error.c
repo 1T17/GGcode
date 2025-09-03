@@ -10,7 +10,7 @@
 #include "config/config.h"
 
 #define MAX_ERRORS 100
-static char error_messages[MAX_ERRORS][256];
+static char error_messages[MAX_ERRORS][512];  // Increased buffer size for longer lines
 static int error_count = 0;
 
 
@@ -60,19 +60,103 @@ extern char *global_source_buffer;
 
 
 void fatal_error(const char *source, int line, int column, const char *format, ...) {
+    // Create detailed error message with line info
+    if (error_count < MAX_ERRORS) {
+        char base_msg[200];  // Reduced size to ensure we have room
+        
+        // First format the base message
+        va_list args;
+        va_start(args, format);
+        vsnprintf(base_msg, sizeof(base_msg), format, args);
+        va_end(args);
+        
+        // Add location info
+        if (source && line > 0 && column > 0) {
+            // Extract the source line
+            const char *line_start = source;
+            const char *p = source;
+            int current_line = 1;
+
+            // Find the start of the target line
+            while (*p && current_line < line) {
+                if (*p == '\n') {
+                    current_line++;
+                    if (current_line <= line) {
+                        line_start = p + 1;  // Start after the newline
+                    }
+                }
+                p++;
+            }
+
+            // Find the end of the line
+            const char *line_end = line_start;
+            while (*line_end && *line_end != '\n' && *line_end != '\r') {
+                line_end++;
+            }
+
+            int line_len = (int)(line_end - line_start);
+            
+            // Create detailed message with source line and better formatting
+            if (line_len > 0) {
+                // Show full line for professional output - limit to 120 chars to leave room for caret
+                int max_line_len = line_len > 120 ? 120 : line_len;
+                
+                // Create the caret indicator line
+                char caret_line[150] = {0};
+                int caret_pos = column - 1; // Convert to 0-based
+                if (caret_pos < 0) caret_pos = 0;
+                if (caret_pos > max_line_len) caret_pos = max_line_len;
+                
+                // Add spaces to align with "  → Source: " (12 characters for exact alignment)
+                strcpy(caret_line, "            "); // 12 spaces to match "  → Source: "
+                
+                // Fill with spaces up to the error position, then add caret
+                for (int i = 0; i < caret_pos && i < 120; i++) {
+                    // Handle tabs properly by using tab character
+                    if (i < line_len && line_start[i] == '\t') {
+                        caret_line[12 + i] = '\t';
+                    } else {
+                        caret_line[12 + i] = ' ';
+                    }
+                }
+                caret_line[12 + caret_pos] = '^';
+                caret_line[12 + caret_pos + 1] = '\0';
+                
+                snprintf(error_messages[error_count], 511, 
+                    "\n%.180s\n  → Location: %d:%d\n  → Source: %.*s%s\n%s", 
+                    base_msg, 
+                    line, column,
+                    max_line_len, line_start,
+                    line_len > 120 ? "..." : "",  // Add ... if truncated
+                    caret_line
+                );
+            } else {
+                // No line content found, just show location
+                snprintf(error_messages[error_count], 511, 
+                    "\n%.200s\n  → Location: %d:%d", 
+                    base_msg, 
+                    line, column
+                );
+            }
+        } else {
+            snprintf(error_messages[error_count], 511, "\n%.200s", base_msg);
+        }
+        
+        error_messages[error_count][511] = '\0';  // Ensure null termination
+        error_count++;
+    }
+    
     // Show header with location
     fprintf(stderr, "\n🛑 [Fatal Error] ");
 
-
-
-    va_list args;
-    va_start(args, format);
-    vfprintf(stderr, format, args);
-    va_end(args);
+    va_list args2;
+    va_start(args2, format);
+    vfprintf(stderr, format, args2);
+    va_end(args2);
 
     // Show file:line:column info (if source provided)
     if (source && line > 0 && column > 0) {
-        fprintf(stderr, "  (at %s:%d:%d)\n", RUNTIME_FILENAME[0] ? RUNTIME_FILENAME : "<input>", line, column);
+        fprintf(stderr, "  (at %d:%d)\n", line, column);
 
         // Extract and print the relevant source line
         const char *line_start = source;
@@ -112,7 +196,8 @@ void fatal_error(const char *source, int line, int column, const char *format, .
     }
 
     free_output_buffer();
-    clear_errors();
+    // Don't clear errors here - let the caller handle it
+    // clear_errors();
 
 
     // Set fatal error flag and jump to error handler
@@ -159,7 +244,7 @@ void report_error(const char *format, ...) {
     if (error_count >= MAX_ERRORS) return;
     va_list args;
     va_start(args, format);
-    vsnprintf(error_messages[error_count], 256, format, args);
+    vsnprintf(error_messages[error_count], 512, format, args);
     va_end(args);
     error_count++;
 }
@@ -178,4 +263,33 @@ void print_errors() {
     for (int i = 0; i < error_count; ++i)
         fprintf(stderr, "\n💥 [Error] %s\n", error_messages[i]);
     clear_errors();
+}
+
+const char* get_error_messages() {
+    if (error_count == 0) {
+        return strdup("No errors");
+    }
+    
+    // Calculate total length needed
+    size_t total_len = 0;
+    for (int i = 0; i < error_count; i++) {
+        total_len += strlen(error_messages[i]) + 15; // +15 for "; ERROR:" and formatting
+    }
+    total_len += 50; // Extra buffer for formatting
+    
+    char* result = malloc(total_len);
+    if (!result) {
+        return strdup("; ERROR: Memory allocation failed");
+    }
+    
+    strcpy(result, "GGcode Compiler Error:");
+    for (int i = 0; i < error_count; i++) {
+        strcat(result, error_messages[i]);
+        if (i < error_count - 1) {
+            strcat(result, "\nGGcode Compiler Error:");
+        }
+    }
+    strcat(result, "\n");
+    
+    return result;
 }

@@ -489,6 +489,15 @@ case AST_EXPR_STMT:
         break;
     }
 
+    case AST_COMPOUND_ASSIGN:
+    {
+        Runtime *rt = get_runtime();
+        rt->statement_count++;
+        // Compound assignments are handled by the evaluator
+        eval_expr(node);
+        break;
+    }
+
     case AST_GCODE:
         emit_gcode_stmt(node);
         break;

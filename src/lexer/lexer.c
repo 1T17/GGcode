@@ -106,7 +106,7 @@ static char advance(Lexer *lexer)
     return c;
 }
 
-/// @brief Skips whitespace and comments
+/// @brief Skips whitespace, comments, and semicolons
 static void skip_whitespace(Lexer *lexer)
 {
     while (1)
@@ -118,7 +118,11 @@ static void skip_whitespace(Lexer *lexer)
 } else if (isspace(c)) {
     advance(lexer);
 }
-
+        // Skip semicolons - they're optional in GGcode
+        else if (c == ';')
+        {
+            advance(lexer);
+        }
         else if (c == '/' && peek_next(lexer) == '/')
         {
             while (peek(lexer) != '\n' && peek(lexer) != '\0')

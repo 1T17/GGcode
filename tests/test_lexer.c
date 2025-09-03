@@ -114,29 +114,29 @@ void test_keywords_and_identifiers()
 
 void test_symbols_and_operators()
 {
-    TokenList tokens = lex_source("+ - * / = == != < <= > >= ( ) { } [ ] , ; . .. !");
+    TokenList tokens = lex_source("+ - * / ^ = == != < <= > >= ( ) { } [ ] , . .. !");
     print_tokens(&tokens);
-    TEST_ASSERT_EQUAL(23, tokens.count); // 23 tokens + EOF
+    TEST_ASSERT_EQUAL(23, tokens.count); // 22 tokens + EOF (semicolon is now skipped)
 
     assert_token(tokens.tokens[0], TOKEN_PLUS, "+");
     assert_token(tokens.tokens[1], TOKEN_MINUS, "-");
     assert_token(tokens.tokens[2], TOKEN_STAR, "*");
     assert_token(tokens.tokens[3], TOKEN_SLASH, "/");
-    assert_token(tokens.tokens[4], TOKEN_EQUAL, "=");
-    assert_token(tokens.tokens[5], TOKEN_EQUAL_EQUAL, "==");
-    assert_token(tokens.tokens[6], TOKEN_BANG_EQUAL, "!=");
-    assert_token(tokens.tokens[7], TOKEN_LESS, "<");
-    assert_token(tokens.tokens[8], TOKEN_LESS_EQUAL, "<=");
-    assert_token(tokens.tokens[9], TOKEN_GREATER, ">");
-    assert_token(tokens.tokens[10], TOKEN_GREATER_EQUAL, ">=");
-    assert_token(tokens.tokens[11], TOKEN_LPAREN, "(");
-    assert_token(tokens.tokens[12], TOKEN_RPAREN, ")");
-    assert_token(tokens.tokens[13], TOKEN_LBRACE, "{");
-    assert_token(tokens.tokens[14], TOKEN_RBRACE, "}");
-    assert_token(tokens.tokens[15], TOKEN_LBRACKET, "[");
-    assert_token(tokens.tokens[16], TOKEN_RBRACKET, "]");
-    assert_token(tokens.tokens[17], TOKEN_COMMA, ",");
-    assert_token(tokens.tokens[18], TOKEN_SEMICOLON, ";");
+    assert_token(tokens.tokens[4], TOKEN_CARET, "^");
+    assert_token(tokens.tokens[5], TOKEN_EQUAL, "=");
+    assert_token(tokens.tokens[6], TOKEN_EQUAL_EQUAL, "==");
+    assert_token(tokens.tokens[7], TOKEN_BANG_EQUAL, "!=");
+    assert_token(tokens.tokens[8], TOKEN_LESS, "<");
+    assert_token(tokens.tokens[9], TOKEN_LESS_EQUAL, "<=");
+    assert_token(tokens.tokens[10], TOKEN_GREATER, ">");
+    assert_token(tokens.tokens[11], TOKEN_GREATER_EQUAL, ">=");
+    assert_token(tokens.tokens[12], TOKEN_LPAREN, "(");
+    assert_token(tokens.tokens[13], TOKEN_RPAREN, ")");
+    assert_token(tokens.tokens[14], TOKEN_LBRACE, "{");
+    assert_token(tokens.tokens[15], TOKEN_RBRACE, "}");
+    assert_token(tokens.tokens[16], TOKEN_LBRACKET, "[");
+    assert_token(tokens.tokens[17], TOKEN_RBRACKET, "]");
+    assert_token(tokens.tokens[18], TOKEN_COMMA, ",");
     assert_token(tokens.tokens[19], TOKEN_DOT, ".");
     assert_token(tokens.tokens[20], TOKEN_DOTDOT, "..");
     assert_token(tokens.tokens[21], TOKEN_BANG, "!");
@@ -171,7 +171,7 @@ void test_reserved_word_as_identifier()
 {
     TokenList tokens = lex_source("let let = 5;");
     print_tokens(&tokens);
-    TEST_ASSERT_EQUAL(6, tokens.count);
+    TEST_ASSERT_EQUAL(5, tokens.count); // semicolon is now skipped
     assert_token(tokens.tokens[0], TOKEN_LET, "let");
     assert_token(tokens.tokens[1], TOKEN_LET, "let"); // or TOKEN_IDENTIFIER
     assert_token(tokens.tokens[2], TOKEN_EQUAL, "=");
@@ -479,6 +479,28 @@ void test_step_and_dotdotlt()
     free_token_list(&tokens);
 }
 
+void test_exponentiation_operator()
+{
+    TokenList tokens = lex_source("2^3 size^2 x^y^z");
+    print_tokens(&tokens);
+    TEST_ASSERT_EQUAL(12, tokens.count); // 2, ^, 3, size, ^, 2, x, ^, y, ^, z, EOF
+
+    assert_token(tokens.tokens[0], TOKEN_NUMBER, "2");
+    assert_token(tokens.tokens[1], TOKEN_CARET, "^");
+    assert_token(tokens.tokens[2], TOKEN_NUMBER, "3");
+    assert_token(tokens.tokens[3], TOKEN_IDENTIFIER, "size");
+    assert_token(tokens.tokens[4], TOKEN_CARET, "^");
+    assert_token(tokens.tokens[5], TOKEN_NUMBER, "2");
+    assert_token(tokens.tokens[6], TOKEN_IDENTIFIER, "x");
+    assert_token(tokens.tokens[7], TOKEN_CARET, "^");
+    assert_token(tokens.tokens[8], TOKEN_IDENTIFIER, "y");
+    assert_token(tokens.tokens[9], TOKEN_CARET, "^");
+    assert_token(tokens.tokens[10], TOKEN_IDENTIFIER, "z");
+    assert_token(tokens.tokens[11], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
 // === UNITY HOOKS ===
 
 void setUp(void) {}
@@ -510,6 +532,7 @@ int main(void)
     RUN_TEST(test_dot_prefixed_and_negative_floats);     // 21
     RUN_TEST(test_ampersand_operator);                   // 22
     RUN_TEST(test_builtin_constants_and_math_functions); // 23
-    RUN_TEST(test_step_and_dotdotlt);                    /// 24
+    RUN_TEST(test_step_and_dotdotlt);                    // 24
+    RUN_TEST(test_exponentiation_operator);              // 25
     return UNITY_END();
 }

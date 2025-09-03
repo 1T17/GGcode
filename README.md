@@ -1,81 +1,25 @@
 <p align="center">
   <img src="logo.png" alt="GGcode Logo" width="320"/>
-  <!-- For SVG support, you can use: <img src="logo.svg" alt="GGcode Logo" width="320"/> -->
 </p>
 
 # GGcode
 
-**GGcode** is a custom G-code scripting language and compiler that brings programmability to CNC machining. Designed for automation, testing, and dynamic toolpath generation, it supports variables, control flow, expression evaluation, and runtime note/comment blocks.
-
-Transform your CNC programming from static G-code to dynamic, parametric toolpaths with the power of a full programming language tailored specifically for machining.
+**GGcode** is a parametric G-code compiler that transforms static CNC programs into dynamic, programmable toolpaths. Write JavaScript-like code that generates professional G-code with variables, loops, functions, and math.
 
 🌐 **[Try GGcode Online →](https://gg.doorbase.io)** - No installation required!
 
----
+## ✨ Key Features
 
-
-
-## ✨ Features
-
-**🪶 Lightweight & Embeddable**  
-- Tiny, standalone compiler for `.ggcode` source files  
-- Easy to embed in toolchains or CNC preprocessors
-
-**🔤 Human-Readable Syntax**  
-- JavaScript-like structure tailored for G-code logic  
-- Clean, readable syntax for operators, conditionals, and loops
-
-**📥 Variables & Assignments**  
-- Use `let` to define and reassign variables  
-- Supports negative numbers, runtime expressions, and math logic
-
-**🧠 Expression Support**  
-- Full arithmetic and logical expressions: `+`, `-`, `*`, `/`, `mod`, `!`, comparisons  
-- Nested expressions and grouped logic fully supported
-
-**🔁 Control Flow**  
-- Conditional blocks: `if`, `else`, `else if` with any expression  
-- Looping constructs: `while`, `for` with scoped variables and dynamic conditions
-
-**🧮 Built-in Math Library**  
-- Functions: `abs`, `mod`, `floor`, `ceil`, `sqrt`, `hypot`, `distance`, `sin`, `cos`, `atan2`, etc.  
-- Constants: `PI`, `E`, `TAU`, `DEG_TO_RAD`, and more
-
-**🧩 Functions**  
-- Define reusable logic with the `function` keyword  
-- Support for recursion, parameters, and local scopes
-
-**🗂️ Arrays (1D & 2D)**  
-- Declare and mutate arrays: `grid[1][2] = 5`  
-- Dynamic indexing, assignment, and array-length flexibility
-
-**🔄 Recursion-Safe Call Tree Output**  
-- Internal tree generation with recursion tracking  
-- Exported as collapsible HTML tree with auto-loop detection
-
-**📄 Professional G-code Output**  
-- Industry-standard formatting with consistent decimal places
-- Automatic line numbering with proper modal behavior
-- Configurable precision and formatting options
-
-**🎛️ Dynamic Formatting Control**  
-- `decimalpoint` variable controls coordinate precision (0-6 decimal places)
-- `nline` variable enables/disables line numbering
-- Real-time formatting changes within programs
-
-**📄 Parametric G-code Generation**  
-- Emit raw `G0`, `G1`, `M3`, etc. from script logic  
-- Generate toolpaths dynamically using math and variables
-
-**🗨️ `note {}` Blocks**  
-- Embed runtime comments, debug logs, or human-readable G-code remarks  
-- Supports variable interpolation: `note {Pass #[i], Z = [z]}`
-
----
+- **Interactive CLI** - Smart file selection menu for easy compilation
+- **Professional G-code Output** - Industry-standard formatting with configurable precision
+- **Full Programming Language** - Variables, functions, loops, conditionals, and arrays
+- **Built-in Math Library** - Trigonometry, geometry functions, and constants
+- **Cross-platform** - Works on Linux, macOS, and Windows
+- **Lightweight** - Single binary, no dependencies
 
 ## 🎯 Quick Example
 
-Instead of writing repetitive G-code manually:
+Instead of repetitive G-code:
 ```gcode
 G1 X10 Y0 F300
 G1 X20 Y0 F300  
@@ -85,429 +29,234 @@ G1 X30 Y0 F300
 Write parametric GGcode:
 ```ggcode
 let feed = 300
-let y_pos = 0
-
-note {
-    Creating linear pattern
-    Feed rate: [feed] mm/min
-}
-
 for i = 1..3 {
-    G1 X[i*10] Y[y_pos] F[feed]
+    G1 X[i*10] Y0 F[feed]
 }
 ```
 
-**Output G-code:**
+**Output:**
 ```gcode
-(Creating linear pattern)
-(Feed rate: 300.000 mm/min)
 N10 G1 X10.000 Y0.000 F300.000
 N15  X20.000 Y0.000
 N20  X30.000 Y0.000
 ```
 
----
+## 🚀 Quick Start
 
-## 🎯 Professional G-code Formatting
-
-GGcode generates professional, industry-standard G-code with consistent formatting and proper modal behavior.
-
-### ✨ **Automatic Formatting Features**
-
-**🔢 Consistent Decimal Places**
-- All coordinates display with 3 decimal places by default: `X1.000`, `Y2.000`, `Z3.000`
-- Feed rates formatted consistently: `F150.000`, `F300.000`
-- Eliminates inconsistent output like `X1`, `Y2.5`, `F150`
-
-**📝 Professional Line Numbering**
-- Automatic line numbering: `N10`, `N15`, `N20`...
-- Starts at N10, increments by 5
-- Proper modal behavior - repeated G-codes omitted
-
-**⚙️ Modal G-code Behavior**
-- Efficient output - repeated commands automatically omitted
-- `G1 X10 Y20` followed by `X30 Y40` (G1 not repeated)
-- Industry-standard CNC programming practice
-
-### 🎛️ **Configuration Variables**
-
-Control formatting dynamically within your GGcode programs:
-
-```ggcode
-// Set decimal precision (0-6 decimal places)
-let decimalpoint = 2  // X1.00 instead of X1.000
-
-// Control line numbering
-let nline = 0  // Disable: G1 X1.00 Y2.00
-let nline = 1  // Enable:  N10 G1 X1.00 Y2.00
-
-// Use in your program
-G0 X[10] Y[20] Z[5] F[300]
-```
-
-**Configuration Examples:**
-
-| Setting | Output Example |
-|---------|----------------|
-| `decimalpoint = 1` | `N10 G0 X1.0 Y2.0 F150.0` |
-| `decimalpoint = 2` | `N10 G0 X1.00 Y2.00 F150.00` |
-| `decimalpoint = 3` | `N10 G0 X1.000 Y2.000 F150.000` *(default)* |
-| `decimalpoint = 4` | `N10 G0 X1.0000 Y2.0000 F150.0000` |
-
-| Setting | Output Example |
-|---------|----------------|
-| `nline = 0` | `G0 X1.000 Y2.000` *(no line numbers)* |
-| `nline = 1` | `N10 G0 X1.000 Y2.000` *(with line numbers)* *(default)* |
-
-### 🔧 **Default Settings**
-
-When no configuration variables are specified:
-- **Decimal Places**: 3 (`X1.000`)
-- **Line Numbering**: Enabled (`N10`, `N15`, `N20`...)
-- **Modal Behavior**: Enabled (efficient G-code output)
-
-All existing GGcode files work unchanged with professional formatting applied automatically.
-
----
-
-## 📋 Requirements
-
-### System Requirements
-- **Linux/macOS**: GCC compiler, Make
-- **Windows**: MinGW-w64 for cross-compilation
-- **Node.js**: Version 14+ (for web interface)
-- **Memory**: ~50MB RAM for compilation
-
-### Dependencies
+### Build & Install
 ```sh
-# Ubuntu/Debian
-sudo apt install build-essential gcc make curl
+# Install dependencies
+sudo apt install build-essential gcc make  # Ubuntu/Debian
+xcode-select --install                     # macOS
 
-# macOS
-xcode-select --install
-
-# Node.js dependencies (for web interface)
-cd node && npm install
-```
-
------
-
-### 🛠️ Build System
-
-Use the following `make` targets to build, test, and manage the project:
-
-| Command | Description | Output |
-|---------|-------------|--------|
-| `make` or `make all` | Build main compiler binary | `GGCODE/ggcode` |
-| `make node` | Build shared library for Node.js | `node/libggcode.so` |
-| `make test` | Run all unit tests with summary | Test results |
-| `make tests` | Compile test binaries only | `bin/test_*` |
-| `make win` | Cross-compile for Windows | `GGCODE/ggcode.exe` |
-| `make clean` | Remove all build artifacts | - |
-
-### Build Process
-1. **Core Compiler**: C source → standalone binary (`GGCODE/ggcode`)
-2. **Shared Library**: C source → Node.js library (`node/libggcode.so`)  
-3. **Web Server**: Node.js Express application (`node/ggcode.js`)
-4. **Tests**: Comprehensive unit test suite with Unity framework
-
-## 🚀 Usage
-
-### Command Line Interface
-```sh
-# Compile a single file
-./GGCODE/ggcode myfile.ggcode
-# Output: myfile.g.gcode
-
-# Compile all .ggcode files in current directory  
-./GGCODE/ggcode
-# Output: Creates .g.gcode files for each .ggcode file
-
-# Cross-platform usage
-./GGCODE/ggcode.exe myfile.ggcode  # Windows
-```
-
-### Web Interface
-1. Start the server: `cd node && npm start`
-2. Open browser: `http://localhost:6990`
-3. Write GGcode in the editor
-4. Click "Compile" to see G-code output
-5. Use "3D View" to visualize toolpaths
-6. Browse examples for inspiration
-
-### Integration Examples
-```sh
-# Embed in build pipeline
-./GGCODE/ggcode parts/*.ggcode && echo "All parts compiled"
-
-# Use with CAM workflow  
-./GGCODE/ggcode template.ggcode > output.gcode
-```
-
----
-## 🚦 Quick Start
-
-### Option 1: Online Demo (Instant)
-🌐 **[Try GGcode Online →](https://gg.doorbase.io)**
-- No installation required
-- Full web interface with examples
-- 3D visualization and real-time compilation
-- Perfect for testing and learning
-
-### Option 2: Local Web Interface
-```sh
-# Build the compiler and Node.js backend
-make all
-make node
-
-# Install Node.js dependencies
-cd node
-npm install
-
-# Start the web UI
-npm start
-# or: node ggcode.js
-
-# Open in your browser:
-http://localhost:6990
-```
-
-### Option 3: Command Line
-```sh
-# Build the compiler
+# Build with automatic global installation prompt
 make
-
-# Compile a single file
-./GGCODE/ggcode myfile.ggcode
-
-# Compile all .ggcode files in current directory
-./GGCODE/ggcode
 ```
 
----
+**After building, you'll be prompted:**
+```
+🌍 Install ggcode globally? (y/N): y
+Choose installation method:
+  1) Symlink to /usr/local/bin (recommended)
+  2) Copy to /usr/local/bin  
+  3) Add to PATH in ~/.bashrc
+```
+
+### Build Options
+| Command | Description |
+|---------|-------------|
+| `make` | Build + prompt for global install |
+| `make install` | Install globally (manual) |
+| `make uninstall` | Remove global installation |
+| `make test` | Run unit tests |
+| `make win` | Cross-compile for Windows |
+| `make clean` | Clean build files |
+
+## �️U Interactive CLI
+
+**Default behavior:** Run `ggcode` (if installed globally) or `./GGCODE/ggcode` to get an interactive menu:
+
+```
+┏┓┏┓┏┓┏┓┳┓┏┓  ┏┓       •┓      ┏┓┓ ┳
+┃┓┃┓┃ ┃┃┃┃┣   ┃ ┏┓┏┳┓┏┓┓┃┏┓┏┓  ┃ ┃ ┃
+┗┛┗┛┗┛┗┛┻┛┗┛  ┗┛┗┛┛┗┗┣┛┗┗┗ ┛   ┗┛┗┛┻   v1.1.2
+
+Found 3 .ggcode files:
+
+  1) part1.ggcode
+  2) part2.ggcode  
+  3) complex_pattern.ggcode
+  4) Compile all files
+  h) Show help
+  0) Exit
+
+Select option (0-4, h): 
+```
+
+### Command Line Options
+
+```sh
+# Interactive menu (default) - use globally or locally
+ggcode                       # If installed globally
+./GGCODE/ggcode             # Local binary
+
+# Compile specific files
+ggcode part.ggcode
+ggcode part1.ggcode part2.ggcode
+
+# Compile all files
+ggcode -a
+
+# Custom output
+ggcode -o custom.gcode part.ggcode
+ggcode --output-dir ./build *.ggcode
+
+# Direct evaluation (testing)
+ggcode -e "G1 X10 Y20 F300"
+ggcode -e "for i=1..5 { G1 X[i*10] Y0 }"
+
+# Options
+ggcode -q -a        # Quiet mode
+ggcode --help       # Show help
+ggcode --version    # Show version
+```
 
 ## 📁 Project Structure
 
 ```
 GGcode/
-├── src/                    # C source code for the compiler and runtime
-│   ├── lexer/             # Tokenization and lexical analysis
-│   ├── parser/            # Syntax parsing and AST generation  
-│   ├── runtime/           # Expression evaluation and runtime state
-│   ├── generator/         # G-code emission and output generation
-│   ├── error/             # Error handling and reporting
-│   ├── utils/             # Utility functions and helpers
-│   ├── bindings/          # Node.js FFI bindings
-│   └── main.c             # Main compiler entry point
-├── node/                   # Node.js web application
-│   ├── views/             # EJS templates for web pages
-│   ├── public/            # Static assets (CSS, JS, images)
-│   ├── data/              # Help content in 15 languages
-│   ├── GGCODE/            # 34 example GGcode files
-│   ├── ggcode.js          # Express.js web server
-│   └── package.json       # Node.js dependencies
-├── tests/                  # Unit and integration tests
-├── bin/                    # Compiled test binaries
-├── GGCODE/                 # Compiled binaries and examples
-├── Makefile               # Build automation
-└── README.md              # This documentation
+├── src/                    # C source code
+│   ├── lexer/             # Tokenization
+│   ├── parser/            # Syntax parsing and AST
+│   ├── runtime/           # Expression evaluation
+│   ├── generator/         # G-code generation
+│   ├── cli/               # Command line interface
+│   └── main.c             # Main entry point
+├── tests/                  # Unit tests
+├── GGCODE/                 # Compiled binaries
+├── Makefile               # Build system
+└── README.md              # Documentation
 ```
 
----
+## 📝 Language Reference
 
-## 🌐 Web Interface Features
-
-The Node.js web application provides a complete development environment:
-
-- **Real-time Editor** - Syntax highlighting and live compilation
-- **3D Visualization** - Interactive toolpath preview using Three.js
-- **Parameter Configurator** - Adjust variables with sliders and inputs
-- **Example Library** - 34 ready-to-use GGcode programs including:
-  - Basic shapes (circles, squares, spirals)
-  - Complex patterns (Flower of Life, gear teeth, rose patterns)
-  - Advanced features (arrays, functions, math demonstrations)
-- **Multi-language Help** - Documentation in 15 languages
-- **Export Options** - Download generated G-code files
-- **Error Reporting** - Clear, helpful error messages with line numbers
-
----
-
-## 🧾 Supported Syntax
-
-### Variables & Data Types
-| Syntax | Description | Example |
-|--------|-------------|---------|
-| `let` | Define/update variables (numbers only) | `let x = 10`, `let count = 5` |
-| `[]` | Arrays (1D/2D) | `let points = [1, 2, 3]`, `grid[y][x] = 5` |
-| `[expr]` | Variable interpolation | `G1 X[x+10] Y[y*2]` |
-
-### Configuration Variables
-| Variable | Description | Example | Default |
-|----------|-------------|---------|---------|
-| `decimalpoint` | Control decimal places (0-6) | `let decimalpoint = 2` | `3` |
-| `nline` | Enable/disable line numbering | `let nline = 0` | `1` |
-
-**Note**: GGcode supports numeric values and arrays. String literals are not supported.
+### Variables & Arrays
+```ggcode
+let x = 10                    // Variables
+let points = [1, 2, 3]        // 1D arrays
+let grid = [[1,2], [3,4]]     // 2D arrays
+G1 X[x] Y[points[0]]          // Variable interpolation
+```
 
 ### Control Flow
-| Syntax | Description | Example |
-|--------|-------------|---------|
-| `if` / `else if` / `else` | Conditional execution | `if x > 40 { G1 X[x] }` |
-| `while` | Loop with condition | `while x < 100 { x = x + 1 }` |
-| `for` | Range-based loop | `for i = 0..10 { G1 X[i] }` |
-| `function` | Define reusable functions | `function circle(r) { ... }` |
-| `return` | Return value from function | `return x * 2 + 1` |
-
-### G-code Integration
-| Syntax | Description | Example |
-|--------|-------------|---------|
-| `G0`, `G1`, `G2`, `G3` | Motion commands | `G1 X[x] Y[y] F[feed]` |
-| `M3`, `M5`, `M8`, `M9` | Machine commands | `M3 S[spindle_speed]` |
-| `note {}` | Runtime comments | `note {Cut depth: [z_depth]mm}` |
-
-### Operators & Expressions
-| Category | Operators | Example |
-|----------|-----------|---------|
-| Arithmetic | `+`, `-`, `*`, `/`, `mod()` | `x = (a + b) * 2`, `r = mod(x, 10)` |
-| Comparison | `==`, `!=`, `<`, `>`, `<=`, `>=` | `if x >= 10` |
-| Logical | `!`, `&&`, `||` | `if x > 0 && y < 100` |
-
-### Built-in Functions
-| Function | Description | Example |
-|----------|-------------|---------|
-| **Math** | `abs()`, `sqrt()`, `floor()`, `ceil()` | `r = sqrt(x*x + y*y)` |
-| **Trigonometry** | `sin()`, `cos()`, `tan()`, `atan2()` | `x = r * cos(angle)` |
-| **Geometry** | `distance()`, `hypot()` | `d = distance(x1, y1, x2, y2)` |
-| **Constants** | `PI`, `E`, `TAU`, `DEG_TO_RAD` | `angle = 45 * DEG_TO_RAD` |
-
----
-
-## 🎨 Advanced Examples
-
-### G-code Formatting Control
 ```ggcode
-let id = 12345
+if x > 10 { G1 X[x] }         // Conditionals
+for i = 1..5 { G1 X[i] }      // Loops
+while x < 100 { x = x + 1 }   // While loops
 
-// High precision for finishing operations
-let decimalpoint = 3
-let nline = 1
-
-note {Finishing pass - Program [id]}
-G1 X[10.12345] Y[20.6789] F[150]  // Output: N10 G1 X10.1235 Y20.6789 F150.0000
-
-// Lower precision for roughing
-let decimalpoint = 1
-let nline = 0
-
-note {Roughing pass}
-G0 X[100] Y[200] F[500]  // Output: G0 X100.0 Y200.0 F500.0
-```
-
-### Parametric Gear Generation
-```ggcode
-function gear_tooth(radius, tooth_angle) {
-    let x1 = radius * cos(tooth_angle - 2)
-    let y1 = radius * sin(tooth_angle - 2)
-    let x2 = (radius + 2) * cos(tooth_angle)
-    let y2 = (radius + 2) * sin(tooth_angle)
-    
-    G1 X[x1] Y[y1]
-    G1 X[x2] Y[y2]
-    return tooth_angle + 10
-}
-
-let teeth = 12
-let base_radius = 20
-for i = 0..teeth {
-    gear_tooth(base_radius, i * (360/teeth))
+function circle(radius) {      // Functions
+    return PI * radius * radius
 }
 ```
 
-### Dynamic Array Processing
+### G-code Commands
 ```ggcode
-let points = [[0,0], [10,5], [20,0], [15,-5]]
-let feed_rates = [100, 200, 300, 150]
+G0 X[x] Y[y]                  // Rapid move
+G1 X[x] Y[y] F[feed]          // Linear move
+M3 S[speed]                   // Spindle on
+note {Cut depth: [z]mm}       // Comments
+```
 
-for i = 0..3 {
-    let pt = points[i]
-    let feed = feed_rates[i]
-    G1 X[pt[0]] Y[pt[1]] F[feed]
+### Math & Constants
+```ggcode
+let angle = 45 * DEG_TO_RAD   // Constants: PI, E, TAU, DEG_TO_RAD
+let dist = sqrt(x*x + y*y)    // Math: abs, sqrt, sin, cos, tan, etc.
+let result = distance(x1, y1, x2, y2)  // Geometry functions
+```
+
+### Formatting Control
+```ggcode
+let decimalpoint = 2          // Control decimal places (0-6)
+let nline = 0                 // Disable line numbering
+```
+
+## 🎨 Examples
+
+### Parametric Circle
+```ggcode
+function circle(radius, steps) {
+    for i = 0..steps {
+        let angle = i * (360 / steps) * DEG_TO_RAD
+        let x = radius * cos(angle)
+        let y = radius * sin(angle)
+        G1 X[x] Y[y] F300
+    }
 }
+
+circle(10, 36)  // 10mm radius, 36 steps
 ```
 
 ### Conditional Machining
 ```ggcode
-let material_type = 1  // 1 = aluminum, 2 = steel
-let depth = -1
-let speed = 6000
+let material = 1  // 1=aluminum, 2=steel
+let speed = material == 1 ? 8000 : 6000
+let depth = material == 1 ? -2 : -1
 
-if material_type == 1 {
-    depth = -2
-    speed = 8000
-} else {
-    depth = -1
-    speed = 6000
-}
-
-note {Material type: [material_type], Depth: [depth]mm, Speed: [speed]rpm}
 M3 S[speed]
 G1 Z[depth] F300
 ```
 
-## 🎯 Use Cases
-
-- **Professional G-code Output**: Generate industry-standard G-code with consistent formatting
-- **Precision Control**: Adjust decimal precision for different machining requirements (roughing vs finishing)
-- **Parametric Parts**: Create families of similar parts with variable dimensions
-- **Pattern Generation**: Complex geometric patterns impossible with manual G-code
-- **Batch Processing**: Generate multiple variations from a single template
-- **Educational**: Learn CNC programming with a familiar syntax
-- **Prototyping**: Rapid iteration of toolpath strategies
-- **Integration**: Embed in larger CAM/manufacturing workflows
-
-GGcode supports nesting, recursion, dynamic expressions, scoped variables, and parametric G-code generation.
+### Array Processing
+```ggcode
+let holes = [[10,10], [20,10], [30,10]]
+for i = 0..2 {
+    G0 X[holes[i][0]] Y[holes[i][1]]
+    G1 Z-5 F100
+    G0 Z5
+}
+```
 
 
 
 ## 🔧 Troubleshooting
 
-### Common Issues
-
-**Build Errors:**
+**Build Issues:**
 ```sh
-# Missing dependencies
+# Install dependencies
 sudo apt install build-essential gcc make  # Ubuntu/Debian
 brew install gcc make                      # macOS
 
-# Permission issues
+# Fix permissions
 chmod +x GGCODE/ggcode
 ```
 
-**Web Interface Issues:**
-```sh
-# Port already in use
-lsof -ti:6990 | xargs kill -9  # Kill process on port 6990
-
-# Node.js dependencies
-cd node && npm install --force
-
-# Missing shared library
-make node  # Rebuild libggcode.so
-```
-
-**Runtime Errors:**
-- Check syntax with web interface for better error messages
+**Runtime Issues:**
 - Verify variable names are defined before use
-- Ensure proper bracket matching `{ }` and `[ ]`
-- Use `note {}` blocks for debugging variable values
-
-### Performance Tips
-- Use `make test` to verify installation
-- Large arrays may require more memory
-- Complex recursive functions have built-in loop detection
-- Web interface provides real-time syntax checking
+- Check bracket matching `{ }` and `[ ]`
+- Use `note {}` blocks for debugging
+- Run `make test` to verify installation
 
 ---
+
+
+
+## 👨‍💻 Author
+
+**T1** - Creator and Lead Developer
+
+
+### Contributing
+- Report issues on GitHub
+- Submit feature requests
+- Contribute example files
+- Help with documentation and translations
+
+### Support
+- 🌐 **[Online Demo](https://gg.doorbase.io)** - Try GGcode instantly
+- 📧 Email: [t@doorbase.io](mailto:t@doorbase.io)
+
+---
+
 
 ## 📜 License
 
@@ -520,25 +269,3 @@ This project is licensed under the **MIT License** for personal, educational, an
 **Commercial Use:** For commercial licensing inquiries, contact: [t@doorbase.io](mailto:t@doorbase.io)
 
 ---
-
-## 👨‍💻 Author
-
-**T1** - Creator and Lead Developer
-
-> *"GGcode is built for control, clarity, and creativity — bringing the power of programming to precision machining."*
-
-### Contributing
-- Report issues on GitHub
-- Submit feature requests
-- Contribute example files
-- Help with documentation and translations
-
-### Support
-- 🌐 **[Online Demo](https://gg.doorbase.io)** - Try GGcode instantly in your browser
-- 📧 Email: [t@doorbase.io](mailto:t@doorbase.io)
-- 🌐 Web Interface: Built-in help system with 15 languages
-- 📚 Examples: 34 sample programs included
-
----
-
-**GGcode** - Where programming meets precision manufacturing. Transform your CNC workflow with the power of parametric toolpath generation.

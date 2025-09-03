@@ -8,7 +8,7 @@ CFLAGS = -g -Wall -Werror -Wpedantic -Wextra \
 CC_WIN = x86_64-w64-mingw32-gcc
 
 # Main source files
-SRC = $(wildcard src/*.c src/lexer/*.c src/error/*.c src/parser/*.c src/semantic/*.c src/generator/*.c src/runtime/*.c src/utils/*.c src/config/*.c)
+SRC = $(wildcard src/*.c src/lexer/*.c src/error/*.c src/parser/*.c src/semantic/*.c src/generator/*.c src/runtime/*.c src/utils/*.c src/config/*.c src/cli/*.c)
 OUT = GGCODE/ggcode
 
 # Test discovery
@@ -25,6 +25,8 @@ all: $(OUT)
 # Build main program
 $(OUT): $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^ -lm
+	@echo "✅ Build complete: $(OUT)"
+	@$(MAKE) -s prompt-install
 
 
 # Windows build target with psapi for memory info
@@ -35,7 +37,13 @@ win:
 # Build all test binaries (excluding src/main.c to avoid duplicate main)
 tests: unity $(TEST_BINS)
 
-bin/%: tests/%.c $(filter-out src/main.c, $(SRC)) $(UNITY)
+# Special rule for security test that needs CLI functions
+bin/test_security_buffer_overflow: tests/test_security_buffer_overflow.c $(filter-out src/main.c, $(SRC)) $(UNITY)
+	@mkdir -p bin
+	$(CC) $(CFLAGS) -o $@ $^ -lm
+
+# General rule for other tests (excludes CLI to avoid compile_file dependency)
+bin/%: tests/%.c $(filter-out src/main.c src/cli/cli.c, $(SRC)) $(UNITY)
 	@mkdir -p bin
 	$(CC) $(CFLAGS) -o $@ $^ -lm
 
@@ -88,6 +96,77 @@ node:
 
 
 
+
+# Interactive global installation prompt
+.PHONY: prompt-install
+prompt-install:
+	@echo ""
+	@echo "🌍 Install ggcode globally? (y/N): "; \
+	read -r response; \
+	case "$$response" in \
+		[yY][eE][sS]|[yY]) \
+			$(MAKE) -s install-global; \
+			;; \
+		*) \
+			echo "Skipped global installation. Use 'make install' later if needed."; \
+			echo "Or run: export PATH=\"\$$PATH:\$$(pwd)/GGCODE\""; \
+			;; \
+	esac
+
+# Global installation options
+.PHONY: install-global install
+install-global install:
+	@echo "Choose installation method:"
+	@echo "  1) Symlink to /usr/local/bin (recommended)"
+	@echo "  2) Copy to /usr/local/bin"
+	@echo "  3) Add to PATH in ~/.bashrc"
+	@echo "Enter choice (1-3): "; \
+	read -r choice; \
+	case "$$choice" in \
+		1) \
+			if [ -L /usr/local/bin/ggcode ]; then \
+				echo "🔄 Updating existing symlink..."; \
+				sudo rm /usr/local/bin/ggcode; \
+			fi; \
+			sudo ln -sf $$(pwd)/$(OUT) /usr/local/bin/ggcode; \
+			echo "✅ Symlink created: /usr/local/bin/ggcode -> $$(pwd)/$(OUT)"; \
+			;; \
+		2) \
+			sudo cp $(OUT) /usr/local/bin/ggcode; \
+			sudo chmod +x /usr/local/bin/ggcode; \
+			echo "✅ Binary copied to /usr/local/bin/ggcode"; \
+			;; \
+		3) \
+			if ! grep -q "GGCODE" ~/.bashrc; then \
+				echo "export PATH=\"\$$PATH:$$(pwd)/GGCODE\"" >> ~/.bashrc; \
+				echo "✅ Added to ~/.bashrc"; \
+				echo "Run: source ~/.bashrc"; \
+			else \
+				echo "⚠️  PATH already contains GGCODE directory"; \
+			fi; \
+			;; \
+		*) \
+			echo "Invalid choice. Skipped installation."; \
+			;; \
+	esac
+	@echo ""
+	@echo "🧪 Test global installation:"
+	@echo "  ggcode --version"
+	@echo "  ggcode -e \"G1 X10 Y20 F300\""
+
+# Uninstall global installation
+.PHONY: uninstall
+uninstall:
+	@echo "🗑️  Removing global ggcode installation..."
+	@if [ -f /usr/local/bin/ggcode ] || [ -L /usr/local/bin/ggcode ]; then \
+		sudo rm /usr/local/bin/ggcode; \
+		echo "✅ Removed /usr/local/bin/ggcode"; \
+	else \
+		echo "No global installation found in /usr/local/bin/"; \
+	fi
+	@if grep -q "GGCODE" ~/.bashrc 2>/dev/null; then \
+		echo "⚠️  Found GGCODE in ~/.bashrc - remove manually if needed"; \
+	fi
 
 # Clean build and test artifacts
 .PHONY: clean

@@ -34,6 +34,7 @@ void fatal_error(const char *source, int line, int column, const char *format, .
 void clear_errors();
 int has_errors();
 void print_errors();
+const char* get_error_messages(); // New function to get error messages as string
 const char *get_ast_type_name(int type);
 
 #endif

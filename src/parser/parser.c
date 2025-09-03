@@ -112,23 +112,33 @@ int get_precedence(Token_Type op)
 {
     switch (op)
     {
+    case TOKEN_CARET:
+        return 5; // highest precedence for exponentiation
     case TOKEN_STAR:
     case TOKEN_SLASH:
-        return 3;
+        return 4;
     case TOKEN_PLUS:
     case TOKEN_MINUS:
-        return 2;
+        return 3;
+    case TOKEN_LSHIFT:
+    case TOKEN_RSHIFT:
+        return 3; // Same as addition/subtraction
     case TOKEN_LESS:
     case TOKEN_LESS_EQUAL:
     case TOKEN_GREATER:
     case TOKEN_GREATER_EQUAL:
     case TOKEN_EQUAL_EQUAL:
     case TOKEN_BANG_EQUAL:
-        return 1;
-    case TOKEN_AND:
-    case TOKEN_OR:
-    case TOKEN_AMPERSAND: // <-- Add this line
-        return 0;         // lowest precedence
+        return 2;
+    case TOKEN_AMPERSAND: // Bitwise AND
+        return 1; // Lower precedence than comparison
+    case TOKEN_PIPE:      // Bitwise OR
+        return 1; // Same as bitwise AND
+    case TOKEN_AND:       // Logical AND
+    case TOKEN_OR:        // Logical OR
+        return 1;         
+    case TOKEN_QUESTION:  // Ternary operator
+        return 0;         // lowest precedence (right-associative)
     default:
         return -1;
     }
@@ -465,17 +475,46 @@ static ASTNode *parse_binary_expression_prec(int min_prec)
         if (prec < min_prec)
             break;
 
-        parser_advance(); // consume operator
+        // Handle ternary operator specially
+        if (op == TOKEN_QUESTION)
+        {
+            parser_advance(); // consume '?'
+            
+            ASTNode *true_expr = parse_binary_expression_prec(0); // Parse true expression
+            
+            if (rt->parser.current.type != TOKEN_COLON)
+            {
+                PARSE_ERROR("Expected ':' after '?' in ternary expression");
+            }
+            
+            parser_advance(); // consume ':'
+            
+            ASTNode *false_expr = parse_binary_expression_prec(prec); // Right-associative
+            
+            ASTNode *node = malloc(sizeof(ASTNode));
+            node->type = AST_TERNARY;
+            node->ternary_expr.condition = left;
+            node->ternary_expr.true_expr = true_expr;
+            node->ternary_expr.false_expr = false_expr;
+            
+            left = node;
+        }
+        else
+        {
+            parser_advance(); // consume operator
 
-        ASTNode *right = parse_binary_expression_prec(prec + 1);
+            // Right-associative for exponentiation, left-associative for others
+            int next_prec = (op == TOKEN_CARET) ? prec : prec + 1;
+            ASTNode *right = parse_binary_expression_prec(next_prec);
 
-        ASTNode *node = malloc(sizeof(ASTNode));
-        node->type = AST_BINARY;
-        node->binary_expr.op = op;
-        node->binary_expr.left = left;
-        node->binary_expr.right = right;
+            ASTNode *node = malloc(sizeof(ASTNode));
+            node->type = AST_BINARY;
+            node->binary_expr.op = op;
+            node->binary_expr.left = left;
+            node->binary_expr.right = right;
 
-        left = node;
+            left = node;
+        }
     }
 
     return left;
@@ -656,6 +695,33 @@ static ASTNode *parse_identifier_statement()
         }
 
         return assign;
+    }
+
+    // Case 2b: Compound assignment like foo += 123, foo -= 5, etc.
+    if (rt->parser.current.type == TOKEN_PLUS_EQUAL ||
+        rt->parser.current.type == TOKEN_MINUS_EQUAL ||
+        rt->parser.current.type == TOKEN_STAR_EQUAL ||
+        rt->parser.current.type == TOKEN_SLASH_EQUAL ||
+        rt->parser.current.type == TOKEN_CARET_EQUAL ||
+        rt->parser.current.type == TOKEN_AMPERSAND_EQUAL ||
+        rt->parser.current.type == TOKEN_PIPE_EQUAL ||
+        rt->parser.current.type == TOKEN_LSHIFT_EQUAL ||
+        rt->parser.current.type == TOKEN_RSHIFT_EQUAL)
+    {
+        if (node->type != AST_VAR)
+        {
+            PARSE_ERROR("[parse_identifier_statement] Compound assignment only supported for variables, not array indices");
+        }
+
+        ASTNode *compound = malloc(sizeof(ASTNode));
+        compound->type = AST_COMPOUND_ASSIGN;
+        compound->compound_assign.name = node->var.name;
+        compound->compound_assign.op = rt->parser.current.type;
+        
+        parser_advance(); // consume compound operator
+        compound->compound_assign.expr = parse_binary_expression();
+
+        return compound;
     }
 
     // Case 3: Implicit assignment like `foo` → `foo = 0`
@@ -867,8 +933,16 @@ static ASTNode *parse_note()
             brace_depth++;
         else if (c == '}')
             brace_depth--;
+        
+        // Properly track line numbers when encountering newlines
+        if (c == '\n') {
+            rt->parser.lexer->line++;
+            rt->parser.lexer->column = 1;
+        } else {
+            rt->parser.lexer->column++;
+        }
+        
         rt->parser.lexer->pos++;
-        rt->parser.lexer->column++;
     }
 
     int len = rt->parser.lexer->pos - start_pos - 1; // exclude final '}'
@@ -1135,6 +1209,11 @@ case AST_EXPR_STMT:
     case AST_ASSIGN:
         free(node->assign_stmt.name);
         free_ast(node->assign_stmt.expr);
+        break;
+
+    case AST_COMPOUND_ASSIGN:
+        free(node->compound_assign.name);
+        free_ast(node->compound_assign.expr);
         break;
 
     default:

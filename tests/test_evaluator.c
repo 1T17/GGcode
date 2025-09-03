@@ -181,6 +181,62 @@ void test_eval_parentheses_override_precedence(void)
     free_ast(root);
 }
 
+void test_eval_exponentiation_basic(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 2^3");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(8.0, retrieved->number); // 2^3 = 8
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_precedence(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 2 + 3^2");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(11.0, retrieved->number); // 2 + (3^2) = 2 + 9 = 11
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_right_associative(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 2^3^2");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(512.0, retrieved->number); // 2^(3^2) = 2^9 = 512
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_with_multiplication(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 2^3 * 4");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(32.0, retrieved->number); // (2^3) * 4 = 8 * 4 = 32
+
+    free_ast(root);
+}
+
 void test_eval_deep_variable_chain(void)
 {
     ASTNode *root = parse_script_from_string("let a = 2\nlet b = a + 2\nlet c = b * 2\nlet d = c - a");
@@ -441,6 +497,301 @@ void test_eval_negative_and_unary(void)
     free_ast(root);
 }
 
+void test_eval_exponentiation_complex_chain(void)
+{
+    // Test 2^3^4 = 2^(3^4) = 2^81 = 2417851639229258349412352
+    // This is a very large number, so let's test a smaller chain: 2^2^3 = 2^(2^3) = 2^8 = 256
+    ASTNode *root = parse_script_from_string("let x = 2^2^3");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(256.0, retrieved->number); // 2^(2^3) = 2^8 = 256
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_four_levels(void)
+{
+    // Test 2^2^2^2 = 2^(2^(2^2)) = 2^(2^4) = 2^16 = 65536
+    ASTNode *root = parse_script_from_string("let x = 2^2^2^2");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(65536.0, retrieved->number); // 2^(2^(2^2)) = 2^16 = 65536
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_with_parentheses(void)
+{
+    // Test (2^3)^2 = 8^2 = 64 vs 2^(3^2) = 2^9 = 512
+    ASTNode *root1 = parse_script_from_string("let x = (2^3)^2");
+    ASTNode *root2 = parse_script_from_string("let y = 2^(3^2)");
+
+    Value *val1 = eval_expr(root1->block.statements[0]->let_stmt.expr);
+    set_var("x", val1);
+    Value *val2 = eval_expr(root2->block.statements[0]->let_stmt.expr);
+    set_var("y", val2);
+
+    Value *x = get_var("x");
+    Value *y = get_var("y");
+    TEST_ASSERT_NOT_NULL(x);
+    TEST_ASSERT_NOT_NULL(y);
+    TEST_ASSERT_EQUAL_DOUBLE(64.0, x->number);   // (2^3)^2 = 8^2 = 64
+    TEST_ASSERT_EQUAL_DOUBLE(512.0, y->number);  // 2^(3^2) = 2^9 = 512
+
+    free_ast(root1);
+    free_ast(root2);
+}
+
+void test_eval_exponentiation_mixed_operations(void)
+{
+    // Test complex expression: 3 + 2^3^2 * 4 - 1
+    // Should be: 3 + (2^(3^2)) * 4 - 1 = 3 + (2^9) * 4 - 1 = 3 + 512 * 4 - 1 = 3 + 2048 - 1 = 2050
+    ASTNode *root = parse_script_from_string("let x = 3 + 2^3^2 * 4 - 1");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(2050.0, retrieved->number);
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_fractional_base(void)
+{
+    // Test 0.5^3 = 0.125
+    ASTNode *root = parse_script_from_string("let x = 0.5^3");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(0.125, retrieved->number);
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_fractional_exponent(void)
+{
+    // Test 4^0.5 = sqrt(4) = 2
+    ASTNode *root = parse_script_from_string("let x = 4^0.5");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(2.0, retrieved->number);
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_negative_base(void)
+{
+    // Test (-2)^3 = -8
+    ASTNode *root = parse_script_from_string("let x = (-2)^3");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(-8.0, retrieved->number);
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_zero_and_one(void)
+{
+    // Test edge cases: 0^5 = 0, 5^0 = 1, 1^100 = 1
+    ASTNode *root = parse_script_from_string("let a = 0^5\nlet b = 5^0\nlet c = 1^100");
+
+    set_var("a", eval_expr(root->block.statements[0]->let_stmt.expr));
+    set_var("b", eval_expr(root->block.statements[1]->let_stmt.expr));
+    set_var("c", eval_expr(root->block.statements[2]->let_stmt.expr));
+
+    Value *a = get_var("a");
+    Value *b = get_var("b");
+    Value *c = get_var("c");
+    
+    TEST_ASSERT_NOT_NULL(a);
+    TEST_ASSERT_NOT_NULL(b);
+    TEST_ASSERT_NOT_NULL(c);
+    TEST_ASSERT_EQUAL_DOUBLE(0.0, a->number);   // 0^5 = 0
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, b->number);   // 5^0 = 1
+    TEST_ASSERT_EQUAL_DOUBLE(1.0, c->number);   // 1^100 = 1
+
+    free_ast(root);
+}
+
+void test_eval_exponentiation_vs_multiplication_precedence(void)
+{
+    // Test that ^ has higher precedence than *: 2 * 3^2 = 2 * 9 = 18 (not (2*3)^2 = 36)
+    ASTNode *root = parse_script_from_string("let x = 2 * 3^2");
+
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("x", val);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(18.0, retrieved->number); // 2 * (3^2) = 2 * 9 = 18
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_plus_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 10\nx += 5");
+
+    // Execute let statement
+    set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
+    
+    // Execute compound assignment
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(15.0, retrieved->number); // 10 + 5 = 15
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_minus_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let y = 20\ny -= 3");
+
+    set_var("y", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("y");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(17.0, retrieved->number); // 20 - 3 = 17
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_star_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let z = 4\nz *= 2");
+
+    set_var("z", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("z");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(8.0, retrieved->number); // 4 * 2 = 8
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_slash_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let w = 16\nw /= 4");
+
+    set_var("w", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("w");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(4.0, retrieved->number); // 16 / 4 = 4
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_caret_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let p = 2\np ^= 3");
+
+    set_var("p", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("p");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(8.0, retrieved->number); // 2^3 = 8
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_complex_expression(void)
+{
+    ASTNode *root = parse_script_from_string("let a = 5\na += 2 * 3");
+
+    set_var("a", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("a");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(11.0, retrieved->number); // 5 + (2 * 3) = 11
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_bitwise_and_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 12\nx &= 10");
+
+    set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(8.0, retrieved->number); // 12 & 10 = 8 (1100 & 1010 = 1000)
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_bitwise_or_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 12\nx |= 10");
+
+    set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(14.0, retrieved->number); // 12 | 10 = 14 (1100 | 1010 = 1110)
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_left_shift_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 5\nx <<= 2");
+
+    set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(20.0, retrieved->number); // 5 << 2 = 20 (101 << 2 = 10100)
+
+    free_ast(root);
+}
+
+void test_eval_compound_assignment_right_shift_equal(void)
+{
+    ASTNode *root = parse_script_from_string("let x = 20\nx >>= 2");
+
+    set_var("x", eval_expr(root->block.statements[0]->let_stmt.expr));
+    eval_expr(root->block.statements[1]);
+
+    Value *retrieved = get_var("x");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_DOUBLE(5.0, retrieved->number); // 20 >> 2 = 5 (10100 >> 2 = 101)
+
+    free_ast(root);
+}
+
 
 int main(void)
 {
@@ -456,19 +807,42 @@ int main(void)
      RUN_TEST(test_eval_chained_arithmetic);               //9
      RUN_TEST(test_eval_operator_precedence);              //10
      RUN_TEST(test_eval_parentheses_override_precedence);  //11
-     RUN_TEST(test_eval_all_operators_combo);              //12
-     RUN_TEST(test_eval_deep_variable_chain);              //13
-     RUN_TEST(test_eval_multiple_comparisons);             //14
-     RUN_TEST(test_eval_division);                         //15      
-     RUN_TEST(test_eval_arith_and_compare_mix);            //16
-     RUN_TEST(test_eval_logical_and_or);                   //17
-     RUN_TEST(test_eval_bitwise_and);                      //18
-     RUN_TEST(test_eval_basic_functions);                  //19
-     RUN_TEST(test_eval_geometry_helpers);                 //20
-     RUN_TEST(test_eval_advanced_functions);               //21
-     RUN_TEST(test_eval_constants);                        //22
-     RUN_TEST(test_eval_manual_while_loop);                //23
-     RUN_TEST(test_eval_trig_functions);                   //24 
-     RUN_TEST(test_eval_negative_and_unary);               //25
+     RUN_TEST(test_eval_exponentiation_basic);             //12
+     RUN_TEST(test_eval_exponentiation_precedence);        //13
+     RUN_TEST(test_eval_exponentiation_right_associative); //14
+     RUN_TEST(test_eval_exponentiation_with_multiplication);//15
+     RUN_TEST(test_eval_exponentiation_complex_chain);     //16 - NEW
+     RUN_TEST(test_eval_exponentiation_four_levels);       //17 - NEW
+     RUN_TEST(test_eval_exponentiation_with_parentheses);  //18 - NEW
+     RUN_TEST(test_eval_exponentiation_mixed_operations);  //19 - NEW
+     RUN_TEST(test_eval_exponentiation_fractional_base);   //20 - NEW
+     RUN_TEST(test_eval_exponentiation_fractional_exponent);//21 - NEW
+     RUN_TEST(test_eval_exponentiation_negative_base);     //22 - NEW
+     RUN_TEST(test_eval_exponentiation_zero_and_one);      //23 - NEW
+     RUN_TEST(test_eval_exponentiation_vs_multiplication_precedence);//24 - NEW
+     RUN_TEST(test_eval_compound_assignment_plus_equal);   //25 - NEW
+     RUN_TEST(test_eval_compound_assignment_minus_equal);  //26 - NEW
+     RUN_TEST(test_eval_compound_assignment_star_equal);   //27 - NEW
+     RUN_TEST(test_eval_compound_assignment_slash_equal);  //28 - NEW
+     RUN_TEST(test_eval_compound_assignment_caret_equal);  //29 - NEW
+     RUN_TEST(test_eval_compound_assignment_complex_expression); //30 - NEW
+     RUN_TEST(test_eval_compound_assignment_bitwise_and_equal); //31 - NEW
+     RUN_TEST(test_eval_compound_assignment_bitwise_or_equal);  //32 - NEW
+     RUN_TEST(test_eval_compound_assignment_left_shift_equal);  //33 - NEW
+     RUN_TEST(test_eval_compound_assignment_right_shift_equal); //34 - NEW
+     RUN_TEST(test_eval_all_operators_combo);              //35
+     RUN_TEST(test_eval_deep_variable_chain);              //36
+     RUN_TEST(test_eval_multiple_comparisons);             //37
+     RUN_TEST(test_eval_division);                         //38      
+     RUN_TEST(test_eval_arith_and_compare_mix);            //39
+     RUN_TEST(test_eval_logical_and_or);                   //40
+     RUN_TEST(test_eval_bitwise_and);                      //41
+     RUN_TEST(test_eval_basic_functions);                  //42
+     RUN_TEST(test_eval_geometry_helpers);                 //43
+     RUN_TEST(test_eval_advanced_functions);               //44
+     RUN_TEST(test_eval_constants);                        //45
+     RUN_TEST(test_eval_manual_while_loop);                //46
+     RUN_TEST(test_eval_trig_functions);                   //47 
+     RUN_TEST(test_eval_negative_and_unary);               //48
     return UNITY_END();
 }

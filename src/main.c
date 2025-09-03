@@ -36,13 +36,16 @@
 #include "utils/report.h"
 #include "error/error.h"
 #include "utils/time_utils.h"
+#include "cli/cli.h"
 
 
 #define FATAL_ERROR(msg, ...) fatal_error(NULL, 0, 0, msg, ##__VA_ARGS__)
 
 // Declare the runtime variable lookup functions from evaluator.c
 const char* GGCODE_INPUT_FILENAME = NULL;
-void compile_file(const char* input_path, const char* output_path);
+void compile_file(const char* input_path, const char* output_path, bool quiet);
+void compile_eval(const char* code);
+void compile_all_files_cli(const CLIArgs* args);
 
 
 void make_g_gcode_filename(const char *src, char *dst, size_t dst_size) {
@@ -61,7 +64,7 @@ int ends_with_ggcode(const char *filename) {
 }
 
 
-void compile_file(const char* input_path, const char* output_path) {
+void compile_file(const char* input_path, const char* output_path, bool quiet) {
     // Initialize runtime state
     init_runtime();
     Runtime* runtime = get_runtime();
@@ -101,8 +104,10 @@ void compile_file(const char* input_path, const char* output_path) {
     // Load source
     char* source = read_file_to_buffer(input_path, &input_size_bytes);
     if (!source) {
-        report_error("Failed to read input file: %s", strerror(errno));
-        FATAL_ERROR("Failed to read input file: %s", strerror(errno));
+        if (!quiet) {
+            fprintf(stderr, "Error: Failed to read input file '%s': %s\n", input_path, strerror(errno));
+        }
+        return;
     }
 
     init_output_buffer();
@@ -144,7 +149,9 @@ long memory_kb = 0;
     if (get_output_to_file()) {
         FILE* out = fopen(output_path, "w");
         if (!out) {
-            report_error("Failed to write output file: %s", strerror(errno));
+            if (!quiet) {
+                fprintf(stderr, "Error: Failed to write output file '%s': %s\n", output_path, strerror(errno));
+            }
         } else {
             fwrite(get_output_buffer(), 1, get_output_length(), out);
             fclose(out);
@@ -155,8 +162,9 @@ long memory_kb = 0;
 
     long gcode_size_bytes = get_output_length();
 
-
-    print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb, runtime->statement_count);
+    if (!quiet) {
+        print_compilation_report(input_size_bytes, gcode_size_bytes, parse_time, emit_time, memory_kb, runtime->statement_count);
+    }
 
     free_ast(root);
     free(source);
@@ -164,12 +172,122 @@ long memory_kb = 0;
 
 
 if (has_errors()) {
-    report_error("⚠️ Compilation finished with errors");
-    print_errors();
+    if (!quiet) {
+        report_error("⚠️ Compilation finished with errors");
+        print_errors();
+    }
     clear_errors();  // Reset for next file (if compiling multiple)
 }
+}
 
+void compile_eval(const char* code) {
+    // Initialize runtime state
+    init_runtime();
+    Runtime* runtime = get_runtime();
+    reset_config_state();
+    
+    GGCODE_INPUT_FILENAME = "<eval>";
+    runtime->statement_count = 0;
+    reset_runtime_state();
+    
+    // Set runtime info for eval mode
+    strncpy(runtime->RUNTIME_FILENAME, "<eval>", sizeof(runtime->RUNTIME_FILENAME) - 1);
+    runtime->RUNTIME_FILENAME[sizeof(runtime->RUNTIME_FILENAME) - 1] = '\0';
+    strncpy(RUNTIME_FILENAME, "<eval>", sizeof(RUNTIME_FILENAME) - 1);
+    RUNTIME_FILENAME[sizeof(RUNTIME_FILENAME) - 1] = '\0';
+    
+    // Get current time
+    time_t now = time(NULL);
+    struct tm* tm_info = localtime(&now);
+    strftime(runtime->RUNTIME_TIME, sizeof(runtime->RUNTIME_TIME), "%Y-%m-%d %H:%M:%S", tm_info);
+    strftime(RUNTIME_TIME, sizeof(RUNTIME_TIME), "%Y-%m-%d %H:%M:%S", tm_info);
+    
+    init_output_buffer();
+    
+    // Parse and emit
+    ASTNode* root = parse_script_from_string(code);
+    if (root) {
+        emit_gcode(root);
+        
+        // Output directly to terminal (no file)
+        printf("%s", get_output_buffer());
+        
+        free_ast(root);
+    }
+    
+    if (has_errors()) {
+        fprintf(stderr, "\nErrors during evaluation:\n");
+        print_errors();
+        clear_errors();
+    }
+    
+    free_output_buffer();
+}
 
+void compile_all_files_cli(const CLIArgs* args) {
+#ifdef _WIN32
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind = FindFirstFile("*.ggcode", &findFileData);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        fprintf(stderr, "No .ggcode files found in current directory\n");
+        return;
+    }
+    do {
+        if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            char* output_path = get_smart_output_path(findFileData.cFileName, args);
+            if (!args->quiet) {
+                printf("\033[38;5;208mGGCODE Compiling\033[0m \033[1m%s\033[0m → \033[1;32m%s\033[0m\n", 
+                       findFileData.cFileName, output_path);
+            }
+            compile_file(findFileData.cFileName, output_path, args->quiet);
+            free(output_path);
+        }
+    } while (FindNextFile(hFind, &findFileData) != 0);
+    FindClose(hFind);
+#else
+    DIR *dir = opendir(".");
+    if (!dir) {
+        fprintf(stderr, "Error: Cannot open current directory: %s\n", strerror(errno));
+        return;
+    }
+    
+    struct dirent *entry;
+    int file_count = 0;
+    
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG && ends_with_ggcode(entry->d_name)) {
+            char* output_path = get_smart_output_path(entry->d_name, args);
+            
+            if (!args->quiet) {
+                printf("\033[38;5;208mGGCODE Compiling\033[0m \033[1m%s\033[0m → \033[1;32m%s\033[0m\n", 
+                       entry->d_name, output_path);
+            }
+            
+            pid_t pid = fork();
+            if (pid == 0) {
+                // Child process
+                compile_file(entry->d_name, output_path, args->quiet);
+                exit(0);
+            } else if (pid > 0) {
+                // Parent process - wait for child
+                int status;
+                waitpid(pid, &status, 0);
+                file_count++;
+            } else {
+                fprintf(stderr, "Error: fork failed: %s\n", strerror(errno));
+            }
+            
+            free(output_path);
+        }
+    }
+    closedir(dir);
+    
+    if (file_count == 0) {
+        fprintf(stderr, "No .ggcode files found in current directory\n");
+    } else if (!args->quiet) {
+        printf("\nCompiled %d file%s\n", file_count, file_count == 1 ? "" : "s");
+    }
+#endif
 }
 
 
@@ -252,7 +370,7 @@ printf("\033[38;5;208m\nGGCODE Compiling\033[0m \033[1m%s\033[0m → \033[1;32m%
 pid_t pid = fork();
 if (pid == 0) {
     // 👶 Child process
-            compile_file(entry->d_name, out_name);
+            compile_file(entry->d_name, out_name, false);
     exit(0);  // Exit cleanly so parent doesn't run more compiles
 } else if (pid > 0) {
     // 👴 Parent process — wait for the child
@@ -279,20 +397,72 @@ if (pid == 0) {
 
 
 
-int main() {
-
-
-    const char *input_file = get_input_file();
-
-if (input_file && strlen(input_file) > 0) {
-    char out_name[272];
-    make_g_gcode_filename(input_file, out_name, sizeof(out_name));
-            compile_file(input_file, out_name);
-} else {
-            compile_all_gg_files();
-}
-
-
-
-    return 0;
+int main(int argc, char* argv[]) {
+    // Parse command line arguments
+    CLIArgs* args = parse_arguments(argc, argv);
+    if (!args) {
+        return 1;
+    }
+    
+    // Handle help and version
+    if (args->show_help) {
+        print_help();
+        free_cli_args(args);
+        return 0;
+    }
+    
+    if (args->show_version) {
+        print_version();
+        free_cli_args(args);
+        return 0;
+    }
+    
+    // Handle eval mode
+    if (args->eval_mode) {
+        if (!args->eval_code) {
+            fprintf(stderr, "Error: No code provided for evaluation\n");
+            free_cli_args(args);
+            return 1;
+        }
+        compile_eval(args->eval_code);
+        free_cli_args(args);
+        return 0;
+    }
+    
+    // Handle compile all mode
+    if (args->compile_all) {
+        compile_all_files_cli(args);
+        free_cli_args(args);
+        return 0;
+    }
+    
+    // Handle specific input files
+    if (args->input_count > 0) {
+        for (int i = 0; i < args->input_count; i++) {
+            char* output_path = get_smart_output_path(args->input_files[i], args);
+            
+            if (!args->quiet && args->input_count > 1) {
+                printf("\033[38;5;208mGGCODE Compiling\033[0m \033[1m%s\033[0m → \033[1;32m%s\033[0m\n", 
+                       args->input_files[i], output_path);
+            }
+            
+            compile_file(args->input_files[i], output_path, args->quiet);
+            free(output_path);
+        }
+        free_cli_args(args);
+        return 0;
+    }
+    
+    // Default behavior: interactive file selection
+    if (argc == 1) {
+        interactive_file_selection(args);
+        free_cli_args(args);
+        return 0;
+    }
+    
+    // If we get here, show help
+    fprintf(stderr, "Error: No input files specified\n");
+    fprintf(stderr, "Use 'ggcode --help' for usage information\n");
+    free_cli_args(args);
+    return 1;
 }

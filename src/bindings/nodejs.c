@@ -16,24 +16,26 @@
 const char* compile_ggcode_from_string(const char* source_code) {
     clock_t start_time = clock();
     if (!source_code) {
-        return strdup("; ERROR: NULL input\n");
+        return strdup("ERROR: NULL input\n");
     }
     size_t input_len = strlen(source_code);
     if (input_len == 0) {
         return strdup("; EMPTY INPUT\n");
     }
     if (input_len > MAX_INPUT_SIZE) {
-        return strdup("; ERROR: Input too large (max 1MB)\n");
+        return strdup("ERROR: Input too large (max 1MB)\n");
     }
     init_runtime();
     Runtime* runtime = get_runtime();
     runtime->statement_count = 0;
     init_output_buffer();
+    clear_errors(); // Clear any previous errors
     ASTNode* root = parse_script_from_string(source_code);
     if (!root) {
+        const char* error_msg = get_error_messages();
         reset_runtime_state();
         free_output_buffer();
-        return strdup("; ERROR: Parsing failed\n");
+        return error_msg;
     }
     char ggcode_file_name[64];
     snprintf(ggcode_file_name, sizeof(ggcode_file_name), "nodejs.ggcode");
@@ -52,14 +54,13 @@ const char* compile_ggcode_from_string(const char* source_code) {
     long output_size = get_output_length();
     //fprintf(stderr, "[GGCODE FFI] Allocated output at %p (%ld bytes)\n", (void*)output, output_size);
     if (has_errors()) {
-        report_error("[NodeJS] Compilation failed or errors detected");
-        print_errors();
+        const char* error_msg = get_error_messages();
         clear_errors();
         free((void*)output);
         reset_runtime_state();
         free_ast(root);
         free_output_buffer();
-        return strdup("; ERROR: Compilation failed\n");
+        return error_msg;
     }
     clock_t end_time = clock();
     double elapsed = ((double)(end_time - start_time)) / CLOCKS_PER_SEC * 1000.0;

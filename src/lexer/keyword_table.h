@@ -19,12 +19,25 @@
     X("<=", TOKEN_LESS_EQUAL, "<=", 0) \
     X(">=", TOKEN_GREATER_EQUAL, ">=", 0) \
     X("&&", TOKEN_AND, "&&", 0) \
+    X("&=", TOKEN_AMPERSAND_EQUAL, "&=", 0) \
     X("&", TOKEN_AMPERSAND, "&", '&') \
     X("||", TOKEN_OR, "||", 0) \
+    X("|=", TOKEN_PIPE_EQUAL, "|=", 0) \
+    X("<<=", TOKEN_LSHIFT_EQUAL, "<<=", 0) \
+    X(">>=", TOKEN_RSHIFT_EQUAL, ">>=", 0) \
+    X("+=", TOKEN_PLUS_EQUAL, "+=", 0) \
+    X("-=", TOKEN_MINUS_EQUAL, "-=", 0) \
+    X("*=", TOKEN_STAR_EQUAL, "*=", 0) \
+    X("/=", TOKEN_SLASH_EQUAL, "/=", 0) \
+    X("^=", TOKEN_CARET_EQUAL, "^=", 0) \
+    X("<<", TOKEN_LSHIFT, "<<", 0) \
+    X(">>", TOKEN_RSHIFT, ">>", 0) \
+    X("|", TOKEN_PIPE, "|", '|') \
     X("+", TOKEN_PLUS, "+", '+') \
     X("-", TOKEN_MINUS, "-", '-') \
     X("*", TOKEN_STAR, "*", '*') \
     X("/", TOKEN_SLASH, "/", '/') \
+    X("^", TOKEN_CARET, "^", '^') \
     X("=", TOKEN_EQUAL, "=", '=') \
     X("!", TOKEN_BANG, "!", '!') \
     X("<", TOKEN_LESS, "<", '<') \
@@ -38,7 +51,9 @@
     X("[", TOKEN_LBRACKET, "[", '[') \
     X("]", TOKEN_RBRACKET, "]", ']') \
     X(",", TOKEN_COMMA, ",", ',') \
-    X(";", TOKEN_SEMICOLON, ";", ';')
+    X(";", TOKEN_SEMICOLON, ";", ';') \
+    X("?", TOKEN_QUESTION, "?", '?') \
+    X(":", TOKEN_COLON, ":", ':')
 
 #define TOKEN_DOT_LIST \
     X("...", TOKEN_DOTDOTDOT, "...", 0) \

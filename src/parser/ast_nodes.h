@@ -21,6 +21,7 @@ typedef enum
     AST_NOP,
     AST_LET,
     AST_ASSIGN,
+    AST_COMPOUND_ASSIGN,
     AST_VAR,
     AST_ARRAY_LITERAL, 
     AST_INDEX,
@@ -31,6 +32,7 @@ typedef enum
     AST_RETURN,
     AST_NUMBER,
     AST_BINARY,
+    AST_TERNARY,
     AST_GCODE,
     AST_WHILE,
     AST_FOR,
@@ -64,6 +66,12 @@ struct {
     char *name;
     ASTNode *expr;
 } assign_stmt;
+
+struct {
+    char *name;
+    Token_Type op;  // TOKEN_PLUS_EQUAL, TOKEN_MINUS_EQUAL, etc.
+    ASTNode *expr;
+} compound_assign;
 
 
 struct {
@@ -189,6 +197,13 @@ struct {
             ASTNode *then_branch;
             ASTNode *else_branch; // NULL if no else
         } if_stmt;
+
+        struct
+        { // ternary expression: condition ? true_expr : false_expr
+            ASTNode *condition;
+            ASTNode *true_expr;
+            ASTNode *false_expr;
+        } ternary_expr;
     };
 };
 
