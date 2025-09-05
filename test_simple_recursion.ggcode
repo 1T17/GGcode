@@ -1,0 +1,14 @@
+// Simple recursion test
+
+function countdown(n) {
+    note {Countdown: n=[n]}
+    if n <= 0 {
+        note {Base case reached}
+        return 0
+    }
+    return countdown(n - 1)
+}
+
+note {Testing simple recursion}
+let result = countdown(3)
+note {Result: [result]}

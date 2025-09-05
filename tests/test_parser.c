@@ -56,6 +56,10 @@ void print_ast_node(ASTNode *node, int indent)
         printf("Number: %g\n", node->number.value);
         break;
 
+    case AST_STRING:
+        printf("String: \"%s\"\n", node->string_literal.value);
+        break;
+
     case AST_VAR:
         printf("Var: %s\n", node->var.name);
         break;
@@ -171,6 +175,16 @@ void print_ast_if_enabled(ASTResult *result, const char *label)
 
 void setUp(void) {}
 void tearDown(void) {}
+
+// String literal test function declarations
+void test_parse_basic_string_literal(void);
+void test_parse_empty_string_literal(void);
+void test_parse_string_with_numbers(void);
+void test_parse_string_with_escape_sequences(void);
+void test_parse_string_with_newline_escape(void);
+void test_parse_string_with_tab_escape(void);
+void test_parse_string_with_backslash_escape(void);
+void test_parse_multiple_string_literals(void);
 
 void test_parse_negative_number(void)
 {
@@ -1039,5 +1053,176 @@ int main(void)
     RUN_TEST(test_nested_array_assignment_inside_loop);      // 32
     RUN_TEST(test_array_assign_index);                       // 33
     RUN_TEST(test_array_assignment_should_parse);            // 34
+    RUN_TEST(test_parse_basic_string_literal);               // 35
+    RUN_TEST(test_parse_empty_string_literal);               // 36
+    RUN_TEST(test_parse_string_with_numbers);                // 37
+    RUN_TEST(test_parse_string_with_escape_sequences);       // 38
+    RUN_TEST(test_parse_string_with_newline_escape);         // 39
+    RUN_TEST(test_parse_string_with_tab_escape);             // 40
+    RUN_TEST(test_parse_string_with_backslash_escape);       // 41
+    RUN_TEST(test_parse_multiple_string_literals);           // 42
     return UNITY_END();
+}
+
+// String literal parsing tests
+void test_parse_basic_string_literal(void)
+{
+    const char *source = "let name = \"hello world\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_basic_string_literal");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(1, result.root->block.count);
+
+    ASTNode *let_stmt = result.root->block.statements[0];
+    TEST_ASSERT_EQUAL(AST_LET, let_stmt->type);
+    TEST_ASSERT_EQUAL_STRING("name", let_stmt->let_stmt.name);
+
+    ASTNode *string_expr = let_stmt->let_stmt.expr;
+    TEST_ASSERT_EQUAL(AST_STRING, string_expr->type);
+    TEST_ASSERT_EQUAL_STRING("hello world", string_expr->string_literal.value);
+
+    free_ast_result(&result);
+}
+
+void test_parse_empty_string_literal(void)
+{
+    const char *source = "let empty = \"\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_empty_string_literal");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    ASTNode *let_stmt = result.root->block.statements[0];
+    ASTNode *string_expr = let_stmt->let_stmt.expr;
+    
+    TEST_ASSERT_EQUAL(AST_STRING, string_expr->type);
+    TEST_ASSERT_EQUAL_STRING("", string_expr->string_literal.value);
+
+    free_ast_result(&result);
+}
+
+void test_parse_string_with_numbers(void)
+{
+    const char *source = "let text = \"text with 123 numbers\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_string_with_numbers");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    ASTNode *let_stmt = result.root->block.statements[0];
+    ASTNode *string_expr = let_stmt->let_stmt.expr;
+    
+    TEST_ASSERT_EQUAL(AST_STRING, string_expr->type);
+    TEST_ASSERT_EQUAL_STRING("text with 123 numbers", string_expr->string_literal.value);
+
+    free_ast_result(&result);
+}
+
+void test_parse_string_with_escape_sequences(void)
+{
+    const char *source = "let quote = \"He said \\\"hello\\\"\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_string_with_escape_sequences");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    ASTNode *let_stmt = result.root->block.statements[0];
+    ASTNode *string_expr = let_stmt->let_stmt.expr;
+    
+    TEST_ASSERT_EQUAL(AST_STRING, string_expr->type);
+    TEST_ASSERT_EQUAL_STRING("He said \"hello\"", string_expr->string_literal.value);
+
+    free_ast_result(&result);
+}
+
+void test_parse_string_with_newline_escape(void)
+{
+    const char *source = "let newline = \"line1\\nline2\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_string_with_newline_escape");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    ASTNode *let_stmt = result.root->block.statements[0];
+    ASTNode *string_expr = let_stmt->let_stmt.expr;
+    
+    TEST_ASSERT_EQUAL(AST_STRING, string_expr->type);
+    TEST_ASSERT_EQUAL_STRING("line1\nline2", string_expr->string_literal.value);
+
+    free_ast_result(&result);
+}
+
+void test_parse_string_with_tab_escape(void)
+{
+    const char *source = "let tab = \"col1\\tcol2\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_string_with_tab_escape");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    ASTNode *let_stmt = result.root->block.statements[0];
+    ASTNode *string_expr = let_stmt->let_stmt.expr;
+    
+    TEST_ASSERT_EQUAL(AST_STRING, string_expr->type);
+    TEST_ASSERT_EQUAL_STRING("col1\tcol2", string_expr->string_literal.value);
+
+    free_ast_result(&result);
+}
+
+void test_parse_string_with_backslash_escape(void)
+{
+    const char *source = "let backslash = \"path\\\\file\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_string_with_backslash_escape");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    ASTNode *let_stmt = result.root->block.statements[0];
+    ASTNode *string_expr = let_stmt->let_stmt.expr;
+    
+    TEST_ASSERT_EQUAL(AST_STRING, string_expr->type);
+    TEST_ASSERT_EQUAL_STRING("path\\file", string_expr->string_literal.value);
+
+    free_ast_result(&result);
+}
+
+void test_parse_multiple_string_literals(void)
+{
+    const char *source = 
+        "let first = \"hello\"\n"
+        "let second = \"world\"\n"
+        "let third = \"test\"";
+    ASTResult result = parse_source(source);
+
+    print_ast_if_enabled(&result, "test_parse_multiple_string_literals");
+
+    TEST_ASSERT_NOT_NULL(result.root);
+    TEST_ASSERT_EQUAL(AST_BLOCK, result.root->type);
+    TEST_ASSERT_EQUAL(3, result.root->block.count);
+
+    // Check first string
+    ASTNode *let1 = result.root->block.statements[0];
+    TEST_ASSERT_EQUAL(AST_LET, let1->type);
+    TEST_ASSERT_EQUAL_STRING("first", let1->let_stmt.name);
+    TEST_ASSERT_EQUAL(AST_STRING, let1->let_stmt.expr->type);
+    TEST_ASSERT_EQUAL_STRING("hello", let1->let_stmt.expr->string_literal.value);
+
+    // Check second string
+    ASTNode *let2 = result.root->block.statements[1];
+    TEST_ASSERT_EQUAL(AST_LET, let2->type);
+    TEST_ASSERT_EQUAL_STRING("second", let2->let_stmt.name);
+    TEST_ASSERT_EQUAL(AST_STRING, let2->let_stmt.expr->type);
+    TEST_ASSERT_EQUAL_STRING("world", let2->let_stmt.expr->string_literal.value);
+
+    // Check third string
+    ASTNode *let3 = result.root->block.statements[2];
+    TEST_ASSERT_EQUAL(AST_LET, let3->type);
+    TEST_ASSERT_EQUAL_STRING("third", let3->let_stmt.name);
+    TEST_ASSERT_EQUAL(AST_STRING, let3->let_stmt.expr->type);
+    TEST_ASSERT_EQUAL_STRING("test", let3->let_stmt.expr->string_literal.value);
+
+    free_ast_result(&result);
 }

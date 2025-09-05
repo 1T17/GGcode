@@ -1,0 +1,9 @@
+[2025-09-04 23:01:55] Starting crash safety test run: crash_test_20250904_230155
+[2025-09-04 23:01:55] Configuration: Priority=1, Timeout=60s, Valgrind=false
+[2025-09-04 23:01:55] Build completed successfully
+[2025-09-04 23:01:55] Starting test category: memory_safety
+[2025-09-04 23:01:55] Completed test category: memory_safety (result: 0)
+[2025-09-04 23:01:55] Starting test category: input_validation
+[2025-09-04 23:01:55] Completed test category: input_validation (result: 0)
+[2025-09-04 23:01:55] Report generated successfully
+[2025-09-04 23:01:55] Test run completed with result: 0

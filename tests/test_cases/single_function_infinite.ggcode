@@ -1,0 +1,8 @@
+// Single function infinite recursion test
+
+function infinite() { 
+    return infinite() 
+}
+
+// This should be detected and handled gracefully
+let result = infinite()

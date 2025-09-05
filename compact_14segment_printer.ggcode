@@ -1,0 +1,372 @@
+// Compact 14-Segment Display Text Printer
+// Optimized for common characters with clean segment patterns
+// Old school digital display aesthetic
+
+note {=== Compact 14-Segment Text Printer ===}
+note {Authentic digital display patterns}
+
+let safe_z = 2
+
+// Main text printing function
+function print_text(x, y, text, size, spacing) {
+    note {Printing '[text]' at X[x] Y[y]}
+    
+    let current_x = x
+    let w = size          // character width
+    let h = size * 1.5    // character height
+    
+    for char in text {
+        note {Drawing '[char]' at X[current_x]}
+        
+        // Calculate segment coordinates
+        let left_x = current_x - w/2    // left edge
+        let right_x = current_x + w/2    // right edge
+        let center_x = current_x          // center
+        let top_y = y + h/2           // top
+        let mid_y = y                 // middle
+        let bot_y = y - h/2           // bottom
+        let q1_y = y + h/4          // quarter top
+        let q3_y = y - h/4          // quarter bottom
+        
+        // Character patterns using 14-segment layout
+        if char == "A" {
+            seg_a(left_x, right_x, top_y)      // top horizontal
+            seg_f(left_x, top_y, q1_y)     // left upper vertical
+            seg_b(right_x, top_y, q1_y)     // right upper vertical
+            seg_g(left_x, right_x, mid_y)      // middle horizontal
+            seg_e(left_x, q3_y, bot_y)     // left lower vertical
+            seg_c(right_x, q3_y, bot_y)     // right lower vertical
+        }
+        
+        if char == "B" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_g(L, R, M)      // middle horizontal
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+            seg_b(R, T, M)      // right upper vertical
+            seg_c(R, M, B)      // right lower vertical
+        }
+        
+        if char == "C" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+        }
+        
+        if char == "D" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+            seg_e(L, Q3, B)     // left lower vertical
+        }
+        
+        if char == "E" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_g(L, C, M)      // middle horizontal (left half)
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+        }
+        
+        if char == "F" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_g(L, C, M)      // middle horizontal (left half)
+            seg_e(L, Q3, B)     // left lower vertical
+        }
+        
+        if char == "G" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_g(C, R, M)      // middle horizontal (right half)
+            seg_c(R, Q3, B)     // right lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+            seg_e(L, Q3, B)     // left lower vertical
+        }
+        
+        if char == "H" {
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_g(L, R, M)      // middle horizontal
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "I" {
+            seg_a(L, R, T)      // top horizontal
+            seg_j(C, T, Q1)     // center upper vertical
+            seg_i(C, Q3, B)     // center lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+        }
+        
+        if char == "J" {
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+            seg_d(L, C, B)      // bottom horizontal (left half)
+            seg_e(L, Q3, B)     // left lower vertical
+        }
+        
+        if char == "L" {
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+        }
+        
+        if char == "M" {
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_k(L, C, T)      // diagonal upper left
+            seg_h(C, R, T)      // diagonal upper right
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "N" {
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_m(L, R, M)      // diagonal across middle
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "O" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "P" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_g(L, R, M)      // middle horizontal
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_b(R, T, M)      // right upper vertical
+        }
+        
+        if char == "R" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_g(L, R, M)      // middle horizontal
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_b(R, T, M)      // right upper vertical
+            seg_l(C, R, Q3)     // diagonal lower right
+        }
+        
+        if char == "S" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, M)      // left upper vertical
+            seg_g(L, R, M)      // middle horizontal
+            seg_c(R, M, B)      // right lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+        }
+        
+        if char == "T" {
+            seg_a(L, R, T)      // top horizontal
+            seg_j(C, T, Q1)     // center upper vertical
+            seg_i(C, Q3, B)     // center lower vertical
+        }
+        
+        if char == "U" {
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "V" {
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_n(L, C, Q3)     // diagonal lower left
+            seg_l(C, R, Q3)     // diagonal lower right
+            seg_b(R, T, Q1)     // right upper vertical
+        }
+        
+        if char == "W" {
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_n(L, C, B)      // diagonal lower left
+            seg_l(C, R, B)      // diagonal lower right
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "Y" {
+            seg_k(L, C, T)      // diagonal upper left
+            seg_h(C, R, T)      // diagonal upper right
+            seg_i(C, Q3, B)     // center lower vertical
+        }
+        
+        if char == "0" {
+            seg_a(L, R, T)      // top horizontal
+            seg_f(L, T, Q1)     // left upper vertical
+            seg_e(L, Q3, B)     // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "1" {
+            seg_b(R, T, Q1)     // right upper vertical
+            seg_c(R, Q3, B)     // right lower vertical
+        }
+        
+        if char == "2" {
+            seg_a(L, R, T)      // top horizontal
+            seg_b(R, T, M)      // right upper vertical
+            seg_g(L, R, M)      // middle horizontal
+            seg_e(L, M, B)      // left lower vertical
+            seg_d(L, R, B)      // bottom horizontal
+        }
+        
+        if char == " " {
+            note {Space character}
+        }
+        
+        // Move to next character position
+        current_x = current_x + w + spacing
+    }
+    
+    return 1
+}
+
+// Segment drawing functions - optimized for 14-segment display
+function seg_a(x1, x2, y) {
+    // Top horizontal
+    G0 Z[safe_z] X[x1] Y[y]
+    G0 Z[0]
+    G1 X[x2] Y[y]
+    G0 Z[safe_z]
+}
+
+function seg_d(x1, x2, y) {
+    // Bottom horizontal
+    G0 Z[safe_z] X[x1] Y[y]
+    G0 Z[0]
+    G1 X[x2] Y[y]
+    G0 Z[safe_z]
+}
+
+function seg_g(x1, x2, y) {
+    // Middle horizontal
+    G0 Z[safe_z] X[x1] Y[y]
+    G0 Z[0]
+    G1 X[x2] Y[y]
+    G0 Z[safe_z]
+}
+
+function seg_f(x, y1, y2) {
+    // Left upper vertical
+    G0 Z[safe_z] X[x] Y[y1]
+    G0 Z[0]
+    G1 X[x] Y[y2]
+    G0 Z[safe_z]
+}
+
+function seg_e(x, y1, y2) {
+    // Left lower vertical
+    G0 Z[safe_z] X[x] Y[y1]
+    G0 Z[0]
+    G1 X[x] Y[y2]
+    G0 Z[safe_z]
+}
+
+function seg_b(x, y1, y2) {
+    // Right upper vertical
+    G0 Z[safe_z] X[x] Y[y1]
+    G0 Z[0]
+    G1 X[x] Y[y2]
+    G0 Z[safe_z]
+}
+
+function seg_c(x, y1, y2) {
+    // Right lower vertical
+    G0 Z[safe_z] X[x] Y[y1]
+    G0 Z[0]
+    G1 X[x] Y[y2]
+    G0 Z[safe_z]
+}
+
+function seg_j(x, y1, y2) {
+    // Center upper vertical
+    G0 Z[safe_z] X[x] Y[y1]
+    G0 Z[0]
+    G1 X[x] Y[y2]
+    G0 Z[safe_z]
+}
+
+function seg_i(x, y1, y2) {
+    // Center lower vertical
+    G0 Z[safe_z] X[x] Y[y1]
+    G0 Z[0]
+    G1 X[x] Y[y2]
+    G0 Z[safe_z]
+}
+
+function seg_k(x1, x2, y) {
+    // Diagonal upper left
+    G0 Z[safe_z] X[x1] Y[y]
+    G0 Z[0]
+    G1 X[x2] Y[y - (x2-x1)*0.5]
+    G0 Z[safe_z]
+}
+
+function seg_h(x1, x2, y) {
+    // Diagonal upper right
+    G0 Z[safe_z] X[x1] Y[y - (x2-x1)*0.5]
+    G0 Z[0]
+    G1 X[x2] Y[y]
+    G0 Z[safe_z]
+}
+
+function seg_n(x1, x2, y) {
+    // Diagonal lower left
+    G0 Z[safe_z] X[x1] Y[y]
+    G0 Z[0]
+    G1 X[x2] Y[y + (x2-x1)*0.5]
+    G0 Z[safe_z]
+}
+
+function seg_l(x1, x2, y) {
+    // Diagonal lower right
+    G0 Z[safe_z] X[x1] Y[y + (x2-x1)*0.5]
+    G0 Z[0]
+    G1 X[x2] Y[y]
+    G0 Z[safe_z]
+}
+
+function seg_m(x1, x2, y) {
+    // Diagonal across middle
+    G0 Z[safe_z] X[x1] Y[y + (x2-x1)*0.25]
+    G0 Z[0]
+    G1 X[x2] Y[y - (x2-x1)*0.25]
+    G0 Z[safe_z]
+}
+
+// DEMONSTRATION
+note {=== 14-Segment Display Demo ===}
+
+// Test alphabet
+print_text(0, 40, "ABCDEFGH", 6, 1)
+print_text(0, 25, "IJKLMNOP", 6, 1)
+print_text(0, 10, "RSTUVWXY", 6, 1)
+
+// Test numbers
+print_text(0, -10, "0123456789", 6, 1)
+
+// Test words
+print_text(0, -30, "HELLO WORLD", 8, 2)
+print_text(0, -50, "GGCODE ROCKS", 7, 1)
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== 14-Segment Display Complete ===}
+note {Old school digital display aesthetic}
+note {Full alphabet and numeric support}

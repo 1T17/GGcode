@@ -31,6 +31,7 @@ typedef enum
     AST_EXPR_STMT, // <-- ADD THIS
     AST_RETURN,
     AST_NUMBER,
+    AST_STRING,
     AST_BINARY,
     AST_TERNARY,
     AST_GCODE,
@@ -91,10 +92,13 @@ struct {
 
 struct {
     char *var;
+    char *index_var;  // For (char, index) syntax - optional
     ASTNode *from;
     ASTNode *to;
     ASTNode *step;
+    ASTNode *iterable; // For string iteration: for char in string_var
     int exclusive;
+    int is_string_iteration; // Flag to distinguish string vs numeric iteration
     ASTNode *body;
 } for_stmt;
 
@@ -154,6 +158,11 @@ struct {
         } number;
 
         struct
+        { // string literal constant
+            char *value;
+        } string_literal;
+
+        struct
         { // array-style access: e.g., X[i]
             ASTNode *array;
             ASTNode *index;
@@ -209,6 +218,7 @@ struct {
 
 // Entry point
 ASTNode *parse_script();
+ASTNode *parse_expression_from_string(const char *expr_text);
 void free_ast(ASTNode *node);
 
 #endif // AST_NODES_H

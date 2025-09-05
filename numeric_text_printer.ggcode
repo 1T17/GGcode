@@ -1,0 +1,199 @@
+// Numeric Text Printer - Works around string parameter limitation
+// Uses character codes instead of strings
+
+note {=== Numeric Text Printer ===}
+note {Character codes: A=65, B=66, C=67, ... H=72, E=69, L=76, O=79}
+note {Space=32, 0=48, 1=49, 2=50, etc.}
+
+let safe_z = 2
+
+// Function to draw a single character by numeric code
+function draw_char(x_pos, y_pos, char_code, size) {
+    note {Drawing character code [char_code] at X[x_pos] Y[y_pos]}
+    
+    let width = size
+    let height = size * 1.5
+    
+    // A = 65
+    if char_code == 65 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+        G0 X[x_pos - width/4] Y[y_pos]
+        G0 Z[0]
+        G1 X[x_pos + width/4] Y[y_pos]
+        G0 Z[safe_z]
+    }
+    
+    // B = 66
+    if char_code == 66 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos]
+        G1 X[x_pos - width/2] Y[y_pos]
+        G1 X[x_pos + width/2] Y[y_pos]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G1 X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+    }
+    
+    // C = 67
+    if char_code == 67 {
+        G0 Z[safe_z] X[x_pos + width/2] Y[y_pos + height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G1 X[x_pos - width/2] Y[y_pos - height/2]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+    }
+    
+    // E = 69
+    if char_code == 69 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos + height/2]
+        G0 Z[safe_z]
+        G0 X[x_pos - width/2] Y[y_pos]
+        G0 Z[0]
+        G1 X[x_pos + width/2] Y[y_pos]
+        G0 Z[safe_z]
+        G0 X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+    }
+    
+    // G = 71
+    if char_code == 71 {
+        G0 Z[safe_z] X[x_pos + width/2] Y[y_pos + height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G1 X[x_pos - width/2] Y[y_pos - height/2]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G1 X[x_pos + width/2] Y[y_pos]
+        G1 X[x_pos] Y[y_pos]
+        G0 Z[safe_z]
+    }
+    
+    // H = 72
+    if char_code == 72 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G0 Z[safe_z]
+        G0 X[x_pos + width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos + width/2] Y[y_pos + height/2]
+        G0 Z[safe_z]
+        G0 X[x_pos - width/2] Y[y_pos]
+        G0 Z[0]
+        G1 X[x_pos + width/2] Y[y_pos]
+        G0 Z[safe_z]
+    }
+    
+    // L = 76
+    if char_code == 76 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G0 Z[safe_z]
+        G0 X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+    }
+    
+    // O = 79
+    if char_code == 79 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G1 X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+    }
+    
+    // 0 = 48
+    if char_code == 48 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos - width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G1 X[x_pos - width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+    }
+    
+    // 1 = 49
+    if char_code == 49 {
+        G0 Z[safe_z] X[x_pos] Y[y_pos - height/2]
+        G0 Z[0]
+        G1 X[x_pos] Y[y_pos + height/2]
+        G0 Z[safe_z]
+    }
+    
+    // 2 = 50
+    if char_code == 50 {
+        G0 Z[safe_z] X[x_pos - width/2] Y[y_pos + height/2]
+        G0 Z[0]
+        G1 X[x_pos + width/2] Y[y_pos + height/2]
+        G1 X[x_pos + width/2] Y[y_pos]
+        G1 X[x_pos - width/2] Y[y_pos]
+        G1 X[x_pos - width/2] Y[y_pos - height/2]
+        G1 X[x_pos + width/2] Y[y_pos - height/2]
+        G0 Z[safe_z]
+    }
+    
+    // Space = 32 (no drawing)
+    if char_code == 32 {
+        note {Space character}
+    }
+}
+
+// Helper function to print multiple characters
+function print_word(start_x, start_y, size, spacing) {
+    note {=== Printing HELLO ===}
+    draw_char(start_x, start_y, 72, size)                    // H
+    draw_char(start_x + size + spacing, start_y, 69, size)   // E
+    draw_char(start_x + 2*(size + spacing), start_y, 76, size) // L
+    draw_char(start_x + 3*(size + spacing), start_y, 76, size) // L
+    draw_char(start_x + 4*(size + spacing), start_y, 79, size) // O
+}
+
+// Usage examples
+note {=== Usage Examples ===}
+
+// Print "HELLO" at origin
+print_word(0, 0, 8, 2)
+
+// Print "HELLO" at different position and size
+print_word(0, -30, 6, 1.5)
+
+// Individual characters
+note {=== Individual Characters ===}
+draw_char(0, -50, 71, 10)  // G
+draw_char(15, -50, 71, 10) // G
+draw_char(30, -50, 67, 10) // C
+draw_char(45, -50, 79, 10) // O
+draw_char(60, -50, 68, 10) // D (if we had it)
+
+// Numbers
+note {=== Numbers ===}
+draw_char(0, -70, 50, 8)   // 2
+draw_char(12, -70, 48, 8)  // 0
+draw_char(24, -70, 50, 8)  // 2
+draw_char(36, -70, 52, 8)  // 4
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Numeric Text Printer Complete ===}
+note {Usage: draw_char(x, y, ascii_code, size)}
+note {Common codes: A=65, B=66, C=67, E=69, G=71, H=72, L=76, O=79}
+note {Numbers: 0=48, 1=49, 2=50, Space=32}

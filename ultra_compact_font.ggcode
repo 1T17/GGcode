@@ -1,0 +1,174 @@
+// ULTRA-COMPACT FONT SYSTEM
+// Complete A-Z, 0-9 in minimal code using lookup tables
+// Based on classic computer graphics algorithms
+
+note {=== Ultra-Compact Font System ===}
+note {Complete alphabet + numbers in minimal code}
+
+let safe_z = 2
+
+// CORE ALGORITHM: 3x5 Matrix Font (Smallest readable font)
+// Each character fits in 3x5 grid = 15 bits total
+// Can encode in single integer per character!
+
+function draw_3x5_char(x, y, char, pixel_size) {
+    note {3x5 Font: '[char]' size [pixel_size]}
+    
+    let pattern = 0  // 15-bit pattern for character
+    
+    // ULTRA-COMPACT ENCODING TABLE
+    // Each number represents 15-bit pattern (3 columns × 5 rows)
+    // Read top-to-bottom, left-to-right: bit 14=top-left, bit 0=bottom-right
+    
+    // LETTERS A-Z (complete alphabet!)
+    if char == "A" { pattern = 11245 }  // .█. █.█ ███ █.█ █.█ (0b010101111101101)
+    if char == "B" { pattern = 0b110101110101110 }  // ██. █.█ ██. █.█ ██.
+    if char == "C" { pattern = 0b011100100100011 }  // .██ █.. █.. █.. .██
+    if char == "D" { pattern = 0b110101101101110 }  // ██. █.█ █.█ █.█ ██.
+    if char == "E" { pattern = 0b111100110100111 }  // ███ █.. ██. █.. ███
+    if char == "F" { pattern = 0b111100110100100 }  // ███ █.. ██. █.. █..
+    if char == "G" { pattern = 0b011100101101011 }  // .██ █.. █.█ █.█ .██
+    if char == "H" { pattern = 0b101101111101101 }  // █.█ █.█ ███ █.█ █.█
+    if char == "I" { pattern = 0b111010010010111 }  // ███ .█. .█. .█. ███
+    if char == "J" { pattern = 0b111001001101010 }  // ███ ..█ ..█ █.█ .█.
+    if char == "K" { pattern = 0b101110100110101 }  // █.█ ██. █.. ██. █.█
+    if char == "L" { pattern = 0b100100100100111 }  // █.. █.. █.. █.. ███
+    if char == "M" { pattern = 0b101111101101101 }  // █.█ ███ █.█ █.█ █.█
+    if char == "N" { pattern = 0b101111101101101 }  // █.█ ███ █.█ █.█ █.█
+    if char == "O" { pattern = 0b010101101101010 }  // .█. █.█ █.█ █.█ .█.
+    if char == "P" { pattern = 0b110101110100100 }  // ██. █.█ ██. █.. █..
+    if char == "Q" { pattern = 0b010101101111011 }  // .█. █.█ █.█ ███ .██
+    if char == "R" { pattern = 0b110101110110101 }  // ██. █.█ ██. ██. █.█
+    if char == "S" { pattern = 0b011100010001110 }  // .██ █.. .█. ..█ ██.
+    if char == "T" { pattern = 0b111010010010010 }  // ███ .█. .█. .█. .█.
+    if char == "U" { pattern = 0b101101101101010 }  // █.█ █.█ █.█ █.█ .█.
+    if char == "V" { pattern = 0b101101101101010 }  // █.█ █.█ █.█ █.█ .█.
+    if char == "W" { pattern = 0b101101101111101 }  // █.█ █.█ █.█ ███ █.█
+    if char == "X" { pattern = 0b101101010101101 }  // █.█ █.█ .█. █.█ █.█
+    if char == "Y" { pattern = 0b101101010010010 }  // █.█ █.█ .█. .█. .█.
+    if char == "Z" { pattern = 0b111001010100111 }  // ███ ..█ .█. █.. ███
+    
+    // NUMBERS 0-9 (complete set!)
+    if char == "0" { pattern = 0b010101101101010 }  // .█. █.█ █.█ █.█ .█.
+    if char == "1" { pattern = 0b010110010010111 }  // .█. ██. .█. .█. ███
+    if char == "2" { pattern = 0b110001010100111 }  // ██. ..█ .█. █.. ███
+    if char == "3" { pattern = 0b110001010001110 }  // ██. ..█ .█. ..█ ██.
+    if char == "4" { pattern = 0b101101111001001 }  // █.█ █.█ ███ ..█ ..█
+    if char == "5" { pattern = 0b111100110001110 }  // ███ █.. ██. ..█ ██.
+    if char == "6" { pattern = 0b011100110101010 }  // .██ █.. ██. █.█ .█.
+    if char == "7" { pattern = 0b111001010010010 }  // ███ ..█ .█. .█. .█.
+    if char == "8" { pattern = 0b010101010101010 }  // .█. █.█ .█. █.█ .█.
+    if char == "9" { pattern = 0b010101011001110 }  // .█. █.█ .██ ..█ ██.
+    
+    // SPECIAL CHARACTERS
+    if char == " " { pattern = 0b000000000000000 }  // Space (all zeros)
+    if char == "." { pattern = 0b000000000000010 }  // Period
+    if char == "!" { pattern = 0b010010010000010 }  // Exclamation
+    
+    // RENDER THE PATTERN
+    // Extract each bit and draw corresponding pixel
+    for row = 0..4 {
+        for col = 0..2 {
+            let bit_pos = (4-row) * 3 + (2-col)  // Calculate bit position
+            let bit_mask = 1 << bit_pos           // Create mask for this bit
+            
+            if pattern & bit_mask {  // If bit is set, draw pixel
+                let px = x + col * pixel_size
+                let py = y + row * pixel_size
+                
+                G0 Z[safe_z] X[px] Y[py]
+                G0 Z[0]
+                G1 X[px + pixel_size] Y[py]
+                G1 X[px + pixel_size] Y[py + pixel_size]
+                G1 X[px] Y[py + pixel_size]
+                G1 X[px] Y[py]
+                G0 Z[safe_z]
+            }
+        }
+    }
+}
+
+// EVEN MORE COMPACT: 2-BIT ENCODING PER COLUMN
+// Uses run-length encoding for vertical columns
+function draw_rle_char(x, y, char, size) {
+    note {RLE Font: '[char]'}
+    
+    // Each character encoded as 3 bytes (one per column)
+    // Each byte: top 3 bits = start row, bottom 3 bits = length
+    // Example: 0b010011 = start at row 2, draw 3 pixels down
+    
+    let col1 = 0
+    let col2 = 0  
+    let col3 = 0
+    
+    if char == "A" {
+        col1 = 0b001101  // Start row 0, length 5 (full column)
+        col2 = 0b000001  // Start row 0, length 1 (top pixel only)
+        col3 = 0b001101  // Start row 0, length 5 (full column)
+        // Plus crossbar would need separate encoding...
+    }
+    
+    if char == "I" {
+        col1 = 0b000001  // Top pixel
+        col2 = 0b000101  // Full column  
+        col3 = 0b000001  // Top pixel
+    }
+    
+    // Decode and render (simplified example)
+    // This would extract start_row and length from each column byte
+    // and draw vertical lines accordingly
+}
+
+// ULTIMATE COMPACT: SINGLE FUNCTION FOR ALL CHARACTERS
+function draw_any_char(x, y, char, size) {
+    note {Universal: '[char]'}
+    
+    // Convert character to index (A=0, B=1, ..., Z=25, 0=26, ..., 9=35)
+    let char_index = 0
+    
+    // Character to index conversion
+    if char == "A" { char_index = 0 }
+    if char == "B" { char_index = 1 }
+    if char == "C" { char_index = 2 }
+    // ... continue for all characters
+    if char == "0" { char_index = 26 }
+    if char == "1" { char_index = 27 }
+    // ... etc
+    
+    // Ultra-compact lookup table (would be array in real implementation)
+    let patterns = [
+        0b010101111101101,  // A
+        0b110101110101110,  // B
+        0b011100100100011,  // C
+        // ... all 36 patterns for A-Z, 0-9
+    ]
+    
+    // Use the 3x5 rendering logic with looked-up pattern
+    draw_3x5_char(x, y, char, size)
+}
+
+// DEMONSTRATION
+note {=== Ultra-Compact Font Demo ===}
+
+let text = "HELLO 123"
+let pos_x = 0
+let char_width = 4
+
+for letter in text {
+    draw_3x5_char(pos_x, 0, letter, 1.2)
+    pos_x = pos_x + char_width
+}
+
+// Show scalability
+draw_3x5_char(0, -10, "A", 2.0)   // Large
+draw_3x5_char(8, -10, "A", 1.0)   // Medium  
+draw_3x5_char(14, -10, "A", 0.5)  // Small
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Ultra-Compact Font Complete ===}
+note {3x5 matrix: Only 15 bits per character!}
+note {Complete A-Z + 0-9 in minimal space}
+note {Scalable and readable}
+note {Perfect for embedded systems}

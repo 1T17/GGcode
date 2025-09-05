@@ -1,0 +1,258 @@
+// MINIMAL COMPACT FONT - Old School Algorithm
+// Complete A-Z, 0-9 in absolute minimal code
+// Based on classic computer font algorithms
+
+note {=== Minimal Compact Font System ===}
+note {Ultra-compact: Complete character set in minimal code}
+
+let safe_z = 2
+
+// SINGLE FUNCTION: All characters using coordinate patterns
+function draw_char(x, y, char, size) {
+    note {Drawing '[char]' at X[x] Y[y]}
+    
+    let w = size / 2  // Half width
+    let h = size / 2  // Half height
+    
+    // LETTERS: Each defined by key coordinate points
+    if char == "A" {
+        // A: Triangle + crossbar (3 strokes)
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x] Y[y+h]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+        G0 X[x-w/2] Y[y]; G0 Z[0]; G1 X[x+w/2] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "B" {
+        // B: Left line + two bumps
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w/2] Y[y+h]; G1 X[x+w/2] Y[y]; G1 X[x-w] Y[y]; G1 X[x+w/2] Y[y]; G1 X[x+w/2] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "C" {
+        // C: Open rectangle
+        G0 Z[safe_z] X[x+w] Y[y+h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x-w] Y[y-h]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "D" {
+        // D: Rectangle
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "E" {
+        // E: Left line + 3 horizontals
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y]; G0 Z[0]; G1 X[x+w/2] Y[y]; G0 Z[safe_z]
+        G0 X[x-w] Y[y-h]; G0 Z[0]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "F" {
+        // F: Like E but no bottom
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y]; G0 Z[0]; G1 X[x+w/2] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "G" {
+        // G: C with inner bar
+        G0 Z[safe_z] X[x+w] Y[y+h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x-w] Y[y-h]; G1 X[x+w] Y[y-h]; G1 X[x+w] Y[y]; G1 X[x] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "H" {
+        // H: Two verticals + crossbar
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x+w] Y[y-h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y]; G0 Z[0]; G1 X[x+w] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "I" {
+        // I: Center vertical + bars
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x] Y[y+h]; G0 Z[0]; G1 X[x] Y[y-h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y-h]; G0 Z[0]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "J" {
+        // J: Right vertical + curve
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x+w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y-h/2]; G1 X[x] Y[y-h]; G1 X[x-w/2] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "K" {
+        // K: Left vertical + diagonals
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y]; G0 Z[0]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y]; G0 Z[0]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "L" {
+        // L: Left vertical + bottom
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y-h]; G0 Z[0]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "M" {
+        // M: Two verticals + peak
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x] Y[y+h/2]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "N" {
+        // N: Two verticals + diagonal
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y-h]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+    }
+    
+    if char == "O" {
+        // O: Rectangle
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "P" {
+        // P: Left vertical + top bump
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y]; G1 X[x-w] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "Q" {
+        // Q: O with tail
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+        G0 X[x+w/2] Y[y-h/2]; G0 Z[0]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "R" {
+        // R: P + diagonal
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y]; G1 X[x-w] Y[y]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "S" {
+        // S: Snake
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y]; G1 X[x-w] Y[y]; G1 X[x-w] Y[y-h]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "T" {
+        // T: Top bar + center vertical
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x] Y[y+h]; G0 Z[0]; G1 X[x] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "U" {
+        // U: Horseshoe
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x-w] Y[y-h]; G1 X[x+w] Y[y-h]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+    }
+    
+    if char == "V" {
+        // V: Converging
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x] Y[y-h]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+    }
+    
+    if char == "W" {
+        // W: Double V
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x-w/2] Y[y-h]; G1 X[x] Y[y+h/2]; G1 X[x+w/2] Y[y-h]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+    }
+    
+    if char == "X" {
+        // X: Cross
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "Y" {
+        // Y: Converging to center
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x] Y[y]; G1 X[x] Y[y-h]; G0 Z[safe_z]
+        G0 X[x+w] Y[y+h]; G0 Z[0]; G1 X[x] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "Z" {
+        // Z: Zigzag
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G1 X[x-w] Y[y-h]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    // NUMBERS: Seven-segment style
+    if char == "0" {
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "1" {
+        G0 Z[safe_z] X[x] Y[y-h]; G0 Z[0]; G1 X[x] Y[y+h]; G0 Z[safe_z]
+    }
+    
+    if char == "2" {
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y]; G1 X[x-w] Y[y]; G1 X[x-w] Y[y-h]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "3" {
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+        G0 X[x-w/2] Y[y]; G0 Z[0]; G1 X[x+w] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "4" {
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x-w] Y[y]; G1 X[x+w] Y[y]; G0 Z[safe_z]
+        G0 X[x+w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "5" {
+        G0 Z[safe_z] X[x+w] Y[y+h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x-w] Y[y]; G1 X[x+w] Y[y]; G1 X[x+w] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "6" {
+        G0 Z[safe_z] X[x+w] Y[y+h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x-w] Y[y-h]; G1 X[x+w] Y[y-h]; G1 X[x+w] Y[y]; G1 X[x-w] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "7" {
+        G0 Z[safe_z] X[x-w] Y[y+h]; G0 Z[0]; G1 X[x+w] Y[y+h]; G1 X[x] Y[y-h]; G0 Z[safe_z]
+    }
+    
+    if char == "8" {
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x-w] Y[y+h]; G1 X[x+w] Y[y+h]; G1 X[x+w] Y[y-h]; G1 X[x-w] Y[y-h]; G0 Z[safe_z]
+        G0 X[x-w] Y[y]; G0 Z[0]; G1 X[x+w] Y[y]; G0 Z[safe_z]
+    }
+    
+    if char == "9" {
+        G0 Z[safe_z] X[x-w] Y[y-h]; G0 Z[0]; G1 X[x+w] Y[y-h]; G1 X[x+w] Y[y+h]; G1 X[x-w] Y[y+h]; G1 X[x-w] Y[y]; G1 X[x+w] Y[y]; G0 Z[safe_z]
+    }
+    
+    // SPECIAL
+    if char == " " { note {Space} }
+    if char == "." { G0 Z[safe_z] X[x] Y[y-h]; G0 Z[0]; G1 X[x+w/4] Y[y-h]; G1 X[x+w/4] Y[y-h+w/4]; G1 X[x] Y[y-h+w/4]; G1 X[x] Y[y-h]; G0 Z[safe_z] }
+    if char == "!" { G0 Z[safe_z] X[x] Y[y]; G0 Z[0]; G1 X[x] Y[y+h]; G0 Z[safe_z]; G0 X[x] Y[y-h]; G0 Z[0]; G1 X[x+w/4] Y[y-h]; G1 X[x+w/4] Y[y-h+w/4]; G1 X[x] Y[y-h+w/4]; G1 X[x] Y[y-h]; G0 Z[safe_z] }
+}
+
+// DEMO: Complete character set
+note {=== Minimal Compact Font Demo ===}
+
+// Alphabet
+let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let x_pos = 0
+let y_pos = 20
+
+for letter in alphabet {
+    draw_char(x_pos, y_pos, letter, 6)
+    x_pos = x_pos + 8
+    if x_pos > 100 {
+        x_pos = 0
+        y_pos = y_pos - 10
+    }
+}
+
+// Numbers
+let numbers = "0123456789"
+x_pos = 0
+y_pos = 0
+
+for digit in numbers {
+    draw_char(x_pos, y_pos, digit, 6)
+    x_pos = x_pos + 8
+}
+
+// Sample text
+let sample = "HELLO WORLD 2024!"
+x_pos = 0
+y_pos = -15
+
+for char in sample {
+    draw_char(x_pos, y_pos, char, 8)
+    x_pos = x_pos + 10
+}
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Minimal Compact Font Complete ===}
+note {Single function handles all A-Z, 0-9, punctuation}
+note {Ultra-compact: Each character in 1-3 lines of code}
+note {Old-school algorithm: Coordinate-based patterns}
+note {Perfect for embedded systems and CNC}

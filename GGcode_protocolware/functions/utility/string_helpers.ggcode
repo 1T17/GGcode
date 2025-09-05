@@ -1,0 +1,60 @@
+// String Helper Functions and Utilities
+// Demonstrates string usage in utility functions
+
+function log_operation(operation_name, tool_name, material) {
+    note {=== Operation Log ===}
+    note {Operation: [operation_name]}
+    note {Tool: [tool_name]}
+    note {Material: [material]}
+    note {==================}
+    return 1
+}
+
+function check_tool_compatibility(tool_type, material_type) {
+    if tool_type == "carbide end mill" && material_type == "aluminum" {
+        note {Tool compatibility: EXCELLENT}
+        return 1
+    } else if tool_type == "HSS end mill" && material_type == "steel" {
+        note {Tool compatibility: GOOD}
+        return 1
+    } else {
+        note {Tool compatibility: CHECK MANUALLY}
+        return 0
+    }
+}
+
+// Example usage
+let current_operation = "face milling"
+let current_tool = "carbide end mill"
+let workpiece_material = "aluminum"
+
+// Log the operation
+log_operation(current_operation, current_tool, workpiece_material)
+
+// Check compatibility
+let compatibility = check_tool_compatibility(current_tool, workpiece_material)
+
+if compatibility == 1 {
+    note {Proceeding with operation}
+    
+    // Setup based on strings
+    if workpiece_material == "aluminum" {
+        let spindle_rpm = 3000
+        let feed_ipm = 800
+    }
+    
+    // Start operation
+    M[3] S[spindle_rpm]
+    note {Starting [current_operation] with [current_tool]}
+    
+    // Simple operation
+    G[0] X[0] Y[0] Z[25]
+    G[1] Z[0] F[100]
+    G[1] X[50] F[feed_ipm]
+    G[0] Z[25]
+    
+    M[5]
+    note {[current_operation] completed successfully}
+} else {
+    note {Operation halted - check tool compatibility}
+}

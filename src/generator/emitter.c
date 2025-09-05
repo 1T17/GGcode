@@ -24,6 +24,49 @@ double get_number(Value *val);
 
 #include <math.h>
 
+// Create a number value that allows special floating-point values (NaN, Infinity)
+Value *make_raw_number_value(double num)
+{
+    Value *val = malloc(sizeof(Value));
+    if (!val)
+    {
+        report_error("[make_raw_number_value] malloc failed for Value");
+        return NULL;
+    }
+
+    val->type = VAL_NUMBER;
+    val->number = num;
+    return val;
+}
+
+Value *make_string_value(const char *str)
+{
+    Value *val = malloc(sizeof(Value));
+    if (!val)
+    {
+        report_error("[make_string_value] malloc failed for Value");
+        return NULL;
+    }
+
+    val->type = VAL_STRING;
+    if (str) {
+        val->string = strdup(str);
+        if (!val->string) {
+            report_error("[make_string_value] strdup failed for string");
+            free(val);
+            return NULL;
+        }
+    } else {
+        val->string = strdup("");
+        if (!val->string) {
+            report_error("[make_string_value] strdup failed for empty string");
+            free(val);
+            return NULL;
+        }
+    }
+    return val;
+}
+
 Value *make_number_value(double num)
 {
     Value *val = malloc(sizeof(Value));
@@ -34,7 +77,7 @@ Value *make_number_value(double num)
     }
 
     // Comprehensive floating-point precision handling
-    // 1. Handle NaN and Infinity
+    // 1. Handle NaN and Infinity (for G-code safety)
     if (isnan(num) || isinf(num)) {
         num = 0.0;
     }
@@ -106,22 +149,25 @@ static void emit_note_stmt(ASTNode *node)
 
         while (*p)
         {
-            if (*p == '[')
+            if (*p == '[' || *p == '{')
             {
-                char varname[64] = {0};
+                char expr_text[256] = {0};
+                char closing_char = (*p == '[') ? ']' : '}';
                 p++;
-                int vi = 0;
-                while (*p && *p != ']' && vi < 63)
-                    varname[vi++] = *p++;
-                varname[vi] = '\0';
-                if (*p == ']')
+                int ei = 0;
+                while (*p && *p != closing_char && ei < 255)
+                    expr_text[ei++] = *p++;
+                expr_text[ei] = '\0';
+                if (*p == closing_char)
                     p++;
 
                 Runtime *rt = get_runtime();
                 const char *replacement = NULL;
-                if (strcmp(varname, "time") == 0)
+                
+                // Check for special runtime variables first
+                if (strcmp(expr_text, "time") == 0)
                     replacement = rt->RUNTIME_TIME;
-                else if (strcmp(varname, "ggcode_file_name") == 0)
+                else if (strcmp(expr_text, "ggcode_file_name") == 0)
                     replacement = rt->RUNTIME_FILENAME;
 
                 if (replacement)
@@ -130,14 +176,41 @@ static void emit_note_stmt(ASTNode *node)
                 }
                 else
                 {
-                    Value *val = get_var(varname);
-                    if (val && val->type == VAL_NUMBER)
+                    // Parse and evaluate the expression while preserving current runtime context
+                    ASTNode *expr_ast = parse_expression_from_string(expr_text);
+                    if (expr_ast)
                     {
-                        out += sprintf(out, get_decimal_format(), val->number);
+                        Value *val = eval_expr(expr_ast);
+                        if (val && val->type == VAL_NUMBER)
+                        {
+                            out += sprintf(out, get_decimal_format(), val->number);
+                        }
+                        else if (val && val->type == VAL_STRING)
+                        {
+                            out += sprintf(out, "%s", val->string);
+                        }
+                        else
+                        {
+                            out += sprintf(out, "0");
+                        }
+                        free_ast(expr_ast);
                     }
                     else
                     {
-                        out += sprintf(out, "0");
+                        // Fallback: try as simple variable lookup
+                        Value *val = get_var(expr_text);
+                        if (val && val->type == VAL_NUMBER)
+                        {
+                            out += sprintf(out, get_decimal_format(), val->number);
+                        }
+                        else if (val && val->type == VAL_STRING)
+                        {
+                            out += sprintf(out, "%s", val->string);
+                        }
+                        else
+                        {
+                            out += sprintf(out, "0");
+                        }
                     }
                 }
             }
@@ -264,7 +337,8 @@ static void emit_while_stmt(ASTNode *node)
     Runtime *rt = get_runtime();
     rt->statement_count++;
 
-
+    // Declare runtime_has_returned as extern since it's defined in evaluator.c
+    extern int runtime_has_returned;
 
     int iteration = 0;
     while (1)
@@ -285,9 +359,13 @@ static void emit_while_stmt(ASTNode *node)
             break;
         }
 
-   
-
         emit_gcode(node->while_stmt.body);
+        
+        // Check if return was encountered in the loop body
+        if (runtime_has_returned) {
+            break;
+        }
+        
         iteration++;
     }
 
@@ -300,12 +378,49 @@ static void emit_for_stmt(ASTNode *node)
 
     if (!node->for_stmt.var || !node->for_stmt.body)
     {
-
         report_error("[Emit] FOR loop missing variable or body");
-
         return;
     }
 
+    // Handle string iteration: for char in string_var or for (char, index) in string_var
+    if (node->for_stmt.is_string_iteration) {
+        const Value *iterable_val = eval_expr(node->for_stmt.iterable);
+        
+        if (!iterable_val || iterable_val->type != VAL_STRING) {
+            report_error("[Emit] FOR-IN loop expects string value");
+            return;
+        }
+        
+        const char *str = iterable_val->string;
+        if (!str) {
+            return; // Empty string, nothing to iterate
+        }
+        
+        // Declare runtime_has_returned as extern since it's defined in evaluator.c
+        extern int runtime_has_returned;
+        
+        // Iterate through each character
+        for (int i = 0; str[i] != '\0'; i++) {
+            // Create a single-character string for the loop variable
+            char char_str[2] = {str[i], '\0'};
+            set_var(node->for_stmt.var, make_string_value(char_str));
+            
+            // If index variable is specified, set it too
+            if (node->for_stmt.index_var) {
+                set_var(node->for_stmt.index_var, make_number_value((double)i));
+            }
+            
+            emit_gcode(node->for_stmt.body);
+            
+            // Check if return was encountered in the loop body
+            if (runtime_has_returned) {
+                break;
+            }
+        }
+        return;
+    }
+
+    // Traditional numeric for loop: for i = 1..10
     Value *v_from = eval_expr(node->for_stmt.from);
     Value *v_to = eval_expr(node->for_stmt.to);
     Value *v_step = node->for_stmt.step ? eval_expr(node->for_stmt.step) : make_number_value(1.0);
@@ -313,9 +428,7 @@ static void emit_for_stmt(ASTNode *node)
     if (!v_from || !v_to || !v_step ||
         v_from->type != VAL_NUMBER || v_to->type != VAL_NUMBER || v_step->type != VAL_NUMBER)
     {
-
         report_error("[Emit] FOR loop expects numeric values");
-
         return;
     }
 
@@ -324,15 +437,14 @@ static void emit_for_stmt(ASTNode *node)
     double step = v_step->number;
     int exclusive = node->for_stmt.exclusive;
 
-
-
     if (step == 0)
     {
-
         report_error("[Emit] FOR loop step cannot be zero");
-
         return;
     }
+
+    // Declare runtime_has_returned as extern since it's defined in evaluator.c
+    extern int runtime_has_returned;
 
     if (step > 0)
     {
@@ -341,6 +453,11 @@ static void emit_for_stmt(ASTNode *node)
         {
             set_var(node->for_stmt.var, make_number_value(i));
             emit_gcode(node->for_stmt.body);
+            
+            // Check if return was encountered in the loop body
+            if (runtime_has_returned) {
+                break;
+            }
         }
     }
     else
@@ -350,6 +467,11 @@ static void emit_for_stmt(ASTNode *node)
         {
             set_var(node->for_stmt.var, make_number_value(i));
             emit_gcode(node->for_stmt.body);
+            
+            // Check if return was encountered in the loop body
+            if (runtime_has_returned) {
+                break;
+            }
         }
     }
 }
@@ -477,7 +599,7 @@ case AST_EXPR_STMT:
         Runtime *rt = get_runtime();
         rt->statement_count++;
         Value *val = eval_expr(node->assign_stmt.expr);
-        if (!val || val->type != VAL_NUMBER)
+        if (!val || (val->type != VAL_NUMBER && val->type != VAL_STRING && val->type != VAL_ARRAY))
         {
             report_error("[Emit] ASSIGN %s failed, invalid expression", node->assign_stmt.name);
             val = make_number_value(0); // fallback

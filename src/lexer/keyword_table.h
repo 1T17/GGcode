@@ -11,7 +11,8 @@
     X("note",    TOKEN_NOTE) \
     X("function", TOKEN_FUNCTION) \
     X("return", TOKEN_RETURN) \
-    X("step",    TOKEN_STEP)
+    X("step",    TOKEN_STEP) \
+    X("in",      TOKEN_IN)
 
 #define TOKEN_OPERATOR_LIST \
     X("==", TOKEN_EQUAL_EQUAL, "==", 0) \

@@ -30,6 +30,12 @@ void report_error(const char *format, ...);
 
 void fatal_error(const char *source, int line, int column, const char *format, ...);
 
+// Enhanced error reporting for return statements
+void report_return_error(const char *source, int line, int column, const char *context, const char *format, ...);
+
+// Error recovery mechanisms
+void parser_error_recovery(void);
+int should_continue_parsing_after_error(void);
 
 void clear_errors();
 int has_errors();

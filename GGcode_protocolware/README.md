@@ -28,7 +28,8 @@ GGcode_protocolware/
 │   ├── arithmetic/    # +, -, *, /, ^, compound assignments
 │   ├── bitwise/       # &, |, <<, >>, compound assignments
 │   ├── comparison/    # ==, !=, <, >, <=, >=
-│   └── logical/       # &&, ||, !
+│   ├── logical/       # &&, ||, !
+│   └── string/        # String variables, comparison, iteration
 ├── functions/         # Built-in functions
 │   ├── math/          # sin, cos, tan, sqrt, abs, etc.
 │   ├── geometry/      # Distance, angle calculations
@@ -39,10 +40,11 @@ GGcode_protocolware/
 
 ## Core Concepts
 
-- **Variables**: `let x = value`
+- **Variables**: `let x = value` (numbers) and `let text = "string"` (strings)
 - **Square Bracket Syntax**: `G[0] X[10] Y[20] F[500]`
 - **Variable Integration**: `G[1] X[position] Y[height] F[speed]`
 - **Expressions**: `G[1] X[10 + 5] Y[sin(45) * 10] F[feed_rate * 1.5]`
+- **String Support**: String variables, comparison, and iteration
 - **G-code Output**: Generates standard G-code from GGCODE syntax
 - **Control Flow**: Loops, conditionals, functions
 - **Built-in Functions**: Mathematical and utility functions
@@ -73,4 +75,24 @@ G[1] X[x_pos + 10] Y[y_pos] F[feed_rate]
 ```ggcode
 let radius = 8
 G[2] X[radius * 2] Y[0] I[radius] J[0] F[300]
+```
+
+### With Strings
+```ggcode
+let tool_name = "1/4 inch end mill"
+let operation = "pocket milling"
+
+note {Tool: [tool_name]}
+note {Operation: [operation]}
+
+// String comparison
+if tool_name == "1/4 inch end mill" {
+    let spindle_speed = 3000
+    M[3] S[spindle_speed]
+}
+
+// String iteration
+for char in operation {
+    note {Character: [char]}
+}
 ```

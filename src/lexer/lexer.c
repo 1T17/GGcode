@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "../utils/compat.h"
-#include "error/error.h"
+#include "../error/error.h"
 #include "lexer.h"
 #include "token_utils.h"
 
@@ -202,6 +202,91 @@ free(word);  // Free the temporary word buffer
 return token;
 
 }
+
+    // String literals
+    if (c == '"') {
+        int start_line = lexer->line;
+        int start_column = lexer->column;
+        advance(lexer); // consume opening quote
+        
+        // Calculate buffer size needed (worst case: every char is escaped)
+        int capacity = 64;
+        char *buffer = malloc(capacity);
+        if (!buffer) {
+            report_error("[Lexer] ERROR: Memory allocation failed for string literal");
+            return make_token(TOKEN_UNKNOWN, "", lexer->line, start_col);
+        }
+        
+        int len = 0;
+        
+        while (peek(lexer) != '"' && peek(lexer) != '\0') {
+            // Expand buffer if needed
+            if (len >= capacity - 2) {
+                capacity *= 2;
+                char *new_buffer = realloc(buffer, capacity);
+                if (!new_buffer) {
+                    free(buffer);
+                    report_error("[Lexer] ERROR: Memory allocation failed for string literal");
+                    return make_token(TOKEN_UNKNOWN, "", lexer->line, start_col);
+                }
+                buffer = new_buffer;
+            }
+            
+            char ch = peek(lexer);
+            if (ch == '\\') {
+                advance(lexer); // consume backslash
+                char escaped = peek(lexer);
+                if (escaped == '\0') {
+                    free(buffer);
+                    report_error("[Lexer] ERROR: Unterminated string literal at line %d, column %d", start_line, start_column);
+                    return make_token(TOKEN_UNKNOWN, "", lexer->line, start_col);
+                }
+                
+                switch (escaped) {
+                    case '"':
+                        buffer[len++] = '"';
+                        break;
+                    case 'n':
+                        buffer[len++] = '\n';
+                        break;
+                    case 't':
+                        buffer[len++] = '\t';
+                        break;
+                    case '\\':
+                        buffer[len++] = '\\';
+                        break;
+                    default:
+                        free(buffer);
+                        report_error("[Lexer] ERROR: Invalid escape sequence '\\%c' at line %d, column %d", escaped, lexer->line, lexer->column);
+                        // Consume the rest of the string to avoid further parsing errors
+                        while (peek(lexer) != '"' && peek(lexer) != '\0') {
+                            advance(lexer);
+                        }
+                        if (peek(lexer) == '"') {
+                            advance(lexer); // consume closing quote
+                        }
+                        return make_token(TOKEN_UNKNOWN, "", lexer->line, start_col);
+                }
+                advance(lexer); // consume escaped character
+            } else {
+                buffer[len++] = ch;
+                advance(lexer);
+            }
+        }
+        
+        if (peek(lexer) != '"') {
+            free(buffer);
+            report_error("[Lexer] ERROR: Unterminated string literal at line %d, column %d", start_line, start_column);
+            return make_token(TOKEN_UNKNOWN, "", lexer->line, start_col);
+        }
+        
+        advance(lexer); // consume closing quote
+        buffer[len] = '\0';
+        
+        Token token = make_token(TOKEN_STRING, buffer, start_line, start_column);
+        free(buffer);
+        return token;
+    }
 
     // Number literals (including negative and dot-prefixed)
     if ((c == '-' && (isdigit(peek_next(lexer)) || peek_next(lexer) == '.')) ||

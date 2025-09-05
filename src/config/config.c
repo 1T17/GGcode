@@ -30,6 +30,10 @@ void init_runtime() {
     g_runtime.var_count = 0;
     g_runtime.function_count = 0;
     g_runtime.current_scope_level = 0;
+    
+    // Initialize recursion protection
+    g_runtime.recursion_depth = 0;
+    g_runtime.max_recursion_depth = 100;  // Default limit
 }
 
 // Get runtime instance

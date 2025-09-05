@@ -1,0 +1,367 @@
+// Simple Ultra-Compact Font System
+// Complete A-Z, 0-9 using minimal algorithmic approach
+
+note {=== Simple Ultra-Compact Font ===}
+note {Algorithmic generation - minimal code, complete character set}
+
+let safe_z = 2
+
+// CORE ALGORITHM: Pattern-based character generation
+// Uses simple geometric rules instead of storing bitmaps
+function draw_compact_char(x, y, char, size) {
+    note {Compact: '[char]' at X[x] Y[y]}
+    
+    let w = size / 2      // Half width
+    let h = size / 2      // Half height
+    
+    // Helper function to draw a line segment
+    function draw_line(x1, y1, x2, y2) {
+        G0 Z[safe_z] X[x + x1] Y[y + y1]
+        G0 Z[0]
+        G1 X[x + x2] Y[y + y2]
+        G0 Z[safe_z]
+    }
+    
+    // Helper function to draw a rectangle outline
+    function draw_rect(x1, y1, x2, y2) {
+        G0 Z[safe_z] X[x + x1] Y[y + y1]
+        G0 Z[0]
+        G1 X[x + x2] Y[y + y1]  // Top
+        G1 X[x + x2] Y[y + y2]  // Right
+        G1 X[x + x1] Y[y + y2]  // Bottom
+        G1 X[x + x1] Y[y + y1]  // Left (close)
+        G0 Z[safe_z]
+    }
+    
+    // LETTERS: Algorithmic patterns
+    if char == "A" {
+        // A: Triangle + crossbar
+        draw_line(-w, -h, 0, h)      // Left diagonal
+        draw_line(0, h, w, -h)       // Right diagonal
+        draw_line(-w/2, 0, w/2, 0)   // Crossbar
+    }
+    
+    if char == "B" {
+        // B: Left vertical + two bumps
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, h, w/2, h)     // Top horizontal
+        draw_line(w/2, h, w/2, 0)    // Top right
+        draw_line(w/2, 0, -w, 0)     // Middle horizontal
+        draw_line(-w, 0, w/2, 0)     // Middle horizontal (repeat for bump)
+        draw_line(w/2, 0, w/2, -h)   // Bottom right
+        draw_line(w/2, -h, -w, -h)   // Bottom horizontal
+    }
+    
+    if char == "C" {
+        // C: Open rectangle (horseshoe)
+        draw_line(w, h, -w, h)       // Top
+        draw_line(-w, h, -w, -h)     // Left
+        draw_line(-w, -h, w, -h)     // Bottom
+    }
+    
+    if char == "D" {
+        // D: Rectangle with curved right (simplified as angled)
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, h, w/2, h)     // Top
+        draw_line(w/2, h, w, 0)      // Top-right curve
+        draw_line(w, 0, w/2, -h)     // Bottom-right curve
+        draw_line(w/2, -h, -w, -h)   // Bottom
+    }
+    
+    if char == "E" {
+        // E: Left vertical + three horizontals
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, h, w, h)       // Top
+        draw_line(-w, 0, w/2, 0)     // Middle
+        draw_line(-w, -h, w, -h)     // Bottom
+    }
+    
+    if char == "F" {
+        // F: Like E but no bottom horizontal
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, h, w, h)       // Top
+        draw_line(-w, 0, w/2, 0)     // Middle
+    }
+    
+    if char == "G" {
+        // G: C with inner horizontal
+        draw_line(w, h, -w, h)       // Top
+        draw_line(-w, h, -w, -h)     // Left
+        draw_line(-w, -h, w, -h)     // Bottom
+        draw_line(w, -h, w, 0)       // Right bottom
+        draw_line(w, 0, 0, 0)        // Inner horizontal
+    }
+    
+    if char == "H" {
+        // H: Two verticals + crossbar
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(w, -h, w, h)       // Right vertical
+        draw_line(-w, 0, w, 0)       // Crossbar
+    }
+    
+    if char == "I" {
+        // I: Center vertical + top/bottom bars
+        draw_line(-w, h, w, h)       // Top bar
+        draw_line(0, h, 0, -h)       // Center vertical
+        draw_line(-w, -h, w, -h)     // Bottom bar
+    }
+    
+    if char == "J" {
+        // J: Top bar + right vertical + bottom curve
+        draw_line(-w, h, w, h)       // Top bar
+        draw_line(w, h, w, -h/2)     // Right vertical
+        draw_line(w, -h/2, 0, -h)    // Curve to center bottom
+        draw_line(0, -h, -w/2, -h)   // Bottom curve
+    }
+    
+    if char == "K" {
+        // K: Left vertical + two diagonals
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, 0, w, h)       // Upper diagonal
+        draw_line(-w, 0, w, -h)      // Lower diagonal
+    }
+    
+    if char == "L" {
+        // L: Left vertical + bottom horizontal
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, -h, w, -h)     // Bottom horizontal
+    }
+    
+    if char == "M" {
+        // M: Two verticals + peak
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(w, -h, w, h)       // Right vertical
+        draw_line(-w, h, 0, h/2)     // Left peak
+        draw_line(0, h/2, w, h)      // Right peak
+    }
+    
+    if char == "N" {
+        // N: Two verticals + diagonal
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(w, -h, w, h)       // Right vertical
+        draw_line(-w, -h, w, h)      // Diagonal
+    }
+    
+    if char == "O" {
+        // O: Complete rectangle
+        draw_rect(-w, -h, w, h)
+    }
+    
+    if char == "P" {
+        // P: Left vertical + top bump
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, h, w, h)       // Top
+        draw_line(w, h, w, 0)        // Right top
+        draw_line(w, 0, -w, 0)       // Middle
+    }
+    
+    if char == "Q" {
+        // Q: O with tail
+        draw_rect(-w, -h, w, h)      // Rectangle
+        draw_line(w/2, -h/2, w, -h)  // Tail
+    }
+    
+    if char == "R" {
+        // R: P + diagonal leg
+        draw_line(-w, -h, -w, h)     // Left vertical
+        draw_line(-w, h, w, h)       // Top
+        draw_line(w, h, w, 0)        // Right top
+        draw_line(w, 0, -w, 0)       // Middle
+        draw_line(-w, 0, w, -h)      // Diagonal leg
+    }
+    
+    if char == "S" {
+        // S: Snake pattern
+        draw_line(-w, h, w, h)       // Top
+        draw_line(-w, h, -w, 0)      // Left top
+        draw_line(-w, 0, w, 0)       // Middle
+        draw_line(w, 0, w, -h)       // Right bottom
+        draw_line(w, -h, -w, -h)     // Bottom
+    }
+    
+    if char == "T" {
+        // T: Top bar + center vertical
+        draw_line(-w, h, w, h)       // Top bar
+        draw_line(0, h, 0, -h)       // Center vertical
+    }
+    
+    if char == "U" {
+        // U: Horseshoe
+        draw_line(-w, h, -w, -h)     // Left vertical
+        draw_line(-w, -h, w, -h)     // Bottom
+        draw_line(w, -h, w, h)       // Right vertical
+    }
+    
+    if char == "V" {
+        // V: Converging lines
+        draw_line(-w, h, 0, -h)      // Left diagonal
+        draw_line(w, h, 0, -h)       // Right diagonal
+    }
+    
+    if char == "W" {
+        // W: Double V
+        draw_line(-w, h, -w/2, -h)   // Left outer
+        draw_line(-w/2, -h, 0, h/2)  // Left inner
+        draw_line(0, h/2, w/2, -h)   // Right inner
+        draw_line(w/2, -h, w, h)     // Right outer
+    }
+    
+    if char == "X" {
+        // X: Two diagonals
+        draw_line(-w, -h, w, h)      // Main diagonal
+        draw_line(-w, h, w, -h)      // Cross diagonal
+    }
+    
+    if char == "Y" {
+        // Y: Converging to center vertical
+        draw_line(-w, h, 0, 0)       // Left diagonal
+        draw_line(w, h, 0, 0)        // Right diagonal
+        draw_line(0, 0, 0, -h)       // Center vertical
+    }
+    
+    if char == "Z" {
+        // Z: Zigzag
+        draw_line(-w, h, w, h)       // Top
+        draw_line(w, h, -w, -h)      // Diagonal
+        draw_line(-w, -h, w, -h)     // Bottom
+    }
+    
+    // NUMBERS: Seven-segment inspired but simplified
+    if char == "0" {
+        draw_rect(-w, -h, w, h)      // Rectangle
+    }
+    
+    if char == "1" {
+        draw_line(0, -h, 0, h)       // Center vertical
+    }
+    
+    if char == "2" {
+        draw_line(-w, h, w, h)       // Top
+        draw_line(w, h, w, 0)        // Right top
+        draw_line(w, 0, -w, 0)       // Middle
+        draw_line(-w, 0, -w, -h)     // Left bottom
+        draw_line(-w, -h, w, -h)     // Bottom
+    }
+    
+    if char == "3" {
+        draw_line(-w, h, w, h)       // Top
+        draw_line(w, h, w, -h)       // Right vertical
+        draw_line(w, 0, 0, 0)        // Middle (partial)
+        draw_line(w, -h, -w, -h)     // Bottom
+    }
+    
+    if char == "4" {
+        draw_line(-w, h, -w, 0)      // Left top
+        draw_line(-w, 0, w, 0)       // Middle
+        draw_line(w, h, w, -h)       // Right vertical
+    }
+    
+    if char == "5" {
+        draw_line(w, h, -w, h)       // Top
+        draw_line(-w, h, -w, 0)      // Left top
+        draw_line(-w, 0, w, 0)       // Middle
+        draw_line(w, 0, w, -h)       // Right bottom
+        draw_line(w, -h, -w, -h)     // Bottom
+    }
+    
+    if char == "6" {
+        draw_line(w, h, -w, h)       // Top
+        draw_line(-w, h, -w, -h)     // Left vertical
+        draw_line(-w, 0, w, 0)       // Middle
+        draw_line(w, 0, w, -h)       // Right bottom
+        draw_line(w, -h, -w, -h)     // Bottom
+    }
+    
+    if char == "7" {
+        draw_line(-w, h, w, h)       // Top
+        draw_line(w, h, 0, -h)       // Diagonal
+    }
+    
+    if char == "8" {
+        draw_rect(-w, -h, w, h)      // Rectangle
+        draw_line(-w, 0, w, 0)       // Middle horizontal
+    }
+    
+    if char == "9" {
+        draw_line(-w, h, w, h)       // Top
+        draw_line(-w, h, -w, 0)      // Left top
+        draw_line(-w, 0, w, 0)       // Middle
+        draw_line(w, h, w, -h)       // Right vertical
+        draw_line(w, -h, -w, -h)     // Bottom
+    }
+    
+    // SPECIAL CHARACTERS
+    if char == " " {
+        // Space - no drawing
+        note {Space}
+    }
+    
+    if char == "." {
+        // Period - small dot
+        G0 Z[safe_z] X[x] Y[y - h]
+        G0 Z[0]
+        G1 X[x + w/4] Y[y - h]
+        G1 X[x + w/4] Y[y - h + w/4]
+        G1 X[x] Y[y - h + w/4]
+        G1 X[x] Y[y - h]
+        G0 Z[safe_z]
+    }
+    
+    if char == "!" {
+        // Exclamation - vertical line + dot
+        draw_line(0, 0, 0, h)        // Vertical line
+        G0 Z[safe_z] X[x] Y[y - h]   // Dot
+        G0 Z[0]
+        G1 X[x + w/4] Y[y - h]
+        G1 X[x + w/4] Y[y - h + w/4]
+        G1 X[x] Y[y - h + w/4]
+        G1 X[x] Y[y - h]
+        G0 Z[safe_z]
+    }
+}
+
+// DEMONSTRATION
+note {=== Simple Compact Font Demo ===}
+
+// Test alphabet
+let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let x_pos = 0
+let y_pos = 20
+
+for letter in alphabet {
+    draw_compact_char(x_pos, y_pos, letter, 6)
+    x_pos = x_pos + 8
+    if x_pos > 100 {
+        x_pos = 0
+        y_pos = y_pos - 10
+    }
+}
+
+// Test numbers
+let numbers = "0123456789"
+x_pos = 0
+y_pos = 0
+
+for digit in numbers {
+    draw_compact_char(x_pos, y_pos, digit, 6)
+    x_pos = x_pos + 8
+}
+
+// Test sample text
+let sample = "HELLO WORLD 2024!"
+x_pos = 0
+y_pos = -15
+
+for char in sample {
+    draw_compact_char(x_pos, y_pos, char, 8)
+    x_pos = x_pos + 10
+}
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Simple Compact Font Complete ===}
+note {Algorithmic generation: No bitmap storage needed}
+note {Complete A-Z, 0-9, and basic punctuation}
+note {Scalable and efficient for CNC applications}
+note {Minimal code - maximum character coverage}

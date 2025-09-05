@@ -1,0 +1,436 @@
+// Simple 14-Segment Display Text Printer
+// Clean implementation with proper variable names
+// Old school digital display aesthetic
+
+note {=== Simple 14-Segment Text Printer ===}
+
+let safe_z = 2
+
+// Main text printing function
+function print_text(x, y, text, size, spacing) {
+    note {Printing '[text]' at X[x] Y[y]}
+    
+    let current_x = x
+    let w = size
+    let h = size * 1.5
+    
+    for char in text {
+        note {Drawing '[char]' at X[current_x]}
+        
+        // Calculate positions for this character
+        let left = current_x - w/2
+        let right = current_x + w/2
+        let center = current_x
+        let top = y + h/2
+        let middle = y
+        let bottom = y - h/2
+        let upper_mid = y + h/4
+        let lower_mid = y - h/4
+        
+        // Draw character patterns
+        if char == "A" {
+            // Top horizontal
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Left verticals
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[middle]
+            G0 Z[safe_z]
+            
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Right verticals
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            G0 X[right] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Middle horizontal
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+        }
+        
+        if char == "B" {
+            // Left vertical full
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Top horizontal
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Middle horizontal
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Right upper vertical
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            // Right lower vertical
+            G0 X[right] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "C" {
+            // Top horizontal
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Left vertical full
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "D" {
+            // Left vertical full
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Top horizontal
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Right vertical full
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "E" {
+            // Left vertical full
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Top horizontal
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Middle horizontal
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[center] Y[middle]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "F" {
+            // Left vertical full
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Top horizontal
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Middle horizontal
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[center] Y[middle]
+            G0 Z[safe_z]
+        }
+        
+        if char == "G" {
+            // Top horizontal
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Left vertical full
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Middle horizontal (right half)
+            G0 X[center] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            // Right lower vertical
+            G0 X[right] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "H" {
+            // Left vertical full
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Right vertical full
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Middle horizontal
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+        }
+        
+        if char == "I" {
+            // Top horizontal
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Center vertical
+            G0 X[center] Y[top]
+            G0 Z[0]
+            G1 X[center] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "L" {
+            // Left vertical full
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "O" {
+            // Top horizontal
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Left vertical full
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Right vertical full
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "R" {
+            // Left vertical full
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Top horizontal
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Middle horizontal
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            // Right upper vertical
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            // Diagonal lower right
+            G0 X[center] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "0" {
+            // Top horizontal
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Left vertical full
+            G0 X[left] Y[top]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Right vertical full
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "1" {
+            // Right vertical full
+            G0 Z[safe_z] X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == "2" {
+            // Top horizontal
+            G0 Z[safe_z] X[left] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[top]
+            G0 Z[safe_z]
+            
+            // Right upper vertical
+            G0 X[right] Y[top]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            // Middle horizontal
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[right] Y[middle]
+            G0 Z[safe_z]
+            
+            // Left lower vertical
+            G0 X[left] Y[middle]
+            G0 Z[0]
+            G1 X[left] Y[bottom]
+            G0 Z[safe_z]
+            
+            // Bottom horizontal
+            G0 X[left] Y[bottom]
+            G0 Z[0]
+            G1 X[right] Y[bottom]
+            G0 Z[safe_z]
+        }
+        
+        if char == " " {
+            note {Space character}
+        }
+        
+        // Move to next character position
+        current_x = current_x + w + spacing
+    }
+    
+    return 1
+}
+
+// DEMONSTRATION
+note {=== 14-Segment Display Demo ===}
+
+// Test basic letters
+print_text(0, 30, "ABCDEF", 8, 2)
+print_text(0, 10, "GHIL", 8, 2)
+print_text(0, -10, "OR", 8, 2)
+
+// Test numbers
+print_text(0, -30, "012", 8, 2)
+
+// Test words
+print_text(0, -50, "HELLO", 10, 3)
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== 14-Segment Display Complete ===}
+note {Old school digital display aesthetic}

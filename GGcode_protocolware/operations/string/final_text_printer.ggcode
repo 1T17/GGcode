@@ -1,0 +1,155 @@
+// Final Text Printer Example - Correct GGCODE Syntax
+// Demonstrates string iteration with proper G0/G1 commands
+
+note {=== Final Text Printer Example ===}
+note {Correct GGCODE syntax: G0, G1 with bracketed parameters}
+note {String iteration for flexible text rendering}
+
+// Configuration
+let safe_z = 2
+let char_width = 8
+let char_height = 12
+let char_spacing = 3
+
+// Text rendering function using string iteration
+let message = "GGCODE"
+let position_x = 0
+let position_y = 0
+
+note {=== Rendering: [message] ===}
+
+let current_x = position_x
+
+for char in message {
+    note {Drawing character: '[char]' at X[current_x]}
+    
+    if char == "G" {
+        // Draw G: C shape with middle bar
+        G0 Z[safe_z] X[current_x - char_width/2] Y[position_y + char_height/2]
+        G0 Z[0]
+        G1 X[current_x - char_width/2] Y[position_y - char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y]
+        G1 X[current_x] Y[position_y]
+        G0 Z[safe_z]
+        G0 X[current_x - char_width/2] Y[position_y + char_height/2]
+        G0 Z[0]
+        G1 X[current_x + char_width/2] Y[position_y + char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    if char == "C" {
+        // Draw C: open rectangle
+        G0 Z[safe_z] X[current_x + char_width/2] Y[position_y + char_height/2]
+        G0 Z[0]
+        G1 X[current_x - char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x - char_width/2] Y[position_y - char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    if char == "O" {
+        // Draw O: complete rectangle
+        G0 Z[safe_z] X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[0]
+        G1 X[current_x - char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G1 X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    if char == "D" {
+        // Draw D: rounded rectangle
+        G0 Z[safe_z] X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[0]
+        G1 X[current_x - char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G1 X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    if char == "E" {
+        // Draw E: left vertical + three horizontals
+        G0 Z[safe_z] X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[0]
+        G1 X[current_x - char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y + char_height/2]
+        G0 Z[safe_z]
+        G0 X[current_x - char_width/2] Y[position_y]
+        G0 Z[0]
+        G1 X[current_x + char_width/2] Y[position_y]
+        G0 Z[safe_z]
+        G0 X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[0]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    // Move to next character position
+    current_x = current_x + char_width + char_spacing
+}
+
+// Add a second line with numbers
+
+
+
+let numbers = "2024"
+position_y = position_y - char_height - 5
+current_x = position_x
+
+note {=== Rendering numbers: [numbers] ===}
+
+for digit in numbers {
+    note {Drawing digit: '[digit]' at X[current_x]}
+    
+    if digit == "2" {
+        // Seven-segment 2
+        G0 Z[safe_z] X[current_x - char_width/2] Y[position_y + char_height/2]
+        G0 Z[0]
+        G1 X[current_x + char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y]
+        G1 X[current_x - char_width/2] Y[position_y]
+        G1 X[current_x - char_width/2] Y[position_y - char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    if digit == "0" {
+        // Seven-segment 0 (same as O)
+        G0 Z[safe_z] X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[0]
+        G1 X[current_x - char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y + char_height/2]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G1 X[current_x - char_width/2] Y[position_y - char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    if digit == "4" {
+        // Seven-segment 4
+        G0 Z[safe_z] X[current_x - char_width/2] Y[position_y + char_height/2]
+        G0 Z[0]
+        G1 X[current_x - char_width/2] Y[position_y]
+        G1 X[current_x + char_width/2] Y[position_y]
+        G0 Z[safe_z]
+        G0 X[current_x + char_width/2] Y[position_y + char_height/2]
+        G0 Z[0]
+        G1 X[current_x + char_width/2] Y[position_y - char_height/2]
+        G0 Z[safe_z]
+    }
+    
+    current_x = current_x + char_width + char_spacing
+}
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Text Printing Complete ===}
+note {Successfully demonstrated:}
+note {- Correct GGCODE syntax: G0, G1}
+
+note {- String iteration: for char in text}
+note {- Character-by-character rendering}
+note {- Mixed text and numbers}

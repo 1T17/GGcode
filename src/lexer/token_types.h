@@ -25,6 +25,7 @@ typedef enum {
     // Identifiers and literals
     TOKEN_IDENTIFIER,
     TOKEN_NUMBER,
+    TOKEN_STRING,
     TOKEN_GCODE_WORD,      // G0, G1, M3, etc.
 
     // Special

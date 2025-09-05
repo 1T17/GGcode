@@ -1,0 +1,310 @@
+// WORKING SEGMENT-BASED FONT SYSTEM
+// True segment display logic like 7-segment but extended for A-Z
+// Each character defined by which segments to activate
+
+note {=== Working Segment-Based Font System ===}
+note {True segment display - like digital clocks but complete A-Z}
+
+let safe_z = 2
+
+// 7-SEGMENT DISPLAY EXTENDED TO 9-SEGMENT FOR LETTERS
+// Layout:
+//  AAA
+// F   B
+// F GGG B
+// E   C
+//  DDD
+// Plus: H (center vertical), J (diagonal)
+
+function draw_segment_char(x, y, char, size) {
+    note {Segment '[char]' at X[x] Y[y]}
+    
+    let seg_len = size
+    let half = seg_len / 2
+    
+    // Define which segments each character uses
+    // We'll use individual flags instead of bit operations
+    
+    let seg_A = 0  // Top horizontal
+    let seg_B = 0  // Top right vertical
+    let seg_C = 0  // Bottom right vertical
+    let seg_D = 0  // Bottom horizontal
+    let seg_E = 0  // Bottom left vertical
+    let seg_F = 0  // Top left vertical
+    let seg_G = 0  // Middle horizontal
+    let seg_H = 0  // Center vertical (for I, T, etc.)
+    let seg_J = 0  // Diagonal (for A, K, etc.)
+    
+    // CHARACTER DEFINITIONS
+    if char == "A" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_E = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "B" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_D = 1; seg_F = 1; seg_G = 1; seg_H = 1
+    }
+    
+    if char == "C" {
+        seg_A = 1; seg_D = 1; seg_E = 1; seg_F = 1
+    }
+    
+    if char == "D" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_D = 1; seg_H = 1
+    }
+    
+    if char == "E" {
+        seg_A = 1; seg_D = 1; seg_E = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "F" {
+        seg_A = 1; seg_E = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "G" {
+        seg_A = 1; seg_C = 1; seg_D = 1; seg_E = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "H" {
+        seg_B = 1; seg_C = 1; seg_E = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "I" {
+        seg_A = 1; seg_D = 1; seg_H = 1
+    }
+    
+    if char == "J" {
+        seg_B = 1; seg_C = 1; seg_D = 1; seg_E = 1
+    }
+    
+    if char == "K" {
+        seg_E = 1; seg_F = 1; seg_G = 1; seg_J = 1
+    }
+    
+    if char == "L" {
+        seg_D = 1; seg_E = 1; seg_F = 1
+    }
+    
+    if char == "M" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_E = 1; seg_F = 1; seg_J = 1
+    }
+    
+    if char == "N" {
+        seg_B = 1; seg_C = 1; seg_E = 1; seg_F = 1; seg_J = 1
+    }
+    
+    if char == "O" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_D = 1; seg_E = 1; seg_F = 1
+    }
+    
+    if char == "P" {
+        seg_A = 1; seg_B = 1; seg_E = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "Q" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_D = 1; seg_E = 1; seg_F = 1; seg_J = 1
+    }
+    
+    if char == "R" {
+        seg_A = 1; seg_B = 1; seg_E = 1; seg_F = 1; seg_G = 1; seg_J = 1
+    }
+    
+    if char == "S" {
+        seg_A = 1; seg_C = 1; seg_D = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "T" {
+        seg_A = 1; seg_H = 1
+    }
+    
+    if char == "U" {
+        seg_B = 1; seg_C = 1; seg_D = 1; seg_E = 1; seg_F = 1
+    }
+    
+    if char == "V" {
+        seg_E = 1; seg_F = 1; seg_J = 1
+    }
+    
+    if char == "W" {
+        seg_B = 1; seg_C = 1; seg_E = 1; seg_F = 1; seg_J = 1
+    }
+    
+    if char == "X" {
+        seg_J = 1
+    }
+    
+    if char == "Y" {
+        seg_B = 1; seg_F = 1; seg_G = 1; seg_C = 1; seg_D = 1
+    }
+    
+    if char == "Z" {
+        seg_A = 1; seg_D = 1; seg_J = 1
+    }
+    
+    // NUMBERS (classic 7-segment)
+    if char == "0" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_D = 1; seg_E = 1; seg_F = 1
+    }
+    
+    if char == "1" {
+        seg_B = 1; seg_C = 1
+    }
+    
+    if char == "2" {
+        seg_A = 1; seg_B = 1; seg_G = 1; seg_E = 1; seg_D = 1
+    }
+    
+    if char == "3" {
+        seg_A = 1; seg_B = 1; seg_G = 1; seg_C = 1; seg_D = 1
+    }
+    
+    if char == "4" {
+        seg_F = 1; seg_G = 1; seg_B = 1; seg_C = 1
+    }
+    
+    if char == "5" {
+        seg_A = 1; seg_F = 1; seg_G = 1; seg_C = 1; seg_D = 1
+    }
+    
+    if char == "6" {
+        seg_A = 1; seg_F = 1; seg_G = 1; seg_E = 1; seg_D = 1; seg_C = 1
+    }
+    
+    if char == "7" {
+        seg_A = 1; seg_B = 1; seg_C = 1
+    }
+    
+    if char == "8" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_D = 1; seg_E = 1; seg_F = 1; seg_G = 1
+    }
+    
+    if char == "9" {
+        seg_A = 1; seg_B = 1; seg_C = 1; seg_D = 1; seg_F = 1; seg_G = 1
+    }
+    
+    // SPACE
+    if char == " " {
+        // All segments off (already 0)
+    }
+    
+    // DRAW THE ACTIVE SEGMENTS
+    
+    // Segment A (top horizontal)
+    if seg_A == 1 {
+        G0 Z[safe_z] X[x - half] Y[y + seg_len]
+        G0 Z[0]
+        G1 X[x + half] Y[y + seg_len]
+        G0 Z[safe_z]
+    }
+    
+    // Segment B (top right vertical)
+    if seg_B == 1 {
+        G0 Z[safe_z] X[x + half] Y[y + seg_len]
+        G0 Z[0]
+        G1 X[x + half] Y[y + half]
+        G0 Z[safe_z]
+    }
+    
+    // Segment C (bottom right vertical)
+    if seg_C == 1 {
+        G0 Z[safe_z] X[x + half] Y[y + half]
+        G0 Z[0]
+        G1 X[x + half] Y[y]
+        G0 Z[safe_z]
+    }
+    
+    // Segment D (bottom horizontal)
+    if seg_D == 1 {
+        G0 Z[safe_z] X[x - half] Y[y]
+        G0 Z[0]
+        G1 X[x + half] Y[y]
+        G0 Z[safe_z]
+    }
+    
+    // Segment E (bottom left vertical)
+    if seg_E == 1 {
+        G0 Z[safe_z] X[x - half] Y[y + half]
+        G0 Z[0]
+        G1 X[x - half] Y[y]
+        G0 Z[safe_z]
+    }
+    
+    // Segment F (top left vertical)
+    if seg_F == 1 {
+        G0 Z[safe_z] X[x - half] Y[y + seg_len]
+        G0 Z[0]
+        G1 X[x - half] Y[y + half]
+        G0 Z[safe_z]
+    }
+    
+    // Segment G (middle horizontal)
+    if seg_G == 1 {
+        G0 Z[safe_z] X[x - half] Y[y + half]
+        G0 Z[0]
+        G1 X[x + half] Y[y + half]
+        G0 Z[safe_z]
+    }
+    
+    // Segment H (center vertical)
+    if seg_H == 1 {
+        G0 Z[safe_z] X[x] Y[y + seg_len]
+        G0 Z[0]
+        G1 X[x] Y[y]
+        G0 Z[safe_z]
+    }
+    
+    // Segment J (diagonal - simplified as two lines)
+    if seg_J == 1 {
+        G0 Z[safe_z] X[x - half/2] Y[y + seg_len - half/2]
+        G0 Z[0]
+        G1 X[x + half/2] Y[y + half/2]
+        G0 Z[safe_z]
+        G0 X[x + half/2] Y[y + seg_len - half/2]
+        G0 Z[0]
+        G1 X[x - half/2] Y[y + half/2]
+        G0 Z[safe_z]
+    }
+}
+
+// DEMONSTRATION
+note {=== Working Segment Font Demo ===}
+
+// Test classic 7-segment numbers
+let numbers = "0123456789"
+let x_pos = 0
+
+for digit in numbers {
+    draw_segment_char(x_pos, 20, digit, 8)
+    x_pos = x_pos + 12
+}
+
+// Test letters with segment display
+let letters = "HELLO WORLD"
+x_pos = 0
+
+for letter in letters {
+    draw_segment_char(x_pos, 0, letter, 8)
+    x_pos = x_pos + 12
+}
+
+// Test full alphabet
+let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+x_pos = 0
+let y_pos = -20
+
+for letter in alphabet {
+    draw_segment_char(x_pos, y_pos, letter, 6)
+    x_pos = x_pos + 8
+    if x_pos > 100 {
+        x_pos = 0
+        y_pos = y_pos - 10
+    }
+}
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Working Segment Font Complete ===}
+note {True segment-based display logic}
+note {Each character = combination of 9 segments}
+note {Like digital clock but complete A-Z coverage}
+note {Ultra-compact: just segment flags per character}

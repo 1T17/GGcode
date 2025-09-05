@@ -1,0 +1,25 @@
+// Debug G-code in functions
+note {=== Debug G-code Function Test ===}
+
+let safe_z = 2
+
+// Test G-code outside function (should work)
+note {G-code outside function:}
+G0 Z[safe_z] X10 Y10
+G1 X20 Y20
+
+// Test G-code inside function
+function test_gcode() {
+    note {G-code inside function:}
+    G0 Z[safe_z] X30 Y30
+    G1 X40 Y40
+}
+
+// Call the function
+test_gcode()
+
+// More G-code outside function
+note {More G-code outside function:}
+G0 Z[safe_z] X0 Y0
+
+note {=== Debug Complete ===}

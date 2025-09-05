@@ -196,6 +196,11 @@ void fatal_error(const char *source, int line, int column, const char *format, .
     }
 
     free_output_buffer();
+    
+    // Clean up recursion state to ensure system returns to stable state
+    extern void cleanup_recursion_error_state(void);
+    cleanup_recursion_error_state();
+    
     // Don't clear errors here - let the caller handle it
     // clear_errors();
 
@@ -292,4 +297,119 @@ const char* get_error_messages() {
     strcat(result, "\n");
     
     return result;
+}
+
+// Enhanced error reporting specifically for return statements
+void report_return_error(const char *source, int line, int column, const char *context, const char *format, ...) {
+    if (error_count >= MAX_ERRORS) return;
+    
+    char base_msg[200];  // Reduced size to fit in final buffer
+    va_list args;
+    va_start(args, format);
+    vsnprintf(base_msg, sizeof(base_msg), format, args);
+    va_end(args);
+    
+    // Create enhanced error message with return statement context
+    if (source && line > 0 && column > 0) {
+        // Extract the source line
+        const char *line_start = source;
+        const char *p = source;
+        int current_line = 1;
+
+        // Find the start of the target line
+        while (*p && current_line < line) {
+            if (*p == '\n') {
+                current_line++;
+                if (current_line <= line) {
+                    line_start = p + 1;
+                }
+            }
+            p++;
+        }
+
+        // Find the end of the line
+        const char *line_end = line_start;
+        while (*line_end && *line_end != '\n' && *line_end != '\r') {
+            line_end++;
+        }
+
+        int line_len = (int)(line_end - line_start);
+        
+        if (line_len > 0) {
+            int max_line_len = line_len > 60 ? 60 : line_len;  // Reduced to fit in buffer
+            
+            // Create the caret indicator line
+            char caret_line[80] = {0};  // Reduced size
+            int caret_pos = column - 1;
+            if (caret_pos < 0) caret_pos = 0;
+            if (caret_pos > max_line_len) caret_pos = max_line_len;
+            
+            strcpy(caret_line, "      "); // 6 spaces
+            
+            for (int i = 0; i < caret_pos && i < 60; i++) {
+                if (i < line_len && line_start[i] == '\t') {
+                    caret_line[6 + i] = '\t';
+                } else {
+                    caret_line[6 + i] = ' ';
+                }
+            }
+            caret_line[6 + caret_pos] = '^';
+            caret_line[6 + caret_pos + 1] = '\0';
+            
+            // Use shorter format to fit in buffer
+            snprintf(error_messages[error_count], 511, 
+                "\nReturn Error: %.150s\nContext: %.30s\nAt %d:%d: %.*s%s\n%s", 
+                base_msg, 
+                context ? context : "Unknown",
+                line, column,
+                max_line_len, line_start,
+                line_len > 60 ? "..." : "",
+                caret_line
+            );
+        } else {
+            snprintf(error_messages[error_count], 511, 
+                "\nReturn Error: %.200s\nContext: %.50s\nAt %d:%d", 
+                base_msg, 
+                context ? context : "Unknown",
+                line, column
+            );
+        }
+    } else {
+        snprintf(error_messages[error_count], 511, 
+            "\nReturn Error: %.250s\nContext: %.50s", 
+            base_msg, 
+            context ? context : "Unknown"
+        );
+    }
+    
+    error_messages[error_count][511] = '\0';
+    error_count++;
+}
+
+// Error recovery mechanism for parser
+void parser_error_recovery(void) {
+    // This function helps the parser recover from errors and continue parsing
+    // It's called when we want to skip problematic tokens and find a safe point to resume
+    
+    // For now, we implement a simple recovery strategy
+    // In a more sophisticated implementation, we might look for statement boundaries,
+    // block boundaries, or other syntactic landmarks
+    
+    // The actual recovery logic is implemented in the parser where it's called
+    // This function serves as a placeholder for more complex recovery strategies
+}
+
+// Determine if parsing should continue after an error
+int should_continue_parsing_after_error(void) {
+    // Continue parsing if we haven't hit the maximum error count
+    // This allows us to find multiple errors in a single pass
+    return error_count < MAX_ERRORS - 10; // Leave some buffer for additional errors
+}
+
+void clear_fatal_state(void) {
+    fatal_error_triggered = 0;
+    
+    // Ensure recursion state is cleaned up after fatal error recovery
+    extern void cleanup_recursion_error_state(void);
+    cleanup_recursion_error_state();
 }

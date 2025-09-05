@@ -1,0 +1,13 @@
+// Original failing case from the bug report
+// This used to cause "variable limit reached" and stack smashing errors
+
+function infinite_a() { 
+    return infinite_b() 
+}
+
+function infinite_b() { 
+    return infinite_a() 
+}
+
+// This should be detected and handled gracefully
+let result = infinite_a()

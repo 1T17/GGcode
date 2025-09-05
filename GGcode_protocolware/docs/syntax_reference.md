@@ -59,10 +59,34 @@ G[1] Y[15.5]    // Decimal
 G[2] Z[-5]      // Negative
 ```
 
+### Strings
+```ggcode
+let tool_name = "1/4 inch end mill"
+let operation = "roughing pass"
+let message = "Hello World"
+
+// String comparison
+if tool_name == "1/4 inch end mill" {
+    note {Using correct tool: [tool_name]}
+}
+
+// String iteration
+for char in message {
+    note {Character: [char]}
+}
+
+// String iteration with index
+for (char, index) in message {
+    note {Position [index]: [char]}
+}
+```
+
 ### Variables
 ```ggcode
 let position = 25
+let text = "Sample text"
 G[0] X[position]
+note {Current operation: [text]}
 ```
 
 ### Expressions
@@ -83,28 +107,36 @@ G[0] X[10] Y[20]  // End of line comment
 
 ## Complete Example
 ```ggcode
-// GGCODE example showing proper syntax
+// GGCODE example showing proper syntax with strings
 let start_x = 0
 let start_y = 0
 let end_x = 50
 let end_y = 25
 let feed_rate = 800
 let spindle_speed = 1200
+let tool_name = "1/4 inch end mill"
+let operation = "pocket cut"
+
+note {Starting operation: [operation]}
+note {Using tool: [tool_name]}
 
 // Rapid move to start position
 G[0] X[start_x] Y[start_y] Z[5] F[1000]
 
 // Start spindle
 M[3] S[spindle_speed]
+note {Spindle started at [spindle_speed] RPM}
 
 // Linear cut to end position
 G[1] X[end_x] Y[end_y] Z[-2] F[feed_rate]
+note {Cutting from X[start_x] Y[start_y] to X[end_x] Y[end_y]}
 
 // Rapid retract
 G[0] Z[10]
 
 // Stop spindle
 M[5]
+note {Operation [operation] completed}
 ```
 
 ## Error Examples

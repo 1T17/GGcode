@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <errno.h>
 #include <libgen.h>
 #include <unistd.h>
@@ -132,9 +133,8 @@ void print_version(void) {
  * @note Uses standard Unix permissions (0755) for created directories
  */
 int create_directory_if_needed(const char* path) {
-    struct stat st = {0};
-    
-    if (stat(path, &st) == -1) {
+    // Check if directory exists using access() instead of stat() for older GLIBC compatibility
+    if (access(path, F_OK) == -1) {
         // Directory doesn't exist, try to create it
         if (mkdir(path, 0755) == -1) {
             return -1; // Failed to create

@@ -168,8 +168,58 @@ uninstall:
 		echo "⚠️  Found GGCODE in ~/.bashrc - remove manually if needed"; \
 	fi
 
+# Crash Safety Testing
+CRASH_TEST_DIR = tests/crash_safety
+CRASH_TEST_SRC = $(wildcard $(CRASH_TEST_DIR)/config/*.c $(CRASH_TEST_DIR)/framework/*.c)
+CRASH_TEST_INCLUDES = -I$(CRASH_TEST_DIR)/config -I$(CRASH_TEST_DIR)/framework
+
+# Build crash safety test infrastructure
+.PHONY: crash-safety-build
+crash-safety-build: unity
+	@echo "🛡️ Building crash safety test infrastructure..."
+	@mkdir -p bin/crash_safety
+	$(CC) $(CFLAGS) $(CRASH_TEST_INCLUDES) -I$(UNITY_DIR)/src \
+		-o bin/crash_safety/test_infrastructure \
+		$(CRASH_TEST_DIR)/test_infrastructure.c \
+		$(CRASH_TEST_SRC) $(UNITY) -lm
+	@echo "✅ Crash safety infrastructure built"
+
+# Run crash safety infrastructure test
+.PHONY: crash-safety-test-infra
+crash-safety-test-infra: crash-safety-build
+	@echo "🧪 Testing crash safety infrastructure..."
+	@./bin/crash_safety/test_infrastructure
+
+# Run all crash safety tests
+.PHONY: crash-safety-tests
+crash-safety-tests: crash-safety-test-infra
+	@echo "🛡️ Running comprehensive crash safety tests..."
+	@$(CRASH_TEST_DIR)/scripts/run_crash_tests.sh
+
+# Run quick crash safety tests (high priority only)
+.PHONY: crash-safety-quick
+crash-safety-quick: crash-safety-test-infra
+	@echo "🛡️ Running quick crash safety tests..."
+	@$(CRASH_TEST_DIR)/scripts/run_crash_tests.sh --quick
+
+# Run full crash safety tests with memory checking
+.PHONY: crash-safety-full
+crash-safety-full: crash-safety-test-infra
+	@echo "🛡️ Running full crash safety tests with memory checking..."
+	@$(CRASH_TEST_DIR)/scripts/run_crash_tests.sh --full --valgrind
+
+# Clean crash safety test artifacts
+.PHONY: crash-safety-clean
+crash-safety-clean:
+	@echo "🧹 Cleaning crash safety test artifacts..."
+	@rm -rf bin/crash_safety
+	@rm -rf $(CRASH_TEST_DIR)/results/crash_test_*
+	@rm -f $(CRASH_TEST_DIR)/Makefile
+	@rm -f $(CRASH_TEST_DIR)/crash_test_runner
+
 # Clean build and test artifacts
 .PHONY: clean
 clean:
 	@mkdir -p bin
-	rm -f $(OUT) bin/* win/*.exe .testlog.tmp
+	rm -f $(OUT) win/*.exe .testlog.tmp
+	@find bin -name "test_*" -type f -delete 2>/dev/null || true

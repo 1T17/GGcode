@@ -1,4 +1,99 @@
 #include "evaluator.h"
+#include <math.h>
+
+// Compatibility math functions embedded directly
+static double compat_hypot_impl(double x, double y) {
+    return sqrt(x * x + y * y);
+}
+
+static double compat_exp_impl(double x) {
+    if (x == 0.0) return 1.0;
+    if (x < -700.0) return 0.0;  // Underflow protection
+    if (x > 700.0) return INFINITY;  // Overflow protection
+    
+    // Taylor series: e^x = 1 + x + x^2/2! + x^3/3! + ...
+    double result = 1.0;
+    double term = 1.0;
+    
+    for (int i = 1; i < 50; i++) {
+        term *= x / i;
+        result += term;
+        if (fabs(term) < 1e-15) break;  // Convergence check
+    }
+    
+    return result;
+}
+
+static double compat_log_impl(double x) {
+    if (x <= 0.0) return NAN;
+    if (x == 1.0) return 0.0;
+    
+    // For x close to 1, use ln(1+u) = u - u^2/2 + u^3/3 - ...
+    if (x > 0.5 && x < 1.5) {
+        double u = x - 1.0;
+        double result = 0.0;
+        double term = u;
+        
+        for (int i = 1; i < 50; i++) {
+            result += (i % 2 == 1 ? term : -term) / i;
+            term *= u;
+            if (fabs(term) < 1e-15) break;
+        }
+        return result;
+    }
+    
+    // For other values, use change of base and recursion
+    if (x > 1.5) {
+        return compat_log_impl(x / 2.0) + 0.693147180559945309417;  // ln(2)
+    } else {
+        return -compat_log_impl(1.0 / x);
+    }
+}
+
+static double compat_pow_impl(double x, double y) {
+    if (y == 0.0) return 1.0;
+    if (x == 0.0) return (y > 0.0) ? 0.0 : INFINITY;
+    if (x == 1.0) return 1.0;
+    if (y == 1.0) return x;
+    
+    // Handle integer powers efficiently
+    if (y == (int)y) {
+        int n = (int)y;
+        if (n < 0) {
+            return 1.0 / compat_pow_impl(x, -n);
+        }
+        
+        double result = 1.0;
+        double base = x;
+        while (n > 0) {
+            if (n % 2 == 1) result *= base;
+            base *= base;
+            n /= 2;
+        }
+        return result;
+    }
+    
+    // For non-integer powers: x^y = e^(y * ln(x))
+    if (x > 0.0) {
+        return compat_exp_impl(y * compat_log_impl(x));
+    }
+    
+    return NAN;  // Negative base with non-integer exponent
+}
+
+static double compat_fmod_impl(double x, double y) {
+    if (y == 0.0) return NAN;
+    if (x == 0.0) return 0.0;
+    
+    // Simple fmod implementation
+    double quotient = x / y;
+    int int_quotient = (int)quotient;
+    if (quotient < 0 && quotient != int_quotient) {
+        int_quotient--;  // Floor for negative numbers
+    }
+    
+    return x - int_quotient * y;
+}
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +104,7 @@
 #define FATAL_ERROR(msg, ...) fatal_error(NULL, 0, 0, msg, ##__VA_ARGS__)
 #include "config/config.h"
 #include "generator/emitter.h"
+#include "../utils/math_utils.h"
 // Parser moved to runtime state - no more global parser
 
 // Configuration variable detection
@@ -39,7 +135,7 @@ void eval_for(ASTNode *stmt);
 void eval_while(ASTNode *stmt);
 
 static ASTNode *find_function(const char *name);
-static int runtime_has_returned = 0;
+int runtime_has_returned = 0;
 
 double get_number(const Value *val)
 {
@@ -127,10 +223,14 @@ void set_parents_recursive(ASTNode *node, ASTNode *parent) {
             set_parents_recursive(node->while_stmt.body, node);
             break;
         case AST_FOR:
-            set_parents_recursive(node->for_stmt.from, node);
-            set_parents_recursive(node->for_stmt.to, node);
+            if (node->for_stmt.from)
+                set_parents_recursive(node->for_stmt.from, node);
+            if (node->for_stmt.to)
+                set_parents_recursive(node->for_stmt.to, node);
             if (node->for_stmt.step)
                 set_parents_recursive(node->for_stmt.step, node);
+            if (node->for_stmt.iterable)
+                set_parents_recursive(node->for_stmt.iterable, node);
             set_parents_recursive(node->for_stmt.body, node);
             break;
         case AST_FUNCTION:
@@ -161,6 +261,30 @@ void set_parents_recursive(ASTNode *node, ASTNode *parent) {
     }
 }
 
+// Cleanup function for error recovery - ensures system returns to stable state
+void cleanup_recursion_error_state(void)
+{
+    Runtime *rt = get_runtime();
+    
+    // Reset recursion depth to 0 to prevent cascading errors
+    rt->recursion_depth = 0;
+    
+    // Clear return state to prevent stale return values
+    runtime_has_returned = 0;
+    if (runtime_return_value) {
+        free_value(runtime_return_value);
+        runtime_return_value = NULL;
+    }
+    
+    // Clean up function stack to prevent stack corruption
+    function_stack_init();
+    
+    // Clean up any open scopes to prevent memory leaks
+    while (rt->current_scope_level > 0) {
+        exit_scope();
+    }
+}
+
 void reset_runtime_state(void)
 {
     Runtime *rt = get_runtime();
@@ -187,6 +311,12 @@ void reset_runtime_state(void)
     // Reset runtime state
     memset(rt, 0, sizeof(Runtime));
 
+    // Initialize recursion protection
+    rt->recursion_depth = 0;
+    rt->max_recursion_depth = 100;  // Default limit for recursion protection
+
+    // Initialize function stack
+    function_stack_init();
 
     // Reset emitter state
     extern void reset_emitter_state(void);
@@ -282,7 +412,22 @@ else if (val->type == VAL_ARRAY)
         }
     }
 }
-
+    else if (val->type == VAL_STRING)
+    {
+        if (val->string) {
+            copy->string = strdup(val->string);
+            if (!copy->string) {
+                free(copy);
+                FATAL_ERROR("[copy_value] strdup failed for string Value");
+            }
+        } else {
+            copy->string = strdup("");
+            if (!copy->string) {
+                free(copy);
+                FATAL_ERROR("[copy_value] strdup failed for empty string Value");
+            }
+        }
+    }
     else
     {
         printf("[copy_value] Unknown Value type: %d\n", val->type);
@@ -304,6 +449,9 @@ Value *eval_expr(ASTNode *node)
     {
     case AST_NUMBER:
         return make_number_value(node->number.value);
+
+    case AST_STRING:
+        return make_string_value(node->string_literal.value);
 
 case AST_VAR:
 {
@@ -339,9 +487,48 @@ case AST_VAR:
 
     case AST_BINARY:
     {
-        double left = get_number(eval_expr(node->binary_expr.left));
-        double right = get_number(eval_expr(node->binary_expr.right));
+        Value *left_val = eval_expr(node->binary_expr.left);
+        Value *right_val = eval_expr(node->binary_expr.right);
         Token_Type op = node->binary_expr.op;
+
+        if (!left_val || !right_val) {
+            report_error("[Runtime evaluator] Failed to evaluate binary expression operands");
+            return make_number_value(0.0);
+        }
+
+        // Handle comparison operators that can work with different types
+        if (op == TOKEN_EQUAL_EQUAL || op == TOKEN_BANG_EQUAL) {
+            int result = 0;
+            
+            // Both are strings - compare string values
+            if (left_val->type == VAL_STRING && right_val->type == VAL_STRING) {
+                result = strcmp(left_val->string, right_val->string) == 0;
+            }
+            // Both are numbers - compare numeric values
+            else if (left_val->type == VAL_NUMBER && right_val->type == VAL_NUMBER) {
+                result = left_val->number == right_val->number;
+            }
+            // Different types - not equal
+            else {
+                result = 0;
+            }
+            
+            // Apply negation for != operator
+            if (op == TOKEN_BANG_EQUAL) {
+                result = !result;
+            }
+            
+            return make_number_value(result ? 1.0 : 0.0);
+        }
+
+        // For all other operations, we need numbers
+        if (left_val->type != VAL_NUMBER || right_val->type != VAL_NUMBER) {
+            report_error("[Runtime evaluator] Arithmetic operations require numeric operands");
+            return make_number_value(0.0);
+        }
+
+        double left = left_val->number;
+        double right = right_val->number;
 
         switch (op)
         {
@@ -352,15 +539,23 @@ case AST_VAR:
         case TOKEN_STAR:
             return make_number_value(left * right);
         case TOKEN_SLASH:
-            if (right == 0)
+            if (right == 0.0)
             {
-                report_error("[Runtime evaluator] Division by zero (%.5f / %.5f)", left, right);
-                return make_number_value(0.0);
+                // Modern IEEE 754 compliant division by zero handling
+                if (left > 0.0) {
+                    report_error("[Runtime evaluator] Division by zero: %.5f / 0.0 = +∞", left);
+                    return make_raw_number_value(INFINITY);
+                } else if (left < 0.0) {
+                    report_error("[Runtime evaluator] Division by zero: %.5f / 0.0 = -∞", left);
+                    return make_raw_number_value(-INFINITY);
+                } else {
+                    report_error("[Runtime evaluator] Indeterminate form: 0.0 / 0.0 = NaN");
+                    return make_raw_number_value(NAN);
+                }
             }
-
             return make_number_value(left / right);
         case TOKEN_CARET:
-            return make_number_value(pow(left, right));
+            return make_number_value(compat_pow_impl(left, right));
         case TOKEN_LESS:
             return make_number_value(left < right ? 1.0 : 0.0);
         case TOKEN_LESS_EQUAL:
@@ -370,14 +565,8 @@ case AST_VAR:
         case TOKEN_GREATER_EQUAL:
             return make_number_value(left >= right ? 1.0 : 0.0);
 
-        case TOKEN_EQUAL_EQUAL:
-        {
-            double result = left == right ? 1.0 : 0.0;
-            //printf("[Eval evaluator] %.2f == %.2f => %.2f\n", left, right, result);
-            return make_number_value(result);
-        }
-
         case TOKEN_BANG_EQUAL:
+            // This case is handled above with TOKEN_EQUAL_EQUAL
             return make_number_value(left != right ? 1.0 : 0.0);
         case TOKEN_AND:
             return make_number_value((left != 0.0 && right != 0.0) ? 1.0 : 0.0);
@@ -459,12 +648,16 @@ case AST_VAR:
         {
             if (cond->number != 0)
             {
-                return eval_expr(node->if_stmt.then_branch);
+                Value *result = eval_expr(node->if_stmt.then_branch);
+                // Return statements in if expressions are handled by the branch evaluation
+                return result;
             }
-        }
-        else if (node->if_stmt.else_branch)
-        {
-            return eval_expr(node->if_stmt.else_branch);
+            else if (node->if_stmt.else_branch)
+            {
+                Value *result = eval_expr(node->if_stmt.else_branch);
+                // Return statements in else expressions are handled by the branch evaluation
+                return result;
+            }
         }
         return make_number_value(0.0);
     }
@@ -489,10 +682,37 @@ case AST_VAR:
 
 case AST_RETURN:
 {
-runtime_has_returned = 1;
-Value *ret = eval_expr(node->return_stmt.expr);
-runtime_return_value = copy_value(ret);   // <- COPY IMMEDIATELY
-return ret;
+    runtime_has_returned = 1;
+    
+    // Handle null expressions (bare return statements)
+    if (node->return_stmt.expr == NULL) {
+        // Clean up any existing return value
+        if (runtime_return_value) {
+            free_value(runtime_return_value);
+        }
+        runtime_return_value = make_number_value(0.0);
+        return runtime_return_value;
+    }
+    
+    // Evaluate the return expression
+    Value *ret = eval_expr(node->return_stmt.expr);
+    if (!ret) {
+        // If expression evaluation failed, return 0
+        if (runtime_return_value) {
+            free_value(runtime_return_value);
+        }
+        runtime_return_value = make_number_value(0.0);
+        return runtime_return_value;
+    }
+    
+    // Clean up any existing return value before setting new one
+    if (runtime_return_value) {
+        free_value(runtime_return_value);
+    }
+    
+    // Copy the return value for later use
+    runtime_return_value = copy_value(ret);
+    return ret;
 }
 
 
@@ -534,13 +754,23 @@ return ret;
                 break;
             case TOKEN_SLASH_EQUAL:
                 if (rhs->number == 0.0) {
-                    report_error("[eval_expr] Division by zero in /= operation");
-                    return make_number_value(0.0);
+                    // Modern IEEE 754 compliant division by zero handling for compound assignment
+                    if (current->number > 0.0) {
+                        report_error("[eval_expr] Division by zero in /= operation: %.5f /= 0.0 = +∞", current->number);
+                        result = INFINITY;
+                    } else if (current->number < 0.0) {
+                        report_error("[eval_expr] Division by zero in /= operation: %.5f /= 0.0 = -∞", current->number);
+                        result = -INFINITY;
+                    } else {
+                        report_error("[eval_expr] Indeterminate form in /= operation: 0.0 /= 0.0 = NaN");
+                        result = NAN;
+                    }
+                } else {
+                    result = current->number / rhs->number;
                 }
-                result = current->number / rhs->number;
                 break;
             case TOKEN_CARET_EQUAL:
-                result = pow(current->number, rhs->number);
+                result = compat_pow_impl(current->number, rhs->number);
                 break;
             case TOKEN_AMPERSAND_EQUAL:
                 result = (double)((int)current->number & (int)rhs->number);
@@ -559,8 +789,12 @@ return ret;
                 return make_number_value(0.0);
         }
 
-        // Set the new value
-        set_var(node->compound_assign.name, make_number_value(result));
+        // Set the new value (use raw if it contains special values)
+        if (isnan(result) || isinf(result)) {
+            set_var(node->compound_assign.name, make_raw_number_value(result));
+        } else {
+            set_var(node->compound_assign.name, make_number_value(result));
+        }
         return make_number_value(0.0);
     }
 
@@ -609,7 +843,12 @@ case AST_BLOCK:
 
 case AST_WHILE: {
     while (get_number(eval_expr(node->while_stmt.condition))) {
-        eval_expr(node->while_stmt.body);
+        // While loop body should be evaluated as a block, not an expression
+        if (node->while_stmt.body->type == AST_BLOCK) {
+            eval_block(node->while_stmt.body);
+        } else {
+            eval_expr(node->while_stmt.body);
+        }
 
         if (runtime_has_returned) {
             break;
@@ -621,6 +860,13 @@ case AST_WHILE: {
 
 
 
+
+    case AST_EXPR_STMT:
+        // Expression statements should evaluate their inner expression
+        if (node->expr_stmt.expr) {
+            return eval_expr(node->expr_stmt.expr);
+        }
+        return make_number_value(0.0);
 
     default:
 
@@ -655,7 +901,7 @@ Value *eval_function_call(ASTNode *node)
     if (strcmp(name, "abs") == 0 && argc == 1)
         return make_number_value(fabs(SCALAR(0)));
     if (strcmp(name, "mod") == 0 && argc == 2)
-        return make_number_value(fmod(SCALAR(0), SCALAR(1)));
+        return make_number_value(compat_fmod_impl(SCALAR(0), SCALAR(1)));
     if (strcmp(name, "floor") == 0 && argc == 1)
         return make_number_value(floor(SCALAR(0)));
     if (strcmp(name, "ceil") == 0 && argc == 1)
@@ -666,6 +912,18 @@ Value *eval_function_call(ASTNode *node)
         return make_number_value(fmin(SCALAR(0), SCALAR(1)));
     if (strcmp(name, "max") == 0 && argc == 2)
         return make_number_value(fmax(SCALAR(0), SCALAR(1)));
+    
+    // --- Safe Math Functions ---
+    if (strcmp(name, "safe_divide") == 0 && argc == 2) {
+        double result = safe_divide(SCALAR(0), SCALAR(1));
+        return (isnan(result) || isinf(result)) ? make_raw_number_value(result) : make_number_value(result);
+    }
+    if (strcmp(name, "is_finite") == 0 && argc == 1)
+        return make_number_value(is_safe_number(SCALAR(0)) ? 1.0 : 0.0);
+    if (strcmp(name, "is_nan") == 0 && argc == 1)
+        return make_number_value(isnan(SCALAR(0)) ? 1.0 : 0.0);
+    if (strcmp(name, "is_inf") == 0 && argc == 1)
+        return make_number_value(isinf(SCALAR(0)) ? 1.0 : 0.0);
     if (strcmp(name, "clamp") == 0 && argc == 3)
     {
         double v = SCALAR(0);
@@ -696,9 +954,9 @@ Value *eval_function_call(ASTNode *node)
     if (strcmp(name, "sqrt") == 0 && argc == 1)
         return make_number_value(sqrt(SCALAR(0)));
     if (strcmp(name, "pow") == 0 && argc == 2)
-        return make_number_value(pow(SCALAR(0), SCALAR(1)));
+        return make_number_value(compat_pow_impl(SCALAR(0), SCALAR(1)));
     if (strcmp(name, "hypot") == 0 && argc == 2)
-        return make_number_value(hypot(SCALAR(0), SCALAR(1)));
+        return make_number_value(compat_hypot_impl(SCALAR(0), SCALAR(1)));
     if (strcmp(name, "lerp") == 0 && argc == 3)
     {
         double a = SCALAR(0), b = SCALAR(1), t = SCALAR(2);
@@ -713,7 +971,7 @@ Value *eval_function_call(ASTNode *node)
     if (strcmp(name, "distance") == 0 && argc == 4)
     {
         double x1 = SCALAR(0), y1 = SCALAR(1), x2 = SCALAR(2), y2 = SCALAR(3);
-        return make_number_value(hypot(x2 - x1, y2 - y1));
+        return make_number_value(compat_hypot_impl(x2 - x1, y2 - y1));
     }
 
     // --- Optional / parser_advanced ---
@@ -735,11 +993,11 @@ Value *eval_function_call(ASTNode *node)
 
     if (strcmp(name, "log") == 0 && argc == 1)
     {
-        return make_number_value(log(SCALAR(0)));
+        return make_number_value(compat_log_impl(SCALAR(0)));
     }
 
     if (strcmp(name, "exp") == 0 && argc == 1)
-        return make_number_value(exp(SCALAR(0)));
+        return make_number_value(compat_exp_impl(SCALAR(0)));
     if (strcmp(name, "noise") == 0 && argc == 1)
     {
         return make_number_value(sin(SCALAR(0))); // Placeholder
@@ -753,16 +1011,43 @@ Value *eval_function_call(ASTNode *node)
         return make_number_value(0.0);
     }
 
+    // Check recursion depth before entering function scope
+    Runtime *rt = get_runtime();
+    if (rt->recursion_depth >= rt->max_recursion_depth) {
+        report_error("Recursion limit exceeded (%d calls). Possible infinite recursion in function '%s'", 
+                     rt->max_recursion_depth, name);
+        
+        // Perform proper cleanup when recursion limit is exceeded
+        // Reset recursion depth to prevent further issues
+        rt->recursion_depth = 0;
+        
+        // Clear any pending return state to ensure clean state
+        runtime_has_returned = 0;
+        if (runtime_return_value) {
+            free_value(runtime_return_value);
+            runtime_return_value = NULL;
+        }
+        
+        // Return safe default value instead of crashing
+        return make_number_value(0.0);
+    }
 
-
-
-
+    // Increment recursion depth when entering function execution
+    rt->recursion_depth++;
 
     // ✅ Clear return state before executing function
     runtime_has_returned = 0;
     runtime_return_value = NULL;
 
     enter_scope();
+    
+    // Push function context for return statement validation
+    if (!function_stack_push(name, func)) {
+        // Function stack push failed, clean up and return
+        rt->recursion_depth--;
+        exit_scope();
+        return make_number_value(0.0);
+    }
 
     int param_count = func->function_stmt.param_count;
     for (int i = 0; i < param_count; i++)
@@ -771,8 +1056,20 @@ Value *eval_function_call(ASTNode *node)
 if (i < argc)
     arg_val = eval_expr(args[i]);
 
-if (!arg_val || arg_val->type != VAL_NUMBER) {
+if (!arg_val) {
     fprintf(stderr, "🚨 ERROR: Failed to evaluate argument %d for function '%s'\n", i, name);
+    // Proper cleanup before fatal error
+    rt->recursion_depth--;
+    function_stack_pop();
+    exit_scope();
+    
+    // Clear return state to prevent stale values
+    runtime_has_returned = 0;
+    if (runtime_return_value) {
+        free_value(runtime_return_value);
+        runtime_return_value = NULL;
+    }
+    
     FATAL_ERROR("🚨 ERROR: Failed to evaluate argument %d for function '%s'", i, name);
 }
 
@@ -787,10 +1084,12 @@ ASTNode *body = func->function_stmt.body;
 for (int i = 0; i < body->block.count; i++) {
     ASTNode *stmt = body->block.statements[i];
 
-    // ✅ Always evaluate control flow and expressions
-    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_WHILE || stmt->type == AST_FOR ) {
+    // ✅ Use emit_gcode for statements that need proper G-code emission
+    // Use eval_expr for everything else to maintain proper execution semantics
+    if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_FOR) {
         emit_gcode(stmt);
     } else {
+        // Handle expressions, assignments, conditionals, and returns through eval_expr
         eval_expr(stmt);
     }
 
@@ -804,18 +1103,6 @@ for (int i = 0; i < body->block.count; i++) {
 
 
 
-// for (int i = 0; i < body->block.count; i++) {
-//     ASTNode *stmt = body->block.statements[i];
-
-//     // Evaluate expressions (e.g., return), emit G-code lines
-//     if (stmt->type == AST_GCODE || stmt->type == AST_NOTE || stmt->type == AST_EXPR_STMT || stmt->type == AST_IF || stmt->type == AST_FOR || stmt->type == AST_WHILE)
-//         emit_gcode(stmt, 0);
-//     else
-//         eval_expr(stmt);
-
-//     if (runtime_has_returned)
-//         break;
-// }
 
 
 
@@ -834,7 +1121,14 @@ for (int i = 0; i < body->block.count; i++) {
 
 
 
+
+    // Pop function context before exiting scope
+    function_stack_pop();
+    
     exit_scope();
+
+    // Decrement recursion depth when function returns normally
+    rt->recursion_depth--;
 
     // ✅ Return the result if set, or 0 otherwise
     if (runtime_return_value)
@@ -957,7 +1251,10 @@ void eval_block(ASTNode *block)
 
 
         case AST_EXPR_STMT:
-
+            // Expression statements should evaluate their inner expression
+            if (stmt->expr_stmt.expr) {
+                eval_expr(stmt->expr_stmt.expr);
+            }
             break;
 
 
@@ -991,15 +1288,55 @@ void eval_if(ASTNode *stmt)
     if (cond && cond->type == VAL_NUMBER && cond->number != 0)
     {
         eval_block(stmt->if_stmt.then_branch);
+        // Return statements in if blocks are handled by eval_block
+        // No need to check runtime_has_returned here as it propagates up
     }
     else if (stmt->if_stmt.else_branch)
     {
         eval_block(stmt->if_stmt.else_branch);
+        // Return statements in else blocks are handled by eval_block
+        // No need to check runtime_has_returned here as it propagates up
     }
 }
 
 void eval_for(ASTNode *stmt)
 {
+    // Handle string iteration: for char in string_var or for (char, index) in string_var
+    if (stmt->for_stmt.is_string_iteration) {
+        const Value *iterable_val = eval_expr(stmt->for_stmt.iterable);
+        
+        if (!iterable_val || iterable_val->type != VAL_STRING) {
+            report_error("[Runtime evaluator] FOR-IN loop expects string value");
+            return;
+        }
+        
+        const char *str = iterable_val->string;
+        if (!str) {
+            return; // Empty string, nothing to iterate
+        }
+        
+        // Iterate through each character
+        for (int i = 0; str[i] != '\0'; i++) {
+            // Create a single-character string for the loop variable
+            char char_str[2] = {str[i], '\0'};
+            set_var(stmt->for_stmt.var, make_string_value(char_str));
+            
+            // If index variable is specified, set it too
+            if (stmt->for_stmt.index_var) {
+                set_var(stmt->for_stmt.index_var, make_number_value((double)i));
+            }
+            
+            eval_block(stmt->for_stmt.body);
+            
+            // Check if return was encountered in the loop body
+            if (runtime_has_returned) {
+                break;
+            }
+        }
+        return;
+    }
+
+    // Traditional numeric for loop: for i = 1..10
     const Value *v_from = eval_expr(stmt->for_stmt.from);
     const Value *v_to = eval_expr(stmt->for_stmt.to);
     const Value *v_step = stmt->for_stmt.step ? eval_expr(stmt->for_stmt.step) : make_number_value(1.0);
@@ -1024,6 +1361,11 @@ void eval_for(ASTNode *stmt)
     {
         set_var(stmt->for_stmt.var, make_number_value(i));
         eval_block(stmt->for_stmt.body);
+        
+        // Check if return was encountered in the loop body
+        if (runtime_has_returned) {
+            break;
+        }
     }
 }
 
@@ -1093,6 +1435,12 @@ void eval_while(ASTNode *stmt)
         }
 
         eval_block(stmt->while_stmt.body);
+        
+        // Check if return was encountered in the loop body
+        if (runtime_has_returned) {
+            break;
+        }
+        
         iter++;
 
         if (iter > 100)
@@ -1184,6 +1532,70 @@ static ASTNode *find_function(const char *name)
     return NULL;
 }
 
+// Function context stack management functions
+void function_stack_init(void)
+{
+    Runtime *rt = get_runtime();
+    rt->function_stack.count = 0;
+    memset(rt->function_stack.contexts, 0, sizeof(rt->function_stack.contexts));
+}
+
+int function_stack_push(const char *function_name, ASTNode *function_node)
+{
+    Runtime *rt = get_runtime();
+    
+    if (rt->function_stack.count >= MAX_FUNCTION_STACK_DEPTH) {
+        report_error("[Function Stack] Maximum function call depth exceeded (%d)", MAX_FUNCTION_STACK_DEPTH);
+        return 0; // Failure
+    }
+    
+    FunctionContext *ctx = &rt->function_stack.contexts[rt->function_stack.count];
+    ctx->function_name = strdup(function_name);  // Make a copy of the name
+    ctx->scope_level = rt->current_scope_level;
+    ctx->function_node = function_node;
+    
+    rt->function_stack.count++;
+    return 1; // Success
+}
+
+void function_stack_pop(void)
+{
+    Runtime *rt = get_runtime();
+    
+    if (rt->function_stack.count <= 0) {
+        report_error("[Function Stack] Attempted to pop from empty function stack");
+        return;
+    }
+    
+    rt->function_stack.count--;
+    FunctionContext *ctx = &rt->function_stack.contexts[rt->function_stack.count];
+    
+    // Free the duplicated function name
+    if (ctx->function_name) {
+        free(ctx->function_name);
+        ctx->function_name = NULL;
+    }
+    ctx->function_node = NULL;
+    ctx->scope_level = 0;
+}
+
+FunctionContext *function_stack_peek(void)
+{
+    Runtime *rt = get_runtime();
+    
+    if (rt->function_stack.count <= 0) {
+        return NULL;
+    }
+    
+    return &rt->function_stack.contexts[rt->function_stack.count - 1];
+}
+
+int is_inside_function(void)
+{
+    Runtime *rt = get_runtime();
+    return rt->function_stack.count > 0;
+}
+
 
 
 
@@ -1204,6 +1616,11 @@ void free_value(Value *val) {
         }
         free(val->array.items);
         val->array.items = NULL;
+    } else if (val->type == VAL_STRING) {
+        if (val->string) {
+            free(val->string);
+            val->string = NULL;
+        }
     }
 
     val->type = FREED_MAGIC;  // poison to catch reuse

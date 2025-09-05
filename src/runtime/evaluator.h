@@ -20,7 +20,8 @@ void exit_scope(void);
 // --- Value types ---
 typedef enum {
     VAL_NUMBER,
-    VAL_ARRAY
+    VAL_ARRAY,
+    VAL_STRING
 } ValueType;
 
 // --- Value ---
@@ -32,11 +33,14 @@ typedef struct Value {
             struct Value **items;
             size_t count;
         } array;        // VAL_ARRAY
+        char *string;   // VAL_STRING
     };
 } Value;
 
 // --- Function declarations ---
 Value *make_number_value(double x);
+Value *make_raw_number_value(double x); // Allows NaN and Infinity
+Value *make_string_value(const char *str);
 Value *copy_value(Value *val);
 void free_value(Value *val);
 
@@ -71,9 +75,22 @@ void register_function(ASTNode *node);
 void reset_runtime_state(void); // test/reset
 void reset_parser_state(void);
 
+// Error recovery and cleanup
+void cleanup_recursion_error_state(void);
+
+// Function context stack management
+int function_stack_push(const char *function_name, ASTNode *function_node);
+void function_stack_pop(void);
+FunctionContext *function_stack_peek(void);
+int is_inside_function(void);
+void function_stack_init(void);
+
 ASTNode *parse_script_from_string(const char *source);
 
 // Configuration variable detection
 void check_config_variable(const char* name, Value* val);
+
+// Runtime state flags
+extern int runtime_has_returned;
 
 #endif // EVALUATOR_H

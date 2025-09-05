@@ -1,0 +1,2 @@
+[2025-09-04 23:01:17] Starting crash safety test run: crash_test_20250904_230117
+[2025-09-04 23:01:17] Configuration: Priority=1, Timeout=60s, Valgrind=false

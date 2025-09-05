@@ -501,6 +501,104 @@ void test_exponentiation_operator()
     free_token_list(&tokens);
 }
 
+void test_basic_string_literals()
+{
+    TokenList tokens = lex_source("\"hello world\" \"\" \"text123\"");
+    print_tokens(&tokens);
+    TEST_ASSERT_EQUAL(4, tokens.count); // 3 strings + EOF
+
+    assert_token(tokens.tokens[0], TOKEN_STRING, "hello world");
+    assert_token(tokens.tokens[1], TOKEN_STRING, "");
+    assert_token(tokens.tokens[2], TOKEN_STRING, "text123");
+    assert_token(tokens.tokens[3], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+void test_string_escape_sequences()
+{
+    TokenList tokens = lex_source("\"He said \\\"hello\\\"\" \"line1\\nline2\" \"col1\\tcol2\" \"path\\\\file\"");
+    print_tokens(&tokens);
+    TEST_ASSERT_EQUAL(5, tokens.count); // 4 strings + EOF
+
+    assert_token(tokens.tokens[0], TOKEN_STRING, "He said \"hello\"");
+    assert_token(tokens.tokens[1], TOKEN_STRING, "line1\nline2");
+    assert_token(tokens.tokens[2], TOKEN_STRING, "col1\tcol2");
+    assert_token(tokens.tokens[3], TOKEN_STRING, "path\\file");
+    assert_token(tokens.tokens[4], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+void test_string_with_mixed_content()
+{
+    TokenList tokens = lex_source("\"Numbers: 123, symbols: !@#$%^&*()\"");
+    print_tokens(&tokens);
+    TEST_ASSERT_EQUAL(2, tokens.count); // 1 string + EOF
+
+    assert_token(tokens.tokens[0], TOKEN_STRING, "Numbers: 123, symbols: !@#$%^&*()");
+    assert_token(tokens.tokens[1], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+void test_string_in_variable_assignment()
+{
+    TokenList tokens = lex_source("let name = \"hello world\"");
+    print_tokens(&tokens);
+    TEST_ASSERT_EQUAL(5, tokens.count); // let, name, =, string, EOF
+
+    assert_token(tokens.tokens[0], TOKEN_LET, "let");
+    assert_token(tokens.tokens[1], TOKEN_IDENTIFIER, "name");
+    assert_token(tokens.tokens[2], TOKEN_EQUAL, "=");
+    assert_token(tokens.tokens[3], TOKEN_STRING, "hello world");
+    assert_token(tokens.tokens[4], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+void test_unterminated_string_error()
+{
+    // Test unterminated string - should produce TOKEN_UNKNOWN due to error handling
+    TokenList tokens = lex_source("\"unterminated string");
+    print_tokens(&tokens);
+    
+    // Should get TOKEN_UNKNOWN due to error, then EOF
+    TEST_ASSERT_EQUAL(2, tokens.count);
+    TEST_ASSERT_EQUAL(TOKEN_UNKNOWN, tokens.tokens[0].type);
+    assert_token(tokens.tokens[1], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+void test_invalid_escape_sequence_error()
+{
+    // Test invalid escape sequence - should produce TOKEN_UNKNOWN due to error handling
+    TokenList tokens = lex_source("\"invalid \\x escape\"");
+    print_tokens(&tokens);
+    
+    // Should get TOKEN_UNKNOWN due to error, then EOF
+    TEST_ASSERT_EQUAL(2, tokens.count);
+    TEST_ASSERT_EQUAL(TOKEN_UNKNOWN, tokens.tokens[0].type);
+    assert_token(tokens.tokens[1], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
+void test_string_with_unterminated_escape()
+{
+    // Test string ending with backslash - should produce TOKEN_UNKNOWN due to error handling
+    TokenList tokens = lex_source("\"ends with backslash\\");
+    print_tokens(&tokens);
+    
+    // Should get TOKEN_UNKNOWN due to error, then EOF
+    TEST_ASSERT_EQUAL(2, tokens.count);
+    TEST_ASSERT_EQUAL(TOKEN_UNKNOWN, tokens.tokens[0].type);
+    assert_token(tokens.tokens[1], TOKEN_EOF, "EOF");
+
+    free_token_list(&tokens);
+}
+
 // === UNITY HOOKS ===
 
 void setUp(void) {}
@@ -534,5 +632,12 @@ int main(void)
     RUN_TEST(test_builtin_constants_and_math_functions); // 23
     RUN_TEST(test_step_and_dotdotlt);                    // 24
     RUN_TEST(test_exponentiation_operator);              // 25
+    RUN_TEST(test_basic_string_literals);                // 26
+    RUN_TEST(test_string_escape_sequences);              // 27
+    RUN_TEST(test_string_with_mixed_content);            // 28
+    RUN_TEST(test_string_in_variable_assignment);        // 29
+    RUN_TEST(test_unterminated_string_error);            // 30
+    RUN_TEST(test_invalid_escape_sequence_error);        // 31
+    RUN_TEST(test_string_with_unterminated_escape);      // 32
     return UNITY_END();
 }

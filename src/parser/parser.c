@@ -13,6 +13,14 @@
 #define PARSE_ERROR(msg, ...) \
     fatal_error(get_runtime()->parser.lexer->source, get_runtime()->parser.current.line, get_runtime()->parser.current.column, msg, ##__VA_ARGS__)
 
+// Enhanced error reporting macro specifically for return statements
+#define RETURN_ERROR(context, msg, ...) \
+    report_return_error(get_runtime()->parser.lexer->source, get_runtime()->parser.current.line, get_runtime()->parser.current.column, context, msg, ##__VA_ARGS__)
+
+// Non-fatal error reporting that allows parsing to continue
+#define PARSE_WARNING(msg, ...) \
+    report_error("Warning at %d:%d: " msg, get_runtime()->parser.current.line, get_runtime()->parser.current.column, ##__VA_ARGS__)
+
 // Parser moved to runtime state - no more global parser
 
 static ASTNode *parse_binary_expression();
@@ -151,6 +159,27 @@ void parser_advance()
     rt->parser.previous = rt->parser.current;
     rt->parser.current = lexer_next_token(rt->parser.lexer);
     // printf("[Parser parser_advance()] got token: type=%d, value=%s\n", rt->parser.current.type, rt->parser.current.value);
+}
+
+// Function definition context tracking for parser
+void parser_enter_function_definition(void)
+{
+    Runtime *rt = get_runtime();
+    rt->parser.function_definition_depth++;
+}
+
+void parser_exit_function_definition(void)
+{
+    Runtime *rt = get_runtime();
+    if (rt->parser.function_definition_depth > 0) {
+        rt->parser.function_definition_depth--;
+    }
+}
+
+int parser_is_inside_function_definition(void)
+{
+    Runtime *rt = get_runtime();
+    return rt->parser.function_definition_depth > 0;
 }
 
 static int match(Token_Type type)
@@ -359,6 +388,25 @@ if (rt->parser.current.type == TOKEN_LPAREN)
         node->type = AST_NUMBER;
         node->number.value = atof(rt->parser.current.value);
         parser_advance(); // consume number
+        return node;
+    }
+
+    // Handle string literals
+    if (rt->parser.current.type == TOKEN_STRING)
+    {
+        ASTNode *node = malloc(sizeof(ASTNode));
+        if (!node) {
+            PARSE_ERROR("Memory allocation failed for string literal");
+        }
+        
+        node->type = AST_STRING;
+        node->string_literal.value = strdup(rt->parser.current.value);
+        if (!node->string_literal.value) {
+            free(node);
+            PARSE_ERROR("Memory allocation failed for string literal value");
+        }
+        
+        parser_advance(); // consume string
         return node;
     }
 
@@ -580,8 +628,14 @@ static ASTNode *parse_function()
 
     parser_advance(); // Consume ')'
 
+    // Enter function definition context for return statement validation
+    parser_enter_function_definition();
+    
     // Parse function body block
     ASTNode *body = parse_block();
+    
+    // Exit function definition context
+    parser_exit_function_definition();
 
     // Build function node
     ASTNode *node = calloc(1, sizeof(ASTNode));
@@ -601,11 +655,177 @@ static ASTNode *parse_function()
 
 static ASTNode *parse_return()
 {
+    Runtime *rt = get_runtime();
+    
+    // Store the return token position for detailed error reporting
+    Token return_token = rt->parser.current;
     parser_advance(); // skip 'return'
-    ASTNode *expr = parse_binary_expression();
+    
+    // Enhanced function context validation with detailed error messages
+    if (!parser_is_inside_function_definition()) {
+        // Provide context-specific error messages based on current parsing context
+        if (rt->parser.lexer->line == 1) {
+            PARSE_ERROR("Return statement at global scope (line %d:%d) - return statements are only valid inside functions.\n"
+                       "  → Suggestion: Wrap your code in a function definition:\n"
+                       "    function main() {\n"
+                       "        return %s\n"
+                       "    }", 
+                       return_token.line, return_token.column,
+                       rt->parser.current.type != TOKEN_NEWLINE && rt->parser.current.type != TOKEN_EOF ? "your_expression" : "");
+        } else {
+            PARSE_ERROR("Return statement outside function context (line %d:%d) - return statements must be inside function definitions.\n"
+                       "  → Current context: Global scope\n"
+                       "  → Suggestion: Move this return statement inside a function", 
+                       return_token.line, return_token.column);
+        }
+        
+        // Error recovery: create a dummy return node to continue parsing
+        ASTNode *error_node = malloc(sizeof(ASTNode));
+        if (error_node) {
+            error_node->type = AST_NOP;  // Use NOP to indicate error recovery
+        }
+        return error_node;
+    }
+    
+    ASTNode *expr = NULL;
+    
+    // Enhanced handling of optional return expressions (bare 'return' statements)
+    // Check if the next token indicates end of statement or block
+    if (rt->parser.current.type != TOKEN_NEWLINE && 
+        rt->parser.current.type != TOKEN_EOF &&
+        rt->parser.current.type != TOKEN_RBRACE &&
+        rt->parser.current.type != TOKEN_SEMICOLON) {
+        
+        // Save current parser state for comprehensive error recovery
+        Token saved_current = rt->parser.current;
+        
+        // Parse the return expression with enhanced error recovery
+        expr = parse_binary_expression();
+        
+        // Comprehensive validation for complex mathematical expressions
+        if (!expr) {
+            // Enhanced error recovery with detailed context and suggestions
+            switch (saved_current.type) {
+                case TOKEN_PLUS:
+                case TOKEN_MINUS:
+                case TOKEN_STAR:
+                case TOKEN_SLASH:
+                case TOKEN_CARET:
+                    PARSE_ERROR("Invalid operator '%s' at start of return expression (line %d:%d).\n"
+                               "  → Error: Operators cannot appear at the beginning of expressions\n"
+                               "  → Suggestion: Add a value before the operator, e.g., 'return 0 %s expression'", 
+                               saved_current.value, saved_current.line, saved_current.column, saved_current.value);
+                    break;
+                case TOKEN_RPAREN:
+                    PARSE_ERROR("Unexpected ')' in return expression (line %d:%d) - missing opening parenthesis.\n"
+                               "  → Error: Unmatched closing parenthesis\n"
+                               "  → Suggestion: Add opening '(' or remove the closing ')'", 
+                               saved_current.line, saved_current.column);
+                    break;
+                case TOKEN_COMMA:
+                    PARSE_ERROR("Unexpected ',' in return expression (line %d:%d) - return statements accept only single expressions.\n"
+                               "  → Error: Multiple values in return statement\n"
+                               "  → Suggestion: Return a single value or use an array: 'return [value1, value2]'", 
+                               saved_current.line, saved_current.column);
+                    break;
+                case TOKEN_RBRACKET:
+                    PARSE_ERROR("Unexpected ']' in return expression (line %d:%d) - missing opening bracket.\n"
+                               "  → Error: Unmatched closing bracket\n"
+                               "  → Suggestion: Add opening '[' or remove the closing ']'", 
+                               saved_current.line, saved_current.column);
+                    break;
+                case TOKEN_EQUAL:
+                    PARSE_ERROR("Unexpected '=' in return expression (line %d:%d) - assignment not allowed in return statements.\n"
+                               "  → Error: Cannot assign values in return expressions\n"
+                               "  → Suggestion: Use comparison '==' or move assignment before return", 
+                               saved_current.line, saved_current.column);
+                    break;
+                default:
+                    PARSE_ERROR("Invalid or malformed expression in return statement (line %d:%d) starting with '%s'.\n"
+                               "  → Error: Unexpected token '%s' of type %d\n"
+                               "  → Suggestion: Check expression syntax and ensure proper operators/operands", 
+                               saved_current.line, saved_current.column, saved_current.value, 
+                               saved_current.value, saved_current.type);
+                    break;
+            }
+            
+            // Error recovery: try to continue parsing by skipping problematic tokens
+            while (rt->parser.current.type != TOKEN_NEWLINE && 
+                   rt->parser.current.type != TOKEN_EOF &&
+                   rt->parser.current.type != TOKEN_RBRACE &&
+                   rt->parser.current.type != TOKEN_SEMICOLON) {
+                parser_advance();
+            }
+        }
+        
+        // Enhanced validation for successfully parsed expressions
+        if (expr) {
+            // Check for common expression errors that parse_binary_expression might miss
+            if (expr->type == AST_NOP) {
+                PARSE_ERROR("Empty or invalid expression in return statement (line %d:%d).\n"
+                           "  → Error: Expression evaluated to no-operation\n"
+                           "  → Suggestion: Provide a valid expression after 'return'", 
+                           return_token.line, return_token.column);
+            }
+            
+            // Enhanced validation for trailing invalid tokens with specific error messages
+            if (rt->parser.current.type != TOKEN_NEWLINE && 
+                rt->parser.current.type != TOKEN_EOF &&
+                rt->parser.current.type != TOKEN_RBRACE &&
+                rt->parser.current.type != TOKEN_SEMICOLON &&
+                rt->parser.current.type != TOKEN_ELSE) {
+                
+                // Check for common mistakes like multiple expressions or missing operators
+                if (rt->parser.current.type == TOKEN_NUMBER ||
+                    rt->parser.current.type == TOKEN_IDENTIFIER) {
+                    PARSE_ERROR("Multiple expressions in return statement (line %d:%d) - found '%s' after '%s'.\n"
+                               "  → Error: Return statements can only contain one expression\n"
+                               "  → Suggestion: Use an operator between values: 'return %s + %s' or 'return %s * %s'", 
+                               rt->parser.current.line, rt->parser.current.column,
+                               rt->parser.current.value, rt->parser.previous.value,
+                               rt->parser.previous.value, rt->parser.current.value,
+                               rt->parser.previous.value, rt->parser.current.value);
+                } else if (rt->parser.current.type == TOKEN_LPAREN) {
+                    PARSE_ERROR("Unexpected '(' after return expression (line %d:%d).\n"
+                               "  → Error: Function call syntax after return expression\n"
+                               "  → Suggestion: Move function call inside return: 'return function_name(args)'", 
+                               rt->parser.current.line, rt->parser.current.column);
+                } else {
+                    PARSE_ERROR("Unexpected token '%s' after return expression (line %d:%d).\n"
+                               "  → Error: Invalid syntax following return expression\n"
+                               "  → Suggestion: End return statement with newline or '}'", 
+                               rt->parser.current.value, rt->parser.current.line, rt->parser.current.column);
+                }
+                
+                // Error recovery: skip the problematic token and continue
+                parser_advance();
+            }
+        }
+    } else {
+        // Bare return statement - provide informational context
+        // This is valid, but we can provide helpful context in debug mode
+        #ifdef DEBUG_PARSER
+        printf("INFO: Bare return statement at line %d:%d (no expression)\n", 
+               return_token.line, return_token.column);
+        #endif
+    }
+    
+    // Create return AST node with enhanced error checking
     ASTNode *node = malloc(sizeof(ASTNode));
+    if (!node) {
+        PARSE_ERROR("Memory allocation failed for return statement (line %d:%d).\n"
+                   "  → Error: Out of memory while creating AST node\n"
+                   "  → Suggestion: Check available memory or simplify code structure", 
+                   return_token.line, return_token.column);
+        return NULL;  // Return NULL to indicate failure
+    }
+    
     node->type = AST_RETURN;
-    node->return_stmt.expr = expr;
+    node->return_stmt.expr = expr;  // Can be NULL for bare returns
+    
+    // Store line information in the AST node for runtime error reporting
+    // Note: This would require extending the AST node structure, but for now we rely on the parser's line tracking
+    
     return node;
 }
 
@@ -825,6 +1045,64 @@ static ASTNode *parse_for()
     Runtime *rt = get_runtime();
     parser_advance(); // skip 'for'
 
+    // Check for tuple syntax first: for (char, index) in string_var
+    if (rt->parser.current.type == TOKEN_LPAREN)
+    {
+        parser_advance(); // skip '('
+        
+        if (rt->parser.current.type != TOKEN_IDENTIFIER)
+        {
+            PARSE_ERROR("[parse_for] Expected identifier for character variable, but got '%s'", rt->parser.current.value);
+        }
+        
+        char *var = strdup(rt->parser.current.value);
+        parser_advance();
+        
+        if (rt->parser.current.type != TOKEN_COMMA)
+        {
+            PARSE_ERROR("[parse_for] Expected ',' in tuple syntax, but got '%s'", rt->parser.current.value);
+        }
+        parser_advance(); // skip ','
+        
+        if (rt->parser.current.type != TOKEN_IDENTIFIER)
+        {
+            PARSE_ERROR("[parse_for] Expected identifier for index variable, but got '%s'", rt->parser.current.value);
+        }
+        
+        char *index_var = strdup(rt->parser.current.value);
+        parser_advance();
+        
+        if (rt->parser.current.type != TOKEN_RPAREN)
+        {
+            PARSE_ERROR("[parse_for] Expected ')' after tuple variables, but got '%s'", rt->parser.current.value);
+        }
+        parser_advance(); // skip ')'
+        
+        if (rt->parser.current.type != TOKEN_IN)
+        {
+            PARSE_ERROR("[parse_for] Expected 'in' after tuple syntax, but got '%s'", rt->parser.current.value);
+        }
+        parser_advance(); // skip 'in'
+        
+        // Parse the iterable expression
+        ASTNode *iterable = parse_binary_expression();
+        ASTNode *body = parse_block();
+
+        ASTNode *node = malloc(sizeof(ASTNode));
+        node->type = AST_FOR;
+        node->for_stmt.var = var;
+        node->for_stmt.index_var = index_var;
+        node->for_stmt.from = NULL;
+        node->for_stmt.to = NULL;
+        node->for_stmt.step = NULL;
+        node->for_stmt.iterable = iterable;
+        node->for_stmt.exclusive = 0;
+        node->for_stmt.is_string_iteration = 1;
+        node->for_stmt.body = body;
+        return node;
+    }
+
+    // Regular identifier-based syntax
     if (rt->parser.current.type != TOKEN_IDENTIFIER)
     {
         PARSE_ERROR("[parse_for] Expected identifier after 'for', but got '%s'", rt->parser.current.value);
@@ -833,6 +1111,30 @@ static ASTNode *parse_for()
     char *var = strdup(rt->parser.current.value);
     parser_advance();
 
+    // Check for string iteration syntax: for char in string_var
+    if (rt->parser.current.type == TOKEN_IN)
+    {
+        parser_advance(); // skip 'in'
+        
+        // Parse the iterable expression (should be a string variable)
+        ASTNode *iterable = parse_binary_expression();
+        ASTNode *body = parse_block();
+
+        ASTNode *node = malloc(sizeof(ASTNode));
+        node->type = AST_FOR;
+        node->for_stmt.var = var;
+        node->for_stmt.index_var = NULL;
+        node->for_stmt.from = NULL;
+        node->for_stmt.to = NULL;
+        node->for_stmt.step = NULL;
+        node->for_stmt.iterable = iterable;
+        node->for_stmt.exclusive = 0;
+        node->for_stmt.is_string_iteration = 1;
+        node->for_stmt.body = body;
+        return node;
+    }
+
+    // Traditional numeric for loop: for i = 1..10
     if (!match(TOKEN_EQUAL))
     {
         PARSE_ERROR("[parse_for] Expected '=' after variable name in for loop, but got '%s'", rt->parser.current.value);
@@ -879,10 +1181,13 @@ static ASTNode *parse_for()
     ASTNode *node = malloc(sizeof(ASTNode));
     node->type = AST_FOR;
     node->for_stmt.var = var;
+    node->for_stmt.index_var = NULL;
     node->for_stmt.from = from;
     node->for_stmt.to = to;
-    node->for_stmt.step = step; // can be NULL (default to 1 later)
+    node->for_stmt.step = step;
+    node->for_stmt.iterable = NULL;
     node->for_stmt.exclusive = exclusive;
+    node->for_stmt.is_string_iteration = 0;
     node->for_stmt.body = body;
     return node;
 }
@@ -1160,6 +1465,9 @@ case AST_EXPR_STMT:
     case AST_NUMBER:
         // nothing to free
         break;
+    case AST_STRING:
+        free(node->string_literal.value);
+        break;
     case AST_UNARY:
         free_ast(node->unary_expr.operand);
         break;
@@ -1175,6 +1483,21 @@ case AST_EXPR_STMT:
 
     case AST_FOR:
         free(node->for_stmt.var);
+        if (node->for_stmt.index_var) {
+            free(node->for_stmt.index_var);
+        }
+        if (node->for_stmt.from) {
+            free_ast(node->for_stmt.from);
+        }
+        if (node->for_stmt.to) {
+            free_ast(node->for_stmt.to);
+        }
+        if (node->for_stmt.step) {
+            free_ast(node->for_stmt.step);
+        }
+        if (node->for_stmt.iterable) {
+            free_ast(node->for_stmt.iterable);
+        }
         free_ast(node->for_stmt.body);
         break;
 
@@ -1222,4 +1545,40 @@ case AST_EXPR_STMT:
     }
 
     free(node);
+}
+// Parse an expression from a string while preserving current runtime context
+ASTNode *parse_expression_from_string(const char *expr_text) {
+    if (!expr_text || strlen(expr_text) == 0) {
+        return NULL;
+    }
+    
+    Runtime *rt = get_runtime();
+    
+    // Save current parser state
+    Lexer *saved_lexer = rt->parser.lexer;
+    Token saved_current = rt->parser.current;
+    
+    // Create temporary lexer for the expression
+    rt->parser.lexer = lexer_new(expr_text);
+    if (!rt->parser.lexer) {
+        // Restore parser state
+        rt->parser.lexer = saved_lexer;
+        rt->parser.current = saved_current;
+        return NULL;
+    }
+    
+    // Advance to first token
+    parser_advance();
+    
+    // Parse the expression
+    ASTNode *expr = parse_binary_expression();
+    
+    // Clean up temporary lexer
+    lexer_free(rt->parser.lexer);
+    
+    // Restore parser state
+    rt->parser.lexer = saved_lexer;
+    rt->parser.current = saved_current;
+    
+    return expr;
 }

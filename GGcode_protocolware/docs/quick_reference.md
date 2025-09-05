@@ -51,6 +51,8 @@
 let x_pos = 10
 let y_pos = 20
 let feed_rate = 500
+let tool_name = "end mill"
+let operation = "roughing"
 
 // Use in commands
 G[0] X[x_pos] Y[y_pos] Z[5]
@@ -58,6 +60,33 @@ G[1] X[x_pos + 10] Y[y_pos] F[feed_rate]
 
 // Mathematical expressions
 G[1] X[sin(45) * 10] Y[cos(45) * 10] F[feed_rate * 1.5]
+
+// String usage in notes
+note {Using tool: [tool_name]}
+note {Operation: [operation]}
+```
+
+## String Operations
+
+```ggcode
+// String variables
+let message = "Hello World"
+let tool = "1/4 inch end mill"
+
+// String comparison
+if tool == "1/4 inch end mill" {
+    note {Correct tool selected}
+}
+
+// String iteration
+for char in message {
+    note {Character: [char]}
+}
+
+// String iteration with index
+for (char, index) in message {
+    note {Position [index]: [char]}
+}
 ```
 
 ## Compound Assignments
@@ -97,30 +126,40 @@ let tool_number = 1
 let spindle_speed = 1200
 let feed_rate = 500
 let safe_z = 25
+let program_name = "Rectangle Cut"
+let tool_description = "1/4 inch end mill"
+
+note {Program: [program_name]}
+note {Tool: [tool_description]}
 
 // Tool change
 G[0] Z[safe_z]
 T[tool_number]
 M[6]
 G[43] H[tool_number] Z[safe_z]
+note {Tool [tool_number] loaded: [tool_description]}
 
 // Start machining
 M[3] S[spindle_speed]
 M[8]  // Coolant on
+note {Spindle started at [spindle_speed] RPM}
 
 // Machining operations
 G[0] X[0] Y[0]
+note {Starting cut at origin}
 G[1] Z[-2] F[100]
 G[1] X[50] F[feed_rate]
 G[1] Y[25]
 G[1] X[0]
 G[1] Y[0]
+note {Rectangle cut completed}
 
 // End program
 G[0] Z[safe_z]
 M[9]  // Coolant off
 M[5]  // Spindle off
 G[49] // Cancel tool compensation
+note {Program [program_name] completed}
 M[30] // End and rewind
 ```
 

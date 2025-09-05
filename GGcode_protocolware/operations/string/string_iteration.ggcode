@@ -1,0 +1,37 @@
+// String Iteration Examples
+// Demonstrates string iteration capabilities in GGCODE
+
+let axes = "XYZ"
+let coordinates = "123"
+let message = "HELLO"
+
+note {=== Basic String Iteration ===}
+note {Iterating through axes: [axes]}
+for axis in axes {
+    note {Axis: [axis]}
+}
+
+note {=== String Iteration with Index ===}
+note {Processing message: [message]}
+for (letter, position) in message {
+    note {Letter '[letter]' at position [position]}
+}
+
+note {=== Nested String Loops ===}
+note {Combining axes with coordinates:}
+for axis in axes {
+    for coord in coordinates {
+        note {[axis][coord]}
+    }
+}
+
+note {=== Conditional String Processing ===}
+let vowels = "AEIOU"
+note {Finding vowels in: [message]}
+for (char, index) in message {
+    for vowel in vowels {
+        if char == vowel {
+            note {Found vowel '[char]' at position [index]}
+        }
+    }
+}

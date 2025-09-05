@@ -1,0 +1,37 @@
+// String Variable Operations
+// Demonstrates basic string variable usage in GGCODE
+
+let tool_name = "1/4 inch end mill"
+let operation_type = "pocket milling"
+let material = "aluminum"
+let programmer = "CNC Operator"
+
+// Basic string usage in notes
+note {=== Program Information ===}
+note {Tool: [tool_name]}
+note {Operation: [operation_type]}
+note {Material: [material]}
+note {Programmed by: [programmer]}
+
+// String comparison for conditional logic
+if material == "aluminum" {
+    let spindle_speed = 3000
+    let feed_rate = 800
+    note {Aluminum settings: [spindle_speed] RPM, [feed_rate] IPM}
+}
+
+if tool_name == "1/4 inch end mill" {
+    note {Using standard 1/4 inch tooling}
+}
+
+// String iteration for character processing
+note {=== Tool Name Analysis ===}
+for char in tool_name {
+    note {Character: [char]}
+}
+
+// String iteration with index
+note {=== Character Positions ===}
+for (char, index) in operation_type {
+    note {Position [index]: [char]}
+}

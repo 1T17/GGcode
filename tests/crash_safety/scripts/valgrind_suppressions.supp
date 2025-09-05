@@ -1,0 +1,30 @@
+# Valgrind suppressions for GGcode compiler
+# This file contains suppressions for known false positives
+
+{
+   glibc_dlopen_leak
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:_dl_open
+}
+
+{
+   glibc_printf_leak
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:printf
+}
+
+{
+   pthread_create_leak
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create*
+}

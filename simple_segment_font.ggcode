@@ -1,0 +1,239 @@
+// SIMPLE SEGMENT FONT - Actually Working
+// True 7-segment display extended for letters
+// Each character draws only the segments it needs
+
+note {=== Simple Segment Font System ===}
+note {True segment display - draws individual segments}
+
+let safe_z = 2
+
+function draw_segment_char(x, y, char, size) {
+    note {Segment '[char]' at X[x] Y[y]}
+    
+    let half = size / 2
+    
+    // NUMBERS - Classic 7-segment display
+    if char == "0" {
+        // Segments: A, B, C, D, E, F (all except middle)
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+    }
+    
+    if char == "1" {
+        // Segments: B, C (right side only)
+        G0 Z[safe_z] X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]  // B
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                // C
+    }
+    
+    if char == "2" {
+        // Segments: A, B, G, E, D
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+    }
+    
+    if char == "3" {
+        // Segments: A, B, G, C, D
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+    }
+    
+    if char == "4" {
+        // Segments: F, G, B, C
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]  // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+    }
+    
+    if char == "5" {
+        // Segments: A, F, G, C, D
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+    }
+    
+    if char == "6" {
+        // Segments: A, F, G, E, D, C
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+    }
+    
+    if char == "7" {
+        // Segments: A, B, C
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+    }
+    
+    if char == "8" {
+        // Segments: All (A, B, C, D, E, F, G)
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+    }
+    
+    if char == "9" {
+        // Segments: A, B, C, D, F, G
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+    }
+    
+    // LETTERS - Extended segment patterns
+    if char == "A" {
+        // Segments: A, B, C, E, F, G (like 8 but no bottom)
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+    }
+    
+    if char == "B" {
+        // Segments: A, B, C, D, F, G + center vertical
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+        G0 X[x] Y[y+size]; G0 Z[0]; G1 X[x] Y[y]; G0 Z[safe_z]                         // Center vertical
+    }
+    
+    if char == "C" {
+        // Segments: A, D, E, F (open rectangle)
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+    }
+    
+    if char == "E" {
+        // Segments: A, D, E, F, G
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+    }
+    
+    if char == "F" {
+        // Segments: A, E, F, G (like E but no bottom)
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+    }
+    
+    if char == "H" {
+        // Segments: B, C, E, F, G (two verticals + middle)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+    }
+    
+    if char == "L" {
+        // Segments: D, E, F (left side + bottom)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+    }
+    
+    if char == "O" {
+        // Same as 0
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+    }
+    
+    if char == "P" {
+        // Segments: A, B, E, F, G (like A but no bottom right)
+        G0 Z[safe_z] X[x-half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+size]; G0 Z[safe_z]  // A (top)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // G (middle)
+    }
+    
+    if char == "U" {
+        // Segments: B, C, D, E, F (horseshoe)
+        G0 X[x+half] Y[y+size]; G0 Z[0]; G1 X[x+half] Y[y+half]; G0 Z[safe_z]           // B (top right)
+        G0 X[x+half] Y[y+half]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]               // C (bottom right)
+        G0 X[x-half] Y[y]; G0 Z[0]; G1 X[x+half] Y[y]; G0 Z[safe_z]                    // D (bottom)
+        G0 X[x-half] Y[y+half]; G0 Z[0]; G1 X[x-half] Y[y]; G0 Z[safe_z]               // E (bottom left)
+        G0 X[x-half] Y[y+size]; G0 Z[0]; G1 X[x-half] Y[y+half]; G0 Z[safe_z]          // F (top left)
+    }
+    
+    // SPACE
+    if char == " " {
+        // No segments - just a note
+        note {Space}
+    }
+}
+
+// DEMONSTRATION
+note {=== Simple Segment Font Demo ===}
+
+// Test numbers (classic 7-segment)
+let numbers = "0123456789"
+let x_pos = 0
+
+for digit in numbers {
+    draw_segment_char(x_pos, 20, digit, 8)
+    x_pos = x_pos + 12
+}
+
+// Test letters
+let letters = "HELLO"
+x_pos = 0
+
+for letter in letters {
+    draw_segment_char(x_pos, 0, letter, 8)
+    x_pos = x_pos + 12
+}
+
+// Test more letters
+let more_letters = "ABCEFHLPOU"
+x_pos = 0
+
+for letter in more_letters {
+    draw_segment_char(x_pos, -20, letter, 6)
+    x_pos = x_pos + 8
+}
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Simple Segment Font Complete ===}
+note {True segment-based display}
+note {Each character draws only needed segments}
+note {Like digital clock extended for letters}

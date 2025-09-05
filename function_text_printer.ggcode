@@ -1,0 +1,326 @@
+// Function-Based Text Printer
+// Usage: print_text(x, y, text, size, spacing)
+// 
+// This demonstrates GGcode's function support with:
+// - Function definitions with multiple parameters
+// - String parameters and string iteration
+// - Mixed parameter types (numbers and strings)
+// - Character-by-character string processing
+
+note {=== Function-Based Text Printer ===}
+note {Usage: print_text(x, y, text, size, spacing)}
+note {Supports: A-Z, 0-5, and space characters}
+
+let safe_z = 2
+
+// Main text printing function
+function print_text(x, y, text, size, spacing) {
+    note {Printing '[text]' at X[x] Y[y], size [size], spacing [spacing]}
+    
+    let current_x = x
+    let char_width = size
+    let char_height = size * 1.5
+    
+    for char in text {
+        note {Drawing '[char]' at X[current_x]}
+        
+        if char == "A" {
+            // Draw A: triangle with crossbar
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/4] Y[y]
+            G0 Z[0]
+            G1 X[current_x + char_width/4] Y[y]
+            G0 Z[safe_z]
+        }
+        
+        if char == "B" {
+            // Draw B: left vertical + two bumps
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y]
+            G1 X[current_x - char_width/2] Y[y]
+            G1 X[current_x + char_width/2] Y[y]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "C" {
+            // Draw C: open rectangle
+            G0 Z[safe_z] X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "D" {
+            // Draw D: rounded rectangle
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "E" {
+            // Draw E: left vertical + three horizontals
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/2] Y[y]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "F" {
+            // Draw F: left vertical + two horizontals
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/2] Y[y]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y]
+            G0 Z[safe_z]
+        }
+        
+        if char == "G" {
+            // Draw G: C shape with middle bar
+            G0 Z[safe_z] X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x + char_width/2] Y[y]
+            G1 X[current_x] Y[y]
+            G0 Z[safe_z]
+        }
+        
+        if char == "H" {
+            // Draw H: two verticals + horizontal middle
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/2] Y[y]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y]
+            G0 Z[safe_z]
+        }
+        
+        if char == "I" {
+            // Draw I: vertical line with top and bottom bars
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x] Y[y - char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "L" {
+            // Draw L: left vertical + bottom horizontal
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "O" {
+            // Draw O: complete rectangle
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "P" {
+            // Draw P: left vertical + top bump
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y]
+            G1 X[current_x - char_width/2] Y[y]
+            G0 Z[safe_z]
+        }
+        
+        if char == "R" {
+            // Draw R: P shape + diagonal
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y]
+            G1 X[current_x - char_width/2] Y[y]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "T" {
+            // Draw T: top horizontal + center vertical
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "U" {
+            // Draw U: horseshoe shape
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        // Numbers
+        if char == "0" {
+            // Same as O
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "1" {
+            // Right vertical line
+            G0 Z[safe_z] X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "2" {
+            // Seven-segment 2
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y]
+            G1 X[current_x - char_width/2] Y[y]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "3" {
+            // Seven-segment 3
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y + char_height/2]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - char_width/2] Y[y]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y]
+            G0 Z[safe_z]
+        }
+        
+        if char == "4" {
+            // Seven-segment 4
+            G0 Z[safe_z] X[current_x - char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y]
+            G1 X[current_x + char_width/2] Y[y]
+            G0 Z[safe_z]
+            G0 X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == "5" {
+            // Seven-segment 5
+            G0 Z[safe_z] X[current_x + char_width/2] Y[y + char_height/2]
+            G0 Z[0]
+            G1 X[current_x - char_width/2] Y[y + char_height/2]
+            G1 X[current_x - char_width/2] Y[y]
+            G1 X[current_x + char_width/2] Y[y]
+            G1 X[current_x + char_width/2] Y[y - char_height/2]
+            G1 X[current_x - char_width/2] Y[y - char_height/2]
+            G0 Z[safe_z]
+        }
+        
+        if char == " " {
+            // Space - no drawing
+            note {Space character}
+        }
+        
+        // Move to next character position
+        current_x = current_x + char_width + spacing
+    }
+    
+    return 1
+}
+
+// Example usage
+note {=== Function Usage Examples ===}
+
+// Print "HELLO" at origin with size 8 and spacing 2
+print_text(0, 0, "HELLO", 8, 2)
+
+// Print "WORLD" below with different size
+print_text(0, -25, "WORLD", 6, 1.5)
+
+// Print numbers
+print_text(0, -45, "12345", 5, 1)
+
+// Print at different position
+print_text(60, 20, "GGCODE", 10, 3)
+
+// Print mixed content
+print_text(0, -65, "ABC 123", 7, 2)
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+
+note {=== Function-Based Text Printer Complete ===}
+note {Function signature: print_text(x, y, text, size, spacing)}
+note {- x, y: starting position}
+note {- text: string to print}
+note {- size: character size}
+note {- spacing: space between characters}

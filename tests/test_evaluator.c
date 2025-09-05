@@ -2,6 +2,9 @@
 #include "parser.h"
 #include "lexer/lexer.h"
 #include "../runtime/evaluator.h"
+#include "../generator/emitter.h"
+#include "../runtime/runtime_state.h"
+#include "../config/config.h"
 
 double get_number(Value *val); 
 
@@ -792,6 +795,232 @@ void test_eval_compound_assignment_right_shift_equal(void)
     free_ast(root);
 }
 
+void test_eval_recursion_limit_protection(void)
+{
+    // Test that infinite recursion is detected and handled gracefully
+    const char *code = 
+        "function infinite_a() { return infinite_b() }\n"
+        "function infinite_b() { return infinite_a() }\n"
+        "let result = infinite_a()\n";
+    
+    reset_runtime_state(); // Ensure clean state
+    
+    ASTNode *root = parse_script_from_string(code);
+    TEST_ASSERT_NOT_NULL(root);
+    
+    // Execute the code - should not crash
+    emit_gcode(root);
+    
+    // Verify that the result is the safe default value (0.0)
+    Value *result = get_var("result");
+    TEST_ASSERT_NOT_NULL(result);
+    TEST_ASSERT_EQUAL_DOUBLE(0.0, result->number);
+    
+    // Verify that the system is in a stable state after recursion error
+    Runtime *rt = get_runtime();
+    TEST_ASSERT_EQUAL_INT(0, rt->recursion_depth); // Should be reset to 0
+    
+    free_ast(root);
+}
+
+void test_eval_recursion_recovery_and_stability(void)
+{
+    // Test that the system remains stable after recursion errors
+    const char *infinite_code = 
+        "function infinite() { return infinite() }\n"
+        "let bad_result = infinite()\n";
+    
+    const char *normal_code = 
+        "function countdown(n) {\n"
+        "  if (n <= 0) { return 0 }\n"
+        "  return countdown(n - 1)\n"
+        "}\n"
+        "let good_result = countdown(5)\n";
+    
+    reset_runtime_state(); // Ensure clean state
+    
+    // First, trigger recursion limit
+    ASTNode *infinite_root = parse_script_from_string(infinite_code);
+    TEST_ASSERT_NOT_NULL(infinite_root);
+    emit_gcode(infinite_root);
+    
+    Value *bad_result = get_var("bad_result");
+    TEST_ASSERT_NOT_NULL(bad_result);
+    TEST_ASSERT_EQUAL_DOUBLE(0.0, bad_result->number);
+    
+    free_ast(infinite_root);
+    
+    // Then, verify normal recursion still works
+    ASTNode *normal_root = parse_script_from_string(normal_code);
+    TEST_ASSERT_NOT_NULL(normal_root);
+    emit_gcode(normal_root);
+    
+    Value *good_result = get_var("good_result");
+    TEST_ASSERT_NOT_NULL(good_result);
+    TEST_ASSERT_EQUAL_DOUBLE(0.0, good_result->number); // countdown(5) should return 0
+    
+    // Verify system is still stable
+    Runtime *rt = get_runtime();
+    TEST_ASSERT_EQUAL_INT(0, rt->recursion_depth);
+    
+    free_ast(normal_root);
+}
+
+// String literal evaluation tests
+void test_eval_string_literal_basic(void)
+{
+    ASTNode *root = parse_script_from_string("let message = \"hello world\"");
+    
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("message", val);
+    
+    Value *retrieved = get_var("message");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, retrieved->type);
+    TEST_ASSERT_EQUAL_STRING("hello world", retrieved->string);
+    
+    free_ast(root);
+}
+
+void test_eval_string_literal_empty(void)
+{
+    ASTNode *root = parse_script_from_string("let empty = \"\"");
+    
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("empty", val);
+    
+    Value *retrieved = get_var("empty");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, retrieved->type);
+    TEST_ASSERT_EQUAL_STRING("", retrieved->string);
+    
+    free_ast(root);
+}
+
+void test_eval_string_literal_with_escapes(void)
+{
+    ASTNode *root = parse_script_from_string("let escaped = \"He said \\\"hello\\\"\\nNext line\\tTabbed\"");
+    
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("escaped", val);
+    
+    Value *retrieved = get_var("escaped");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, retrieved->type);
+    TEST_ASSERT_EQUAL_STRING("He said \"hello\"\nNext line\tTabbed", retrieved->string);
+    
+    free_ast(root);
+}
+
+void test_eval_string_variable_assignment(void)
+{
+    ASTNode *root = parse_script_from_string("let name = \"Alice\"\nlet greeting = name");
+    
+    // Set first variable
+    Value *name_val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("name", name_val);
+    
+    // Set second variable to reference first
+    Value *greeting_val = eval_expr(root->block.statements[1]->let_stmt.expr);
+    set_var("greeting", greeting_val);
+    
+    Value *name = get_var("name");
+    Value *greeting = get_var("greeting");
+    
+    TEST_ASSERT_NOT_NULL(name);
+    TEST_ASSERT_NOT_NULL(greeting);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, name->type);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, greeting->type);
+    TEST_ASSERT_EQUAL_STRING("Alice", name->string);
+    TEST_ASSERT_EQUAL_STRING("Alice", greeting->string);
+    
+    free_ast(root);
+}
+
+void test_eval_string_variable_reassignment(void)
+{
+    ASTNode *root = parse_script_from_string("let text = \"first\"\ntext = \"second\"");
+    
+    // Set initial value
+    Value *initial_val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("text", initial_val);
+    
+    // Reassign
+    Value *new_val = eval_expr(root->block.statements[1]->assign_stmt.expr);
+    set_var("text", new_val);
+    
+    Value *retrieved = get_var("text");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, retrieved->type);
+    TEST_ASSERT_EQUAL_STRING("second", retrieved->string);
+    
+    free_ast(root);
+}
+
+void test_eval_string_memory_management(void)
+{
+    // Test that string memory is properly managed during operations
+    ASTNode *root = parse_script_from_string("let str1 = \"test string\"\nlet str2 = \"another string\"");
+    
+    Value *val1 = eval_expr(root->block.statements[0]->let_stmt.expr);
+    Value *val2 = eval_expr(root->block.statements[1]->let_stmt.expr);
+    
+    set_var("str1", val1);
+    set_var("str2", val2);
+    
+    // Verify both strings are properly stored
+    Value *retrieved1 = get_var("str1");
+    Value *retrieved2 = get_var("str2");
+    
+    TEST_ASSERT_NOT_NULL(retrieved1);
+    TEST_ASSERT_NOT_NULL(retrieved2);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, retrieved1->type);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, retrieved2->type);
+    TEST_ASSERT_EQUAL_STRING("test string", retrieved1->string);
+    TEST_ASSERT_EQUAL_STRING("another string", retrieved2->string);
+    
+    // Verify strings have different memory addresses (independent copies)
+    TEST_ASSERT_NOT_EQUAL(retrieved1->string, retrieved2->string);
+    
+    free_ast(root);
+}
+
+void test_eval_string_copy_independence(void)
+{
+    // Test that copying string values creates independent copies
+    Value *original = make_string_value("original text");
+    Value *copy = copy_value(original);
+    
+    TEST_ASSERT_NOT_NULL(original);
+    TEST_ASSERT_NOT_NULL(copy);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, original->type);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, copy->type);
+    TEST_ASSERT_EQUAL_STRING("original text", original->string);
+    TEST_ASSERT_EQUAL_STRING("original text", copy->string);
+    
+    // Verify they have different memory addresses
+    TEST_ASSERT_NOT_EQUAL(original->string, copy->string);
+    
+    // Cleanup
+    free_value(original);
+    free_value(copy);
+}
+
+void test_eval_string_mixed_content(void)
+{
+    ASTNode *root = parse_script_from_string("let mixed = \"text with 123 numbers and symbols!@#\"");
+    
+    Value *val = eval_expr(root->block.statements[0]->let_stmt.expr);
+    set_var("mixed", val);
+    
+    Value *retrieved = get_var("mixed");
+    TEST_ASSERT_NOT_NULL(retrieved);
+    TEST_ASSERT_EQUAL_INT(VAL_STRING, retrieved->type);
+    TEST_ASSERT_EQUAL_STRING("text with 123 numbers and symbols!@#", retrieved->string);
+    
+    free_ast(root);
+}
+
 
 int main(void)
 {
@@ -844,5 +1073,18 @@ int main(void)
      RUN_TEST(test_eval_manual_while_loop);                //46
      RUN_TEST(test_eval_trig_functions);                   //47 
      RUN_TEST(test_eval_negative_and_unary);               //48
+     RUN_TEST(test_eval_recursion_limit_protection);       //49
+     RUN_TEST(test_eval_recursion_recovery_and_stability); //50
+     
+     // String literal tests
+     RUN_TEST(test_eval_string_literal_basic);             //51
+     RUN_TEST(test_eval_string_literal_empty);             //52
+     RUN_TEST(test_eval_string_literal_with_escapes);      //53
+     RUN_TEST(test_eval_string_variable_assignment);       //54
+     RUN_TEST(test_eval_string_variable_reassignment);     //55
+     RUN_TEST(test_eval_string_memory_management);         //56
+     RUN_TEST(test_eval_string_copy_independence);         //57
+     RUN_TEST(test_eval_string_mixed_content);             //58tion);       //49 - NEW
+     RUN_TEST(test_eval_recursion_recovery_and_stability); //50 - NEW
     return UNITY_END();
 }

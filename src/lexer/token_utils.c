@@ -20,6 +20,12 @@ Token make_token(Token_Type type, const char *value, int line, int column) {
     return token;
 }
 
+void token_free(Token token) {
+    if (token.value) {
+        free(token.value);
+    }
+}
+
 
 
 

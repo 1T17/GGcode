@@ -1,0 +1,93 @@
+// Corrected Function-Based Text Printer
+// Simple function approach that should work with GGCODE
+
+note {=== Corrected Text Printer ===}
+
+let safe_z = 2
+
+// Simple text printing function
+function print_text(pos_x, pos_y, message, char_size, char_gap) {
+    note {Printing text: [message]}
+    note {Position: X[pos_x] Y[pos_y]}
+    note {Size: [char_size], Gap: [char_gap]}
+    
+    let current_x = pos_x
+    let width = char_size
+    let height = char_size * 1.5
+    
+    for letter in message {
+        note {Drawing: [letter]}
+        
+        if letter == "H" {
+            // Draw H
+            G0 Z[safe_z] X[current_x - width/2] Y[pos_y - height/2]
+            G0 Z[0]
+            G1 X[current_x - width/2] Y[pos_y + height/2]
+            G0 Z[safe_z]
+            G0 X[current_x + width/2] Y[pos_y - height/2]
+            G0 Z[0]
+            G1 X[current_x + width/2] Y[pos_y + height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - width/2] Y[pos_y]
+            G0 Z[0]
+            G1 X[current_x + width/2] Y[pos_y]
+            G0 Z[safe_z]
+        }
+        
+        if letter == "E" {
+            // Draw E
+            G0 Z[safe_z] X[current_x - width/2] Y[pos_y - height/2]
+            G0 Z[0]
+            G1 X[current_x - width/2] Y[pos_y + height/2]
+            G1 X[current_x + width/2] Y[pos_y + height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - width/2] Y[pos_y]
+            G0 Z[0]
+            G1 X[current_x + width/2] Y[pos_y]
+            G0 Z[safe_z]
+            G0 X[current_x - width/2] Y[pos_y - height/2]
+            G0 Z[0]
+            G1 X[current_x + width/2] Y[pos_y - height/2]
+            G0 Z[safe_z]
+        }
+        
+        if letter == "L" {
+            // Draw L
+            G0 Z[safe_z] X[current_x - width/2] Y[pos_y - height/2]
+            G0 Z[0]
+            G1 X[current_x - width/2] Y[pos_y + height/2]
+            G0 Z[safe_z]
+            G0 X[current_x - width/2] Y[pos_y - height/2]
+            G0 Z[0]
+            G1 X[current_x + width/2] Y[pos_y - height/2]
+            G0 Z[safe_z]
+        }
+        
+        if letter == "O" {
+            // Draw O
+            G0 Z[safe_z] X[current_x - width/2] Y[pos_y - height/2]
+            G0 Z[0]
+            G1 X[current_x - width/2] Y[pos_y + height/2]
+            G1 X[current_x + width/2] Y[pos_y + height/2]
+            G1 X[current_x + width/2] Y[pos_y - height/2]
+            G1 X[current_x - width/2] Y[pos_y - height/2]
+            G0 Z[safe_z]
+        }
+        
+        if letter == " " {
+            // Space - no drawing
+            note {Space}
+        }
+        
+        // Move to next position
+        current_x = current_x + width + char_gap
+    }
+}
+
+// Test the function
+note {=== Testing Function ===}
+print_text(0, 0, "HELLO", 8, 2)
+
+// Return to safe position
+G0 Z[safe_z] X[0] Y[0]
+note {=== Complete ===}
